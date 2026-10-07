@@ -1,0 +1,52 @@
+// lib/groups.ts
+import { api } from './api';
+
+export type Group = {
+  id: string;
+  name: string;
+  currency: string;
+  createdAt: string;
+  createdById: string;
+  remainingDebts: number;
+  cover?: string;
+  _count: {
+    members: number;
+    transactions: number;
+  };
+};
+
+export type CreateGroupInput = {
+  name: string;
+  currency: string;
+  cover: {
+    uri: string;
+    fileName?: string | null;
+    mimeType?: string | null;
+    file?: File; // present on web
+  } | null;
+};
+
+export async function getGroups() {
+  const { data } = await api.get<Group[]>('/groups');
+  return data;
+}
+
+export async function createGroup({ name, currency, cover }: CreateGroupInput) {
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('currency', currency);
+
+  if (cover) {
+    const ext = cover.uri.split('.').pop()?.toLowerCase() ?? 'jpg';
+    formData.append('cover', {
+      uri: cover.uri,
+      name: cover.fileName ?? `cover.${ext}`,
+      type: cover.mimeType ?? (ext === 'png' ? 'image/png' : 'image/jpeg'),
+    } as any);
+  }
+
+  const { data } = await api.post<Group>('/groups', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
+}

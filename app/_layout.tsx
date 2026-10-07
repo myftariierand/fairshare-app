@@ -31,7 +31,7 @@ function RootNavigator() {
     <GestureHandlerRootView>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Protected guard={isLoggedIn}>
-          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(private)" />
         </Stack.Protected>
         <Stack.Protected guard={!isLoggedIn}>
           <Stack.Screen name="(public)" />
