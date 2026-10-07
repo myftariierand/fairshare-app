@@ -1,5 +1,6 @@
 // lib/auth-context.tsx
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { setAuthFailureHandler } from './api';
 import { tokenStorage } from './token-storage';
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
+    await GoogleSignin.signOut();
     await tokenStorage.clear();
     setAccessToken(null);
   }
