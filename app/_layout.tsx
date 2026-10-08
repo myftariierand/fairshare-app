@@ -12,6 +12,11 @@ import { Toaster } from 'sonner-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from 'expo-router';
+
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
 });
@@ -24,7 +29,7 @@ SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
   const { theme } = useUniwind();
-  const { isLoading, isLoggedIn } = useAuth();
+  const { isLoading, isLoggedIn, user } = useAuth();
 
   useEffect(() => {
     if (!isLoading) SplashScreen.hideAsync();
@@ -35,11 +40,14 @@ function RootNavigator() {
   return (
     <GestureHandlerRootView>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Protected guard={isLoggedIn}>
+        <Stack.Protected guard={isLoggedIn && !!user && user.emailVerified}>
           <Stack.Screen name="(private)" />
         </Stack.Protected>
         <Stack.Protected guard={!isLoggedIn}>
           <Stack.Screen name="(public)" />
+        </Stack.Protected>
+        <Stack.Protected guard={!!user && !user.emailVerified}>
+          <Stack.Screen name="verify-email" />
         </Stack.Protected>
       </Stack>
       <Toaster theme={theme} />

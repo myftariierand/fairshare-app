@@ -4,11 +4,6 @@ import { Tabs } from 'expo-router';
 
 import { UserGroupIcon, UserIcon, UsersIcon } from 'lucide-react-native';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
 export default function RootLayout() {
   return (
     <Tabs
@@ -20,6 +15,13 @@ export default function RootLayout() {
         options={{
           title: 'Groups',
           tabBarIcon: ({ color, size }) => <UserGroupIcon size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => <UserIcon size={size} color={color} />,
         }}
       />
     </Tabs>

@@ -27,16 +27,18 @@ export function SocialConnections() {
   const { theme } = useUniwind();
   const [loading, setLoading] = useState(false);
 
-  const { signIn } = useAuth();
+  const { setTokens, setUser } = useAuth();
 
   const handlePress = async (type: string) => {
     if (type === 'oauth_google') {
       if (loading) return;
       setLoading(true);
       try {
-        const tokens = await signInWithGoogle();
-        if (!tokens) return; // user cancelled, do nothing
-        await signIn(tokens);
+        const data = await signInWithGoogle();
+        if (!data) return; // user cancelled, do nothing
+        const { accessToken, refreshToken, user } = data;
+        await setTokens({ accessToken, refreshToken });
+        setUser(user);
       } catch (e: any) {
         toast.error('Sign-in failed', e.message ?? 'Something went wrong');
       } finally {

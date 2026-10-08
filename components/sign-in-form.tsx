@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { type TextInput, View } from 'react-native';
 import { Link } from 'expo-router';
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form';
@@ -39,7 +39,7 @@ export function SignInForm() {
     passwordInputRef.current?.focus();
   }
 
-  const { signIn } = useAuth();
+  const { setTokens, setUser } = useAuth();
 
   const form = useAppForm({
     defaultValues: {
@@ -55,8 +55,9 @@ export function SignInForm() {
     },
     onSubmit: async ({ value }) => {
       try {
-        const tokens = await login(value);
-        await signIn(tokens);
+        const { accessToken, refreshToken, user } = await login(value);
+        await setTokens({ accessToken, refreshToken });
+        setUser(user);
       } catch (e) {
         if (axios.isAxiosError(e)) {
           toast.error(e.response?.data?.message ?? 'Could not reach the server');
@@ -102,7 +103,7 @@ export function SignInForm() {
             <View className="gap-1.5">
               <View className="flex-row items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link asChild href={'/register'} className="text-sm">
+                <Link asChild href={'/forgot-password'} className="text-sm">
                   <Text>Forgot your password?</Text>
                 </Link>
               </View>
@@ -114,6 +115,7 @@ export function SignInForm() {
                       id="password"
                       secureTextEntry
                       returnKeyType="send"
+                      autoCapitalize="none"
                       ref={passwordInputRef}
                       onSubmitEditing={() => form.handleSubmit()}
                       value={field.state.value}

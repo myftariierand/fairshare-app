@@ -5,25 +5,36 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { setAuthFailureHandler } from './api';
 import { tokenStorage } from './token-storage';
 
+import { getProfile, type User } from '@/lib/auth';
+
 type Tokens = { accessToken: string; refreshToken?: string };
 
 type AuthContextValue = {
   isLoading: boolean;
   isLoggedIn: boolean;
-  signIn: (tokens: Tokens) => Promise<void>;
+  setTokens: (tokens: Tokens) => Promise<void>;
   signOut: () => Promise<void>;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     tokenStorage
       .getAccess()
-      .then(setAccessToken)
+      .then(async (token) => {
+        setAccessToken(token);
+        if (token) {
+          const user = await getProfile();
+          setUser(user);
+        }
+      })
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -33,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => setAuthFailureHandler(null);
   }, []);
 
-  async function signIn(tokens: Tokens) {
+  async function setTokens(tokens: Tokens) {
     await tokenStorage.set(tokens);
     setAccessToken(tokens.accessToken);
   }
@@ -45,7 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ isLoading, isLoggedIn: !!accessToken, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ isLoading, isLoggedIn: !!accessToken, user, setTokens, signOut, setUser }}>
       {children}
     </AuthContext.Provider>
   );
