@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, View, Image, ScrollView } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, View, Image } from 'react-native';
 import { Tabs, Link } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { format, formatDistance } from 'date-fns';
@@ -95,7 +95,7 @@ export default function GroupsScreen() {
                   <Text>Add Expense</Text>
                 </Button>
               </Link>
-              <Link asChild href="/">
+              <Link asChild href={`/groups/${item.id}`}>
                 <Button variant="outline" className="flex-1">
                   <Icon as={EyeIcon} />
                   <Text>View Group</Text>
@@ -119,7 +119,11 @@ export default function GroupsScreen() {
                   <Text className="text-muted-foreground text-center">No settled groups yet</Text>
                 ) : (
                   settledGroups.map((item) => (
-                    <Link key={item.id} asChild href="/" className="h-auto w-full">
+                    <Link
+                      key={item.id}
+                      asChild
+                      href={`/groups/${item.id}`}
+                      className="h-auto w-full">
                       <Button variant="ghost" className="h-auto w-full items-center gap-4 p-1">
                         <Image
                           className="size-12 shrink-0 rounded-lg"

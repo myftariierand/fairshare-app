@@ -1,19 +1,7 @@
 // lib/groups.ts
 import { api } from './api';
 
-export type Group = {
-  id: string;
-  name: string;
-  currency: string;
-  createdAt: string;
-  createdById: string;
-  remainingDebts: number;
-  cover?: string;
-  _count: {
-    members: number;
-    transactions: number;
-  };
-};
+import type { Group, SingleGroup } from '@/types/group';
 
 export type CreateGroupInput = {
   name: string;
@@ -28,6 +16,11 @@ export type CreateGroupInput = {
 
 export async function getGroups() {
   const { data } = await api.get<Group[]>('/groups');
+  return data;
+}
+
+export async function getGroupById(id: string) {
+  const { data } = await api.get<SingleGroup>(`/groups/${id}`);
   return data;
 }
 
@@ -48,5 +41,17 @@ export async function createGroup({ name, currency, cover }: CreateGroupInput) {
   const { data } = await api.post<Group>('/groups', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
+  return data;
+}
+
+type SettleUpInput = {
+  groupId: string;
+  amount: number;
+  description: string;
+  paidBy: string;
+};
+
+export async function settleUp(input: SettleUpInput) {
+  const { data } = await api.post('/transactions/settle', input);
   return data;
 }

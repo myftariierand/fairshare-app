@@ -68,3 +68,13 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
   return ctx;
 }
+
+export function useAuthUser(): User {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading || !user) {
+    throw new Error('useAuthUser must be used when a user is authenticated');
+  }
+
+  return user;
+}
