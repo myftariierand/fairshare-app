@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
 import { useAuthUser } from '@/lib/auth-context';
-import { useSettleUp } from '@/hooks/use-settle-up';
+import { useSettleUp } from '@/hooks/use-group-api';
 
 import { formatAmount, getErrorMessage } from '@/lib/utils';
 

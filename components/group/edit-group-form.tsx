@@ -1,11 +1,11 @@
-import { View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View } from 'react-native';
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form';
 import { z } from 'zod';
-// import DateTimePicker from '@expo/ui/community/datetime-picker';
 import { toast } from 'sonner-native';
-import { router } from 'expo-router';
 
-import { useCreateGroup } from '@/hooks/use-create-group';
+import { useUpdateGroup } from '@/hooks/use-group-api';
+
+import type { SingleGroup } from '@/types/group';
 
 import { Check } from 'lucide-react-native';
 
@@ -44,24 +44,28 @@ const currencies = [
   { code: 'INR', name: 'Indian Rupee' },
 ];
 
-const coverSchema = z.object({
-  uri: z.string(),
-  width: z.number(),
-  height: z.number(),
-  fileName: z.string().nullish(),
-  mimeType: z.string().optional(),
-});
+const coverSchema = z
+  .object({
+    uri: z.string(),
+    width: z.number(),
+    height: z.number(),
+    fileName: z.string().nullish(),
+    mimeType: z.string().optional(),
+  })
+  .or(z.object({ uri: z.string() }));
 
 type CoverSchemaType = z.infer<typeof coverSchema>;
 
-const CreateGroupForm = () => {
-  const createGroup = useCreateGroup();
+export const EditGroupForm = ({ data }: { data: SingleGroup }) => {
+  const updateGroup = useUpdateGroup();
 
   const form = useAppForm({
     defaultValues: {
-      name: '',
-      currency: '',
-      cover: null as CoverSchemaType | null,
+      name: data.name,
+      currency: data.currency,
+      cover: data.cover
+        ? { uri: process.env.EXPO_PUBLIC_IMG_URL + '/' + data.cover }
+        : (null as CoverSchemaType | null),
     },
     validators: {
       onSubmit: z.object({
@@ -72,20 +76,16 @@ const CreateGroupForm = () => {
     },
     onSubmit: async ({ value }) => {
       try {
-        await createGroup.mutateAsync(value);
+        await updateGroup.mutateAsync({ id: data.id, ...value });
         toast.success('Group created');
-        router.back();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : 'Something went wrong');
       }
     },
   });
 
-  //   const [show, setShow] = useState(false);
-  //   const [date, setDate] = useState(new Date());
-
   return (
-    <View className="h-full gap-2 p-4">
+    <View className="gap-2">
       <form.Field name="cover">
         {(field) => (
           <View className="gap-2">
@@ -131,7 +131,7 @@ const CreateGroupForm = () => {
                 field.handleChange(option?.value ?? '');
                 field.handleBlur();
               }}>
-              <SelectTrigger>
+              <SelectTrigger disabled>
                 <SelectValue placeholder="Select a currency" />
               </SelectTrigger>
               <SelectContent>
@@ -148,43 +148,20 @@ const CreateGroupForm = () => {
           </View>
         )}
       />
-      {/* <View className="gap-1">
-        <Label>Date</Label>
-        <Button variant={'outline'} onPress={() => setShow(true)}>
-          <Icon as={CalendarIcon} />
-          <Text>Start Date</Text>
-        </Button>
-        {show && (
-          <DateTimePicker
-            value={date}
-            onValueChange={(event, selectedDate) => {
-              setShow(false);
-              setDate(selectedDate);
-            }}
-            onDismiss={() => {
-              setShow(false);
-            }}
-            mode="date"
-            presentation="dialog"
-          />
-        )}
-      </View> */}
       <Button
         size={'lg'}
-        disabled={createGroup.isPending}
+        disabled={updateGroup.isPending}
         onPress={() => form.handleSubmit()}
         className="mt-auto">
-        {createGroup.isPending ? (
+        {updateGroup.isPending ? (
           <Spinner />
         ) : (
           <>
             <Icon as={Check} />
-            <Text>Create</Text>
+            <Text>Update</Text>
           </>
         )}
       </Button>
     </View>
   );
 };
-
-export default CreateGroupForm;

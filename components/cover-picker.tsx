@@ -7,7 +7,7 @@ import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
 
 type Props = {
-  value: ImagePicker.ImagePickerAsset | null;
+  value: ImagePicker.ImagePickerAsset | { uri: string } | null;
   onChange: (asset: ImagePicker.ImagePickerAsset | null) => void;
 };
 

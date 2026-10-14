@@ -12,6 +12,7 @@ import { DotIcon, InboxIcon } from 'lucide-react-native';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useMemo } from 'react';
+import { useGroupIdParam } from '@/hooks/use-group-id-param';
 
 type Section = { title: string; data: Transaction[] };
 
@@ -22,6 +23,7 @@ export default function TransactionList({
   transactions: Transaction[];
   currency: string;
 }) {
+  const { groupId } = useGroupIdParam();
   const sections = useMemo<Section[]>(() => {
     const sorted = [...transactions].sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -65,7 +67,7 @@ export default function TransactionList({
       )}
       renderItem={({ item: transaction }) =>
         transaction.type === TransactionType.expense ? (
-          <Link href="/" asChild>
+          <Link asChild href={`/groups/${groupId}/expenses/${transaction.id}`}>
             <Pressable className="mb-2 w-full flex-row items-center gap-3">
               <View className="bg-secondary size-8 shrink-0 items-center justify-center rounded">
                 <Text>{transactionCategories[transaction.category].emoji}</Text>

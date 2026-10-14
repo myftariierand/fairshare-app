@@ -79,3 +79,17 @@ export type Debt = {
   };
   amount: number;
 };
+
+export type SingleTransaction = {
+  groupId: string;
+  paidBy: User;
+  paidById: string;
+  createdBy: User;
+  createById: string;
+  splits: {
+    id: string;
+    amount: number;
+    userId: string;
+    user: User;
+  }[];
+} & Transaction;
