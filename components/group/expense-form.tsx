@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
-import { router } from 'expo-router';
-import { toast } from 'sonner-native';
-import { formOptions } from '@tanstack/react-form';
-import { z } from 'zod';
-import * as Haptics from 'expo-haptics';
+import { useEffect, useState } from 'react'
+import { View } from 'react-native'
+import { router } from 'expo-router'
+import { toast } from 'sonner-native'
+import { formOptions } from '@tanstack/react-form'
+import { z } from 'zod'
+import * as Haptics from 'expo-haptics'
 
-import { useAppForm } from '@/lib/form';
-import { useAuthUser } from '@/lib/auth-context';
-import { useGroupIdParam } from '@/hooks/use-group-id-param';
-import { useCreateExpense, useGetGroupById, useUpdateExpense } from '@/hooks/use-group-api';
+import { useAppForm } from '@/lib/form'
+import { useAuthUser } from '@/lib/auth-context'
+import { useGroupIdParam } from '@/hooks/use-group-id-param'
+import { useCreateExpense, useGetGroupById, useUpdateExpense } from '@/hooks/use-group-api'
 
 import {
   formatAmount,
@@ -19,21 +19,21 @@ import {
   sanitizeNumberInput,
   toMinorUnit,
   transactionCategories,
-} from '@/lib/utils';
+} from '@/lib/utils'
 
-import { SaveIcon } from 'lucide-react-native';
-import { Icon } from '@/components/ui/icon';
-import { Text } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Switch } from '@/components/ui/switch';
-import { Card } from '@/components/ui/card';
-import { ExpenseSplits } from '@/components/group/expense-splits';
-import { Spinner } from '@/components/spinner';
-import { SingleTransaction } from '@/types/group';
+import { SaveIcon } from 'lucide-react-native'
+import { Icon } from '@/components/ui/icon'
+import { Text } from '@/components/ui/text'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Switch } from '@/components/ui/switch'
+import { Card } from '@/components/ui/card'
+import { ExpenseSplits } from '@/components/group/expense-splits'
+import { Spinner } from '@/components/spinner'
+import { SingleTransaction } from '@/types/group'
 
 export const expenseFormOpts = formOptions({
   defaultValues: {
@@ -43,14 +43,14 @@ export const expenseFormOpts = formOptions({
     paidBy: '',
     splits: [] as { name: string; userId: string; amount: string }[],
   },
-});
+})
 
 export function ExpenseForm({ data }: { data?: SingleTransaction }) {
-  const user = useAuthUser();
-  const { groupId } = useGroupIdParam();
-  const { data: group } = useGetGroupById(groupId);
-  const createExpense = useCreateExpense();
-  const updateExpense = useUpdateExpense();
+  const user = useAuthUser()
+  const { groupId } = useGroupIdParam()
+  const { data: group } = useGetGroupById(groupId)
+  const createExpense = useCreateExpense()
+  const updateExpense = useUpdateExpense()
 
   const form = useAppForm({
     defaultValues: {
@@ -68,7 +68,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
       onSubmit: z.object({
         category: z.string(),
         description: z.string().min(4, 'Must be at least 4 characters long.'),
-        amount: z.string().refine((val) => parseNumberInput(val) > 0, {
+        amount: z.string().refine(val => parseNumberInput(val) > 0, {
           message: 'Amount must be a positive number',
         }),
         paidBy: z.uuid(),
@@ -76,7 +76,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
           .object({
             name: z.string(),
             userId: z.uuid(),
-            amount: z.string().refine((val) => parseNumberInput(val) > 0, {
+            amount: z.string().refine(val => parseNumberInput(val) > 0, {
               message: 'Amount must be a positive number',
             }),
           })
@@ -89,81 +89,81 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
           ...value,
           groupId,
           amount: parseNumberInput(value.amount),
-          splits: value.splits.map((split) => ({
+          splits: value.splits.map(split => ({
             ...split,
             amount: +split.amount,
           })),
-        } as any;
+        } as any
 
         if (data) {
-          transformedData.id = data.id;
-          await updateExpense.mutateAsync(transformedData);
-          toast.success('Exepense updated');
-          router.navigate(`/groups/${groupId}`);
+          transformedData.id = data.id
+          await updateExpense.mutateAsync(transformedData)
+          toast.success('Exepense updated')
+          router.navigate(`/groups/${groupId}`)
         } else {
-          await createExpense.mutateAsync(transformedData);
-          toast.success('Exepense added');
-          router.back();
+          await createExpense.mutateAsync(transformedData)
+          toast.success('Exepense added')
+          router.back()
         }
       } catch (error) {
-        toast.error(getErrorMessage(error));
+        toast.error(getErrorMessage(error))
       }
     },
-  });
+  })
 
   const handleChange = (value: string) => {
-    const currency = group?.currency ?? 'EUR';
+    const currency = group?.currency ?? 'EUR'
 
-    const amount = sanitizeNumberInput(value);
-    form.setFieldValue('amount', amount);
+    const amount = sanitizeNumberInput(value)
+    form.setFieldValue('amount', amount)
 
-    const selectedGroupedMembers = form.getFieldValue('splits').length;
+    const selectedGroupedMembers = form.getFieldValue('splits').length
 
-    const unitAmount = toMinorUnit(+amount, currency);
-    const base = Math.floor(unitAmount / selectedGroupedMembers);
-    const remainder = unitAmount % selectedGroupedMembers;
+    const unitAmount = toMinorUnit(+amount, currency)
+    const base = Math.floor(unitAmount / selectedGroupedMembers)
+    const remainder = unitAmount % selectedGroupedMembers
 
     const updatedSplits = form.getFieldValue('splits').map((split, i) => ({
       ...split,
       amount: fromMinorUnit(base + (i < remainder ? 1 : 0), currency),
-    }));
+    }))
 
-    form.setFieldValue('splits', updatedSplits);
-  };
+    form.setFieldValue('splits', updatedSplits)
+  }
 
-  const [splitEqually, setSplitEqually] = useState(true);
+  const [splitEqually, setSplitEqually] = useState(true)
 
   const handleSplitEqually = (checked: boolean) => {
-    if (!group) return;
+    if (!group) return
 
-    const amount = form.getFieldValue('amount');
+    const amount = form.getFieldValue('amount')
 
     if (!(+amount > 0)) {
-      toast.warning('Enter a cost for your expense first');
-      return;
+      toast.warning('Enter a cost for your expense first')
+      return
     }
 
-    setSplitEqually(checked);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSplitEqually(checked)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
 
     if (checked) {
-      const unitAmount = toMinorUnit(+amount, group.currency);
-      const base = Math.floor(unitAmount / group.members.length);
-      const remainder = unitAmount % group.members.length;
+      const unitAmount = toMinorUnit(+amount, group.currency)
+      const base = Math.floor(unitAmount / group.members.length)
+      const remainder = unitAmount % group.members.length
 
       const updatedSplits = form.getFieldValue('splits').map((split, i) => {
         return {
           ...split,
           amount: fromMinorUnit(base + (i < remainder ? 1 : 0), group.currency),
-        };
-      });
+        }
+      })
 
-      form.setFieldValue('splits', updatedSplits);
+      form.setFieldValue('splits', updatedSplits)
     }
-  };
+  }
 
   useEffect(() => {
-    if (!data) return;
+    if (!data) return
     form.reset({
       category: data.category ?? '',
       description: data.description,
@@ -174,48 +174,51 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
         userId: user.id,
         amount: amount.toString(),
       })),
-    });
-  }, [data]);
+    })
+  }, [data])
 
   return (
-    <View className="gap-2">
+    <View className='gap-2'>
       <form.AppField
-        name="category"
-        children={(field) => (
+        name='category'
+        children={field => (
           <ToggleGroup
-            type="single"
-            className="flex-col"
+            type='single'
+            className='flex-col'
             value={field.state.value}
-            onValueChange={(value) => {
-              if (value) field.handleChange(value);
-            }}>
-            <View className="flex-row flex-wrap justify-start gap-1">
+            onValueChange={value => {
+              if (value) field.handleChange(value)
+            }}
+          >
+            <View className='flex-row flex-wrap justify-start gap-1'>
               {Object.entries(transactionCategories)
                 .slice(0, 10)
                 .map(([value, { emoji, label }]) => (
                   <ToggleGroupItem
                     key={label}
                     value={value}
-                    className="shrink-0 grow whitespace-nowrap"
+                    className='shrink-0 grow whitespace-nowrap'
                     size={'sm'}
-                    variant={'outline'}>
+                    variant={'outline'}
+                  >
                     <Text>
                       {emoji} {label}
                     </Text>
                   </ToggleGroupItem>
                 ))}
             </View>
-            <Collapsible className="grow">
-              <CollapsibleContent className="flex-row flex-wrap gap-1">
+            <Collapsible className='grow'>
+              <CollapsibleContent className='flex-row flex-wrap gap-1'>
                 {Object.entries(transactionCategories)
                   .slice(10)
                   .map(([value, { emoji, label }]) => (
                     <ToggleGroupItem
                       key={label}
                       value={value}
-                      className="shrink-0 grow whitespace-nowrap"
+                      className='shrink-0 grow whitespace-nowrap'
                       size={'sm'}
-                      variant={'outline'}>
+                      variant={'outline'}
+                    >
                       <Text>
                         {emoji} {label}
                       </Text>
@@ -232,63 +235,65 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
         )}
       />
       <form.AppField
-        name="description"
-        children={(field) => (
-          <View className="gap-1">
+        name='description'
+        children={field => (
+          <View className='gap-1'>
             <Label>Description*</Label>
             <field.Input
-              placeholder="Plane Tickets"
+              placeholder='Plane Tickets'
               value={field.state.value}
               onChangeText={field.handleChange}
             />
             {field.state.meta.errors.length > 0 && (
-              <Text className="text-destructive text-sm">
-                {field.state.meta.errors.map((e) => e?.message).join(', ')}
+              <Text className='text-destructive text-sm'>
+                {field.state.meta.errors.map(e => e?.message).join(', ')}
               </Text>
             )}
           </View>
         )}
       />
       <form.AppField
-        name="amount"
-        children={(field) => (
-          <View className="gap-1">
+        name='amount'
+        children={field => (
+          <View className='gap-1'>
             <Label>Amount*</Label>
             <field.Input
-              inputMode="decimal"
+              inputMode='decimal'
               placeholder={formatAmount(600, group?.currency ?? 'EUR')}
               value={field.state.value}
               onChangeText={handleChange}
             />
             {field.state.meta.errors.length > 0 && (
-              <Text className="text-destructive text-sm">
-                {field.state.meta.errors.map((e) => e?.message).join(', ')}
+              <Text className='text-destructive text-sm'>
+                {field.state.meta.errors.map(e => e?.message).join(', ')}
               </Text>
             )}
           </View>
         )}
       />
       <form.AppField
-        name="paidBy"
-        children={(field) => (
+        name='paidBy'
+        children={field => (
           <ToggleGroup
-            type="single"
-            className="flex-wrap justify-start"
+            type='single'
+            className='flex-wrap justify-start'
             value={field.state.value}
-            onValueChange={(value) => {
-              if (value) field.handleChange(value);
-            }}>
+            onValueChange={value => {
+              if (value) field.handleChange(value)
+            }}
+          >
             {(group ? [...group.members] : [])
-              .sort((a) => (a.id === user.id ? -1 : 1))
-              .map((member) => (
+              .sort(a => (a.id === user.id ? -1 : 1))
+              .map(member => (
                 <ToggleGroupItem
                   key={member.id}
                   value={member.id}
-                  className="shrink-0 whitespace-nowrap"
-                  variant={'outline'}>
-                  <Avatar className="size-5" alt={user.name}>
-                    <AvatarFallback className="border">
-                      <Text className="text-xs">{member.name.slice(0, 2)}</Text>
+                  className='shrink-0 whitespace-nowrap'
+                  variant={'outline'}
+                >
+                  <Avatar className='size-5' alt={user.name}>
+                    <AvatarFallback className='border'>
+                      <Text className='text-xs'>{member.name.slice(0, 2)}</Text>
                     </AvatarFallback>
                   </Avatar>
                   <Text>{user.id === member.id ? 'You' : member.name.split(' ')[0]}</Text>
@@ -297,10 +302,10 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
           </ToggleGroup>
         )}
       />
-      <Card className="flex flex-row items-center justify-between p-4">
-        <View className="shrink">
-          <Text className="text-base">Split Equally</Text>
-          <Text variant={'muted'} className="text-xs" textBreakStrategy="balanced">
+      <Card className='flex flex-row items-center justify-between p-4'>
+        <View className='shrink'>
+          <Text className='text-base'>Split Equally</Text>
+          <Text variant={'muted'} className='text-xs' textBreakStrategy='balanced'>
             Disable this if you want to manually specify the split amounts for each group member.
           </Text>
         </View>
@@ -311,9 +316,10 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
       {!splitEqually && group && <ExpenseSplits form={form} group={group} />}
       <form.AppForm>
         <form.Button
-          className="w-full"
+          className='w-full'
           disabled={createExpense.isPending || updateExpense.isPending}
-          onPress={() => form.handleSubmit()}>
+          onPress={() => form.handleSubmit()}
+        >
           {createExpense.isPending || updateExpense.isPending ? (
             <Spinner />
           ) : (
@@ -325,5 +331,5 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
         </form.Button>
       </form.AppForm>
     </View>
-  );
+  )
 }

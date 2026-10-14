@@ -1,62 +1,62 @@
-import { useEffect } from 'react';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { AuthProvider, useAuth } from '@/lib/auth-context';
-import { NAV_THEME } from '@/lib/theme';
-import { ThemeProvider } from 'expo-router/react-navigation';
-import { PortalHost } from '@rn-primitives/portal';
-import { StatusBar } from 'expo-status-bar';
-import { useUniwind } from 'uniwind';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'sonner-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { useEffect } from 'react'
+import { Stack } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
+import { AuthProvider, useAuth } from '@/lib/auth-context'
+import { NAV_THEME } from '@/lib/theme'
+import { ThemeProvider } from 'expo-router/react-navigation'
+import { PortalHost } from '@rn-primitives/portal'
+import { StatusBar } from 'expo-status-bar'
+import { useUniwind } from 'uniwind'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from 'sonner-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router';
+} from 'expo-router'
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
-});
+})
 
 GoogleSignin.configure({
   webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-});
+})
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync()
 
 function RootNavigator() {
-  const { theme } = useUniwind();
-  const { isLoading, isLoggedIn, user } = useAuth();
+  const { theme } = useUniwind()
+  const { isLoading, isLoggedIn, user } = useAuth()
 
   useEffect(() => {
-    if (!isLoading) SplashScreen.hideAsync();
-  }, [isLoading]);
+    if (!isLoading) SplashScreen.hideAsync()
+  }, [isLoading])
 
-  if (isLoading) return null;
+  if (isLoading) return null
 
   return (
     <GestureHandlerRootView>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Protected guard={isLoggedIn && !!user && user.emailVerified}>
-          <Stack.Screen name="(private)" />
+          <Stack.Screen name='(private)' />
         </Stack.Protected>
         <Stack.Protected guard={!isLoggedIn}>
-          <Stack.Screen name="(public)" />
+          <Stack.Screen name='(public)' />
         </Stack.Protected>
         <Stack.Protected guard={!!user && !user.emailVerified}>
-          <Stack.Screen name="verify-email" />
+          <Stack.Screen name='verify-email' />
         </Stack.Protected>
       </Stack>
       <Toaster theme={theme} />
     </GestureHandlerRootView>
-  );
+  )
 }
 
 export default function RootLayout() {
-  const { theme } = useUniwind();
+  const { theme } = useUniwind()
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -68,5 +68,5 @@ export default function RootLayout() {
         </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router'
 
 export function useGroupIdParam() {
-  return useLocalSearchParams<{ groupId: string }>();
+  return useLocalSearchParams<{ groupId: string }>()
 }

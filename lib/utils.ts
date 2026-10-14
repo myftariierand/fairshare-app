@@ -1,19 +1,19 @@
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-import axios from 'axios';
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+import axios from 'axios'
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
 export function getErrorMessage(e: unknown): string {
   if (axios.isAxiosError(e)) {
-    const msg = e.response?.data?.message ?? 'Could not reach the server';
+    const msg = e.response?.data?.message ?? 'Could not reach the server'
     // NestJS validation errors come back as string[]
-    if (Array.isArray(msg)) return msg.join('\n');
-    if (typeof msg === 'string') return msg;
+    if (Array.isArray(msg)) return msg.join('\n')
+    if (typeof msg === 'string') return msg
   }
-  return 'Something went wrong';
+  return 'Something went wrong'
 }
 
 export function formatAmount(
@@ -21,14 +21,14 @@ export function formatAmount(
   currency: string,
   signDisplay?: keyof Intl.NumberFormatOptionsSignDisplayRegistry
 ) {
-  const userLocale = new Intl.NumberFormat().resolvedOptions().locale;
+  const userLocale = new Intl.NumberFormat().resolvedOptions().locale
 
   return new Intl.NumberFormat(userLocale, {
     style: 'currency',
     minimumFractionDigits: 2,
     currency,
     signDisplay,
-  }).format(number);
+  }).format(number)
 }
 
 export const transactionCategories = {
@@ -133,7 +133,7 @@ export const transactionCategories = {
     label: 'Utilities',
     emoji: '⚡',
   },
-} as const;
+} as const
 
 /**
  * Sanitizes a numeric input string by allowing only digits, a single decimal separator,
@@ -148,19 +148,19 @@ export const transactionCategories = {
  * sanitizeNumberInput("00123.45") // Returns 123.45
  */
 export function sanitizeNumberInput(value: string) {
-  let newValue = value.replace(/[^0-9.,]/g, ''); // Remove non-numeric characters except '.' and ','
+  let newValue = value.replace(/[^0-9.,]/g, '') // Remove non-numeric characters except '.' and ','
 
-  const parts = newValue.split(/[,.]/); // Split on '.' or ','
+  const parts = newValue.split(/[,.]/) // Split on '.' or ','
 
   if (parts.length > 1) {
-    newValue = parts[0] + '.' + parts.slice(1).join(''); // Ensure only one decimal separator (.)
+    newValue = parts[0] + '.' + parts.slice(1).join('') // Ensure only one decimal separator (.)
   }
 
-  return newValue.replace(/^0+(?=\d)/, ''); // Remove leading zeros
+  return newValue.replace(/^0+(?=\d)/, '') // Remove leading zeros
 }
 
 export function parseNumberInput(value: string): number {
-  return parseFloat(value) || 0;
+  return parseFloat(value) || 0
 }
 
 const currencyDecimals: Record<string, number> = {
@@ -172,14 +172,14 @@ const currencyDecimals: Record<string, number> = {
   CHF: 2, // rappen
   CNY: 2, // jiao/fen
   INR: 2, // paise
-};
+}
 
 export function toMinorUnit(amount: number, currency: string): number {
-  const decimals = currencyDecimals[currency] ?? 2;
-  return Math.round(amount * Math.pow(10, decimals));
+  const decimals = currencyDecimals[currency] ?? 2
+  return Math.round(amount * Math.pow(10, decimals))
 }
 
 export function fromMinorUnit(amount: number, currency: string): string {
-  const decimals = currencyDecimals[currency] ?? 2;
-  return (amount / Math.pow(10, decimals)).toFixed(decimals);
+  const decimals = currencyDecimals[currency] ?? 2
+  return (amount / Math.pow(10, decimals)).toFixed(decimals)
 }

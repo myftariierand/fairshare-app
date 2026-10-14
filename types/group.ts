@@ -1,28 +1,28 @@
-import type { User } from '@/lib/auth';
+import type { User } from '@/lib/auth'
 
 export type Group = {
-  id: string;
-  name: string;
-  currency: string;
-  createdAt: string;
-  createdById: string;
-  remainingDebts: number;
-  cover?: string;
+  id: string
+  name: string
+  currency: string
+  createdAt: string
+  createdById: string
+  remainingDebts: number
+  cover?: string
   _count: {
-    members: number;
-    transactions: number;
-  };
-};
+    members: number
+    transactions: number
+  }
+}
 
 type BaseTransaction = {
-  id: string;
-  description: string;
-  createdAt: Date;
-  paidBy: User;
-  amount: number;
-  balance: number;
-  splits: { userId: string; amount: number }[];
-};
+  id: string
+  description: string
+  createdAt: Date
+  paidBy: User
+  amount: number
+  balance: number
+  splits: { userId: string; amount: number }[]
+}
 
 export enum TransactionType {
   expense = 'EXPENSE',
@@ -31,13 +31,13 @@ export enum TransactionType {
 
 export type Transaction =
   | (BaseTransaction & {
-      type: TransactionType.expense;
-      category: TransactionCategory;
+      type: TransactionType.expense
+      category: TransactionCategory
     })
   | (BaseTransaction & {
-      type: TransactionType.settlement;
-      category: null;
-    });
+      type: TransactionType.settlement
+      category: null
+    })
 
 export enum TransactionCategory {
   FOOD = 'FOOD',
@@ -55,41 +55,41 @@ export enum TransactionCategory {
 }
 
 export type SingleGroup = {
-  createdBy: User;
-  members: Member[];
-  transactions: Transaction[];
-  settlements: Debt[];
-} & Group;
+  createdBy: User
+  members: Member[]
+  transactions: Transaction[]
+  settlements: Debt[]
+} & Group
 
 export type Member = {
-  email: string;
-  id: string;
-  name: string;
-  joinedAt: Date;
-};
+  email: string
+  id: string
+  name: string
+  joinedAt: Date
+}
 
 export type Debt = {
   from: {
-    id: string;
-    name: string;
-  };
+    id: string
+    name: string
+  }
   to: {
-    id: string;
-    name: string;
-  };
-  amount: number;
-};
+    id: string
+    name: string
+  }
+  amount: number
+}
 
 export type SingleTransaction = {
-  groupId: string;
-  paidBy: User;
-  paidById: string;
-  createdBy: User;
-  createById: string;
+  groupId: string
+  paidBy: User
+  paidById: string
+  createdBy: User
+  createById: string
   splits: {
-    id: string;
-    amount: number;
-    userId: string;
-    user: User;
-  }[];
-} & Transaction;
+    id: string
+    amount: number
+    userId: string
+    user: User
+  }[]
+} & Transaction

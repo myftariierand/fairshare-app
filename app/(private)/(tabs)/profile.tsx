@@ -1,11 +1,11 @@
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/auth-context'
 
-import { Text } from '@/components/ui/text';
-import { View } from 'react-native';
-import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text'
+import { View } from 'react-native'
+import { Button } from '@/components/ui/button'
 
 export default function ProfileScreen() {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuth()
 
   return (
     <View>
@@ -14,5 +14,5 @@ export default function ProfileScreen() {
         <Text>Sign Out</Text>
       </Button>
     </View>
-  );
+  )
 }

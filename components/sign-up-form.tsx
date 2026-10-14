@@ -1,22 +1,22 @@
-import { useRef, useState } from 'react';
-import { type TextInput, View } from 'react-native';
-import { Link } from 'expo-router';
-import { createFormHook, createFormHookContexts } from '@tanstack/react-form';
-import { z } from 'zod';
-import axios from 'axios';
-import { toast } from 'sonner-native';
+import { useRef, useState } from 'react'
+import { type TextInput, View } from 'react-native'
+import { Link } from 'expo-router'
+import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
+import { z } from 'zod'
+import axios from 'axios'
+import { toast } from 'sonner-native'
 
-import { signUp } from '@/lib/auth';
+import { signUp } from '@/lib/auth'
 
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/auth-context'
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Text } from '@/components/ui/text';
-import { getErrorMessage } from '@/lib/utils';
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Text } from '@/components/ui/text'
+import { getErrorMessage } from '@/lib/utils'
 
-const { fieldContext, formContext } = createFormHookContexts();
+const { fieldContext, formContext } = createFormHookContexts()
 
 const { useAppForm } = createFormHook({
   fieldComponents: {
@@ -27,13 +27,13 @@ const { useAppForm } = createFormHook({
   },
   fieldContext,
   formContext,
-});
+})
 
 export function SignUpForm() {
-  const emailInputRef = useRef<TextInput>(null);
-  const passwordInputRef = useRef<TextInput>(null);
+  const emailInputRef = useRef<TextInput>(null)
+  const passwordInputRef = useRef<TextInput>(null)
 
-  const { setTokens, setUser } = useAuth();
+  const { setTokens, setUser } = useAuth()
 
   const form = useAppForm({
     defaultValues: {
@@ -57,114 +57,114 @@ export function SignUpForm() {
               code: 'custom',
               message: 'The passwords did not match',
               path: ['confirmPassword'],
-            });
+            })
           }
         }),
     },
     onSubmit: async ({ value }) => {
       try {
-        const { accessToken, refreshToken, user } = await signUp(value);
-        await setTokens({ accessToken, refreshToken });
-        setUser(user);
+        const { accessToken, refreshToken, user } = await signUp(value)
+        await setTokens({ accessToken, refreshToken })
+        setUser(user)
       } catch (e) {
-        toast.error(getErrorMessage(e));
+        toast.error(getErrorMessage(e))
       }
     },
-  });
+  })
 
   return (
-    <View className="gap-3">
+    <View className='gap-3'>
       <form.AppField
-        name="name"
-        children={(field) => (
-          <View className="gap-1.5">
+        name='name'
+        children={field => (
+          <View className='gap-1.5'>
             <Label>Name</Label>
             <field.Input
-              placeholder="John"
-              autoComplete="name"
-              autoCapitalize="words"
-              returnKeyType="next"
+              placeholder='John'
+              autoComplete='name'
+              autoCapitalize='words'
+              returnKeyType='next'
               onSubmitEditing={() => emailInputRef.current?.focus()}
               value={field.state.value}
               onChangeText={field.handleChange}
             />
             {field.state.meta.errors.length > 0 && (
-              <Text className="text-destructive text-sm">
-                {field.state.meta.errors.map((e) => e?.message).join(', ')}
+              <Text className='text-destructive text-sm'>
+                {field.state.meta.errors.map(e => e?.message).join(', ')}
               </Text>
             )}
           </View>
         )}
       />
       <form.AppField
-        name="email"
-        children={(field) => (
-          <View className="gap-1.5">
+        name='email'
+        children={field => (
+          <View className='gap-1.5'>
             <Label>Email</Label>
             <field.Input
-              placeholder="m@example.com"
-              keyboardType="email-address"
-              autoComplete="email"
-              autoCapitalize="none"
+              placeholder='m@example.com'
+              keyboardType='email-address'
+              autoComplete='email'
+              autoCapitalize='none'
               ref={emailInputRef}
               onSubmitEditing={() => passwordInputRef.current?.focus()}
-              returnKeyType="next"
+              returnKeyType='next'
               value={field.state.value}
               onChangeText={field.handleChange}
             />
             {field.state.meta.errors.length > 0 && (
-              <Text className="text-destructive text-sm">
-                {field.state.meta.errors.map((e) => e?.message).join(', ')}
+              <Text className='text-destructive text-sm'>
+                {field.state.meta.errors.map(e => e?.message).join(', ')}
               </Text>
             )}
           </View>
         )}
       />
       <form.AppField
-        name="password"
-        children={(field) => (
-          <View className="gap-1.5">
+        name='password'
+        children={field => (
+          <View className='gap-1.5'>
             <Label>Password</Label>
             <field.Input
               secureTextEntry
-              returnKeyType="send"
+              returnKeyType='send'
               ref={passwordInputRef}
               onSubmitEditing={() => form.handleSubmit()}
               value={field.state.value}
               onChangeText={field.handleChange}
             />
             {field.state.meta.errors.length > 0 && (
-              <Text className="text-destructive text-sm">
-                {field.state.meta.errors.map((e) => e?.message).join(', ')}
+              <Text className='text-destructive text-sm'>
+                {field.state.meta.errors.map(e => e?.message).join(', ')}
               </Text>
             )}
           </View>
         )}
       />
       <form.AppField
-        name="confirmPassword"
-        children={(field) => (
-          <View className="gap-1.5">
+        name='confirmPassword'
+        children={field => (
+          <View className='gap-1.5'>
             <Label>Confirm Password</Label>
             <field.Input
               secureTextEntry
-              returnKeyType="send"
+              returnKeyType='send'
               value={field.state.value}
               onChangeText={field.handleChange}
             />
             {field.state.meta.errors.length > 0 && (
-              <Text className="text-destructive text-sm">
-                {field.state.meta.errors.map((e) => e?.message).join(', ')}
+              <Text className='text-destructive text-sm'>
+                {field.state.meta.errors.map(e => e?.message).join(', ')}
               </Text>
             )}
           </View>
         )}
       />
       <form.AppForm>
-        <form.Button className="w-full" onPress={() => form.handleSubmit()}>
+        <form.Button className='w-full' onPress={() => form.handleSubmit()}>
           <Text>Register</Text>
         </form.Button>
       </form.AppForm>
     </View>
-  );
+  )
 }

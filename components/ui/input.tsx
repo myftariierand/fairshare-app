@@ -1,12 +1,12 @@
-import { cn } from '@/lib/utils';
-import { TextInput } from 'react-native';
-import { useUniwind } from 'uniwind';
+import { cn } from '@/lib/utils'
+import { TextInput } from 'react-native'
+import { useUniwind } from 'uniwind'
 
 function Input({
   className,
   ...props
 }: React.ComponentProps<typeof TextInput> & React.RefAttributes<TextInput>) {
-  const { theme } = useUniwind();
+  const { theme } = useUniwind()
   return (
     <TextInput
       className={cn(
@@ -17,7 +17,7 @@ function Input({
       placeholderTextColor={theme === 'dark' ? '#a1a1a1' : '#a1a1aa'}
       {...props}
     />
-  );
+  )
 }
 
-export { Input };
+export { Input }

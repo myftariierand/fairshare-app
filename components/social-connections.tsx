@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useRouter } from 'expo-router';
-import { useUniwind } from 'uniwind';
-import { toast } from 'sonner-native';
+import { useState } from 'react'
+import { useRouter } from 'expo-router'
+import { useUniwind } from 'uniwind'
+import { toast } from 'sonner-native'
 
-import { signInWithGoogle } from '@/lib/auth';
+import { signInWithGoogle } from '@/lib/auth'
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Image, Platform, View } from 'react-native';
-import { useAuth } from '@/lib/auth-context';
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Image, Platform, View } from 'react-native'
+import { useAuth } from '@/lib/auth-context'
 
 const SOCIAL_CONNECTION_STRATEGIES = [
   {
@@ -21,43 +21,44 @@ const SOCIAL_CONNECTION_STRATEGIES = [
   //   source: { uri: 'https://img.clerk.com/static/apple.png?width=160' },
   //   useTint: true,
   // },
-];
+]
 
 export function SocialConnections() {
-  const { theme } = useUniwind();
-  const [loading, setLoading] = useState(false);
+  const { theme } = useUniwind()
+  const [loading, setLoading] = useState(false)
 
-  const { setTokens, setUser } = useAuth();
+  const { setTokens, setUser } = useAuth()
 
   const handlePress = async (type: string) => {
     if (type === 'oauth_google') {
-      if (loading) return;
-      setLoading(true);
+      if (loading) return
+      setLoading(true)
       try {
-        const data = await signInWithGoogle();
-        if (!data) return; // user cancelled, do nothing
-        const { accessToken, refreshToken, user } = data;
-        await setTokens({ accessToken, refreshToken });
-        setUser(user);
+        const data = await signInWithGoogle()
+        if (!data) return // user cancelled, do nothing
+        const { accessToken, refreshToken, user } = data
+        await setTokens({ accessToken, refreshToken })
+        setUser(user)
       } catch (e: any) {
-        toast.error('Sign-in failed', e.message ?? 'Something went wrong');
+        toast.error('Sign-in failed', e.message ?? 'Something went wrong')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
-  };
+  }
 
   return (
-    <View className="gap-2 sm:flex-row sm:gap-3">
-      {SOCIAL_CONNECTION_STRATEGIES.map((strategy) => {
+    <View className='gap-2 sm:flex-row sm:gap-3'>
+      {SOCIAL_CONNECTION_STRATEGIES.map(strategy => {
         return (
           <Button
             key={strategy.type}
-            variant="outline"
-            size="sm"
-            className="sm:flex-1"
+            variant='outline'
+            size='sm'
+            className='sm:flex-1'
             disabled={loading}
-            onPress={() => handlePress(strategy.type)}>
+            onPress={() => handlePress(strategy.type)}
+          >
             <Image
               className={cn('size-4', strategy.useTint && Platform.select({ web: 'dark:invert' }))}
               tintColor={Platform.select({
@@ -66,8 +67,8 @@ export function SocialConnections() {
               source={strategy.source}
             />
           </Button>
-        );
+        )
       })}
     </View>
-  );
+  )
 }

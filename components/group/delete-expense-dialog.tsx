@@ -1,15 +1,15 @@
-import { router } from 'expo-router';
-import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner-native';
+import { router } from 'expo-router'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner-native'
 
-import { useDeleteExpense } from '@/hooks/use-group-api';
+import { useDeleteExpense } from '@/hooks/use-group-api'
 
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage } from '@/lib/utils'
 
-import type { SingleTransaction } from '@/types/group';
+import type { SingleTransaction } from '@/types/group'
 
-import { TrashIcon } from 'lucide-react-native';
-import { Button } from '@/components/ui/button';
+import { TrashIcon } from 'lucide-react-native'
+import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,31 +20,31 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Icon } from '@/components/ui/icon';
-import { Text } from '@/components/ui/text';
-import { Spinner } from '@/components/spinner';
+} from '@/components/ui/alert-dialog'
+import { Icon } from '@/components/ui/icon'
+import { Text } from '@/components/ui/text'
+import { Spinner } from '@/components/spinner'
 
 type Props = {
-  expense: SingleTransaction;
-  groupId: string;
-};
+  expense: SingleTransaction
+  groupId: string
+}
 
 export function DeleteExpenseDialog(props: Props) {
-  const queryClient = useQueryClient();
-  const deleteExpense = useDeleteExpense();
+  const queryClient = useQueryClient()
+  const deleteExpense = useDeleteExpense()
 
   const handleDeleteExpense = async () => {
     try {
-      await deleteExpense.mutateAsync(props.expense.id);
-      queryClient.removeQueries({ queryKey: ['expenses', props.expense.id] });
-      await queryClient.invalidateQueries({ queryKey: ['groups', props.groupId] });
-      toast.success('Expense deleted');
-      router.back();
+      await deleteExpense.mutateAsync(props.expense.id)
+      queryClient.removeQueries({ queryKey: ['expenses', props.expense.id] })
+      await queryClient.invalidateQueries({ queryKey: ['groups', props.groupId] })
+      toast.success('Expense deleted')
+      router.back()
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      toast.error(getErrorMessage(error))
     }
-  };
+  }
 
   return (
     <AlertDialog>
@@ -56,7 +56,7 @@ export function DeleteExpenseDialog(props: Props) {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete {props.expense.description}?</AlertDialogTitle>
-          <AlertDialogDescription textBreakStrategy="balanced">
+          <AlertDialogDescription textBreakStrategy='balanced'>
             Are you sure you want to delete this expense? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -68,12 +68,13 @@ export function DeleteExpenseDialog(props: Props) {
             <Button
               variant={'destructive'}
               disabled={deleteExpense.isPending}
-              onPress={handleDeleteExpense}>
+              onPress={handleDeleteExpense}
+            >
               {deleteExpense.isPending ? <Spinner /> : <Text>Delete</Text>}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

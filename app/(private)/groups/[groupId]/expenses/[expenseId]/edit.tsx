@@ -1,15 +1,15 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router'
 
-import { View } from 'react-native';
-import { Text } from '@/components/ui/text';
-import { useGetExpenseById } from '@/hooks/use-group-api';
-import { ExpenseForm } from '@/components/group/expense-form';
+import { View } from 'react-native'
+import { Text } from '@/components/ui/text'
+import { useGetExpenseById } from '@/hooks/use-group-api'
+import { ExpenseForm } from '@/components/group/expense-form'
 
 export default function EditExpenseScreen() {
-  const { groupId, expenseId } = useLocalSearchParams<{ groupId: string; expenseId: string }>();
-  const { data: expense } = useGetExpenseById(expenseId);
+  const { groupId, expenseId } = useLocalSearchParams<{ groupId: string; expenseId: string }>()
+  const { data: expense } = useGetExpenseById(expenseId)
 
-  if (!expense) return null;
+  if (!expense) return null
 
   return (
     <>
@@ -31,9 +31,9 @@ export default function EditExpenseScreen() {
         }}
       />
 
-      <View className="p-4">
+      <View className='p-4'>
         <ExpenseForm data={expense} />
       </View>
     </>
-  );
+  )
 }
