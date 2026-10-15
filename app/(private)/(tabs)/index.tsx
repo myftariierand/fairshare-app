@@ -89,7 +89,7 @@ export default function GroupsScreen() {
               </CardDescription>
             </CardHeader>
             <CardFooter className='gap-2 p-2 pt-0'>
-              <Link asChild href='/'>
+              <Link asChild href={`/groups/${item.id}/add-expense`}>
                 <Button variant='outline' className='flex-1'>
                   <Icon as={PlusIcon} />
                   <Text>Add Expense</Text>
