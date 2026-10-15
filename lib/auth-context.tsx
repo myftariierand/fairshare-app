@@ -6,6 +6,7 @@ import { setAuthFailureHandler } from './api'
 import { tokenStorage } from './token-storage'
 
 import { getProfile, type User } from '@/lib/auth'
+import { Profile } from '@/types/common'
 
 type Tokens = { accessToken: string; refreshToken?: string }
 
@@ -14,14 +15,14 @@ type AuthContextValue = {
   isLoggedIn: boolean
   setTokens: (tokens: Tokens) => Promise<void>
   signOut: () => Promise<void>
-  user: User | null
-  setUser: React.Dispatch<React.SetStateAction<User | null>>
+  user: Profile | null
+  setUser: React.Dispatch<React.SetStateAction<Profile | null>>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<Profile | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -32,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAccessToken(token)
         if (token) {
           const user = await getProfile()
-          setUser(user)
+          setUser(user as Profile)
         }
       })
       .finally(() => setIsLoading(false))
@@ -70,7 +71,7 @@ export function useAuth() {
   return ctx
 }
 
-export function useAuthUser(): User {
+export function useAuthUser(): Profile {
   const { user, isLoading } = useAuth()
 
   if (isLoading || !user) {

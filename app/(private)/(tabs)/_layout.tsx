@@ -5,7 +5,7 @@ import { useAuthUser } from '@/lib/auth-context'
 
 import { Tabs } from 'expo-router'
 
-import { ContactIcon, UserGroupIcon, UserIcon } from 'lucide-react-native'
+import { ActivityIcon, ContactIcon, UserGroupIcon, UserIcon } from 'lucide-react-native'
 
 export default function RootLayout() {
   const user = useAuthUser()
@@ -28,6 +28,13 @@ export default function RootLayout() {
         options={{
           title: 'Friends',
           tabBarIcon: ({ color, size }) => <ContactIcon size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name='activity'
+        options={{
+          title: 'Activity',
+          tabBarIcon: ({ color, size }) => <ActivityIcon size={size} color={color} />,
         }}
       />
       <Tabs.Screen

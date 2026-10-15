@@ -21,13 +21,13 @@ export default function FriendsScreen() {
             return (
               <>
                 <Link asChild href={'/friends/add'}>
-                  <Button size={'sm'} className='mr-2'>
+                  <Button size={'sm'} variant={'secondary'} className='mr-2'>
                     <Icon as={UserPlusIcon} />
                     <Text>Add Friend</Text>
                   </Button>
                 </Link>
                 <Link asChild href={'/friends/requests'}>
-                  <Button size={'icon'} className='size-8'>
+                  <Button size={'icon'} variant={'secondary'} className='size-8'>
                     <Icon as={InboxIcon} />
                   </Button>
                 </Link>
