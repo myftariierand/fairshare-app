@@ -11,7 +11,7 @@ import { Text } from '@/components/ui/text'
 import { Icon } from '@/components/ui/icon'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
-import { EyeIcon, PlusIcon } from 'lucide-react-native'
+import { EyeIcon, InboxIcon, PlusIcon } from 'lucide-react-native'
 
 export default function GroupsScreen() {
   const [settledGroupsOpen, setSettleGroupsOpen] = useState(true)
@@ -54,11 +54,19 @@ export default function GroupsScreen() {
         options={{
           title: 'Groups',
           headerRight: () => (
-            <Link asChild href={'/groups/new'}>
-              <Button size={'icon'} variant={'secondary'}>
-                <Icon as={PlusIcon} />
-              </Button>
-            </Link>
+            <>
+              <Link asChild href={'/groups/new'}>
+                <Button size={'sm'} variant={'secondary'} className='mr-2'>
+                  <Icon as={PlusIcon} />
+                  <Text>Create Group</Text>
+                </Button>
+              </Link>
+              <Link asChild href={'/groups/invites'}>
+                <Button size={'icon'} variant={'secondary'} className='size-8'>
+                  <Icon as={InboxIcon} />
+                </Button>
+              </Link>
+            </>
           ),
           headerRightContainerStyle: { paddingRight: 16 },
         }}

@@ -108,7 +108,7 @@ export async function getFriendRequest() {
 
 export const useGetFriendRequestsQuery = () => {
   return useQuery({
-    queryKey: ['request'],
+    queryKey: ['requests'],
     queryFn: getFriendRequest,
   })
 }
@@ -125,7 +125,7 @@ export const useAcceptFriendRequestMutation = () => {
     mutationFn: acceptFriendRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friends'] })
-      queryClient.invalidateQueries({ queryKey: ['request'] })
+      queryClient.invalidateQueries({ queryKey: ['requests'] })
     },
   })
 }
@@ -141,7 +141,7 @@ export const useRejectFriendRequestMutation = () => {
   return useMutation({
     mutationFn: rejectFriendRequest,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['request'] })
+      queryClient.invalidateQueries({ queryKey: ['requests'] })
     },
   })
 }
@@ -157,7 +157,7 @@ export const useCancelFriendRequestMutation = () => {
   return useMutation({
     mutationFn: cancelFriendRequest,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['request'] })
+      queryClient.invalidateQueries({ queryKey: ['requests'] })
     },
   })
 }
