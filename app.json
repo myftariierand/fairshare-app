@@ -18,6 +18,16 @@
         "backgroundColor": "#000000"
       },
       "package": "com.em.fairshare",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            { "scheme": "https", "host": "app.fairshare.world", "pathPrefix": "/join-group" }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "googleServicesFile": "./google-services.json"
     },
     "plugins": [

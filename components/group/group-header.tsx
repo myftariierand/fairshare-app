@@ -1,5 +1,6 @@
-import { View, Image, Settings } from 'react-native'
+import { View, Image } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Link } from 'expo-router'
 import { format } from 'date-fns'
 
 import { DotIcon, SettingsIcon, UserPlusIcon } from 'lucide-react-native'
@@ -7,7 +8,7 @@ import { DotIcon, SettingsIcon, UserPlusIcon } from 'lucide-react-native'
 import { Text } from '@/components/ui/text'
 import { Icon } from '@/components/ui/icon'
 import { Button } from '@/components/ui/button'
-import { Link } from 'expo-router'
+import ShareGroupDialog from '@/components/group/share-group-dialog'
 
 export default function GroupHeader({
   id,
@@ -41,6 +42,7 @@ export default function GroupHeader({
           <Text className='text-xs'>{members} people</Text>
         </View>
       </View>
+      <ShareGroupDialog groupId={id} />
       <Link asChild href={`/groups/${id}/invite-member`}>
         <Button size={'icon'} variant={'ghost'}>
           <Icon as={UserPlusIcon} />
