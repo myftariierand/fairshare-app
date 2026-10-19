@@ -2,7 +2,7 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 
 import { View } from 'react-native'
 import { Text } from '@/components/ui/text'
-import { useGetExpenseById } from '@/hooks/use-group-api'
+import { useGetExpenseById } from '@/services/group'
 import { ExpenseForm } from '@/components/group/expense-form'
 
 export default function EditExpenseScreen() {

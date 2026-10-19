@@ -2,7 +2,7 @@ import { View, Image, Settings } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { format } from 'date-fns'
 
-import { DotIcon, SettingsIcon } from 'lucide-react-native'
+import { DotIcon, SettingsIcon, UserPlusIcon } from 'lucide-react-native'
 
 import { Text } from '@/components/ui/text'
 import { Icon } from '@/components/ui/icon'
@@ -41,6 +41,11 @@ export default function GroupHeader({
           <Text className='text-xs'>{members} people</Text>
         </View>
       </View>
+      <Link asChild href={`/groups/${id}/invite-member`}>
+        <Button size={'icon'} variant={'ghost'}>
+          <Icon as={UserPlusIcon} />
+        </Button>
+      </Link>
       <Link asChild href={`/groups/${id}/settings`}>
         <Button size={'icon'} variant={'ghost'}>
           <Icon as={SettingsIcon} />

@@ -3,7 +3,7 @@ import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
 import { toast } from 'sonner-native'
 
-import { useUpdateGroup } from '@/hooks/use-group-api'
+import { useUpdateGroup } from '@/services/group'
 
 import type { SingleGroup } from '@/types/group'
 

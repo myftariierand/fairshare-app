@@ -22,7 +22,7 @@ import {
 import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
 import { Spinner } from '@/components/spinner'
-import { useRemoveMember } from '@/hooks/use-group-api'
+import { useRemoveMember } from '@/services/group'
 
 type Props = {
   member: Member

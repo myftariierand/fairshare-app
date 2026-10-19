@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { toast } from 'sonner-native'
 import { router } from 'expo-router'
 
-import { useCreateGroup } from '@/hooks/use-group-api'
+import { useCreateGroup } from '@/services/group'
 
 import { Check } from 'lucide-react-native'
 

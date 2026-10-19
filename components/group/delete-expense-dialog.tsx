@@ -2,7 +2,7 @@ import { router } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner-native'
 
-import { useDeleteExpense } from '@/hooks/use-group-api'
+import { useDeleteExpense } from '@/services/group'
 
 import { getErrorMessage } from '@/lib/utils'
 

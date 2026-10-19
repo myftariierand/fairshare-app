@@ -4,7 +4,7 @@ import { Tabs, Link } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { format, formatDistance } from 'date-fns'
 
-import { getGroups } from '@/lib/groups'
+import { getGroups } from '@/services/group'
 
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'

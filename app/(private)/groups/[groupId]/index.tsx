@@ -4,7 +4,7 @@ import { Link, Stack, router } from 'expo-router'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { useGetTasks } from '@/services/tasks'
-import { useGetGroupById } from '@/hooks/use-group-api'
+import { useGetGroupById } from '@/services/group'
 import { useGroupIdParam } from '@/hooks/use-group-id-param'
 
 import { ReceiptText } from 'lucide-react-native'

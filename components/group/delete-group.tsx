@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { toast } from 'sonner-native'
 
-import { useDeleteGroup } from '@/hooks/use-group-api'
+import { useDeleteGroup } from '@/services/group'
 
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'

@@ -2,7 +2,8 @@ import { View, FlatList } from 'react-native'
 import { Stack } from 'expo-router'
 import { useDebounceValue } from 'usehooks-ts'
 
-import { useSearchUserQuery, useSendFriendReuqestMutation } from '@/services/friends'
+import { useSearchUserQuery } from '@/services/users'
+import { useSendFriendRequestMutation } from '@/services/friends'
 
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
@@ -16,7 +17,7 @@ export default function AddFriendScreen() {
   const [debouncedValue, setValue] = useDebounceValue('', 500)
 
   const { data } = useSearchUserQuery(debouncedValue)
-  const sendFriendRequest = useSendFriendReuqestMutation()
+  const sendFriendRequest = useSendFriendRequestMutation()
 
   return (
     <>

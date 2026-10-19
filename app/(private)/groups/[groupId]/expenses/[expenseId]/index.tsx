@@ -1,7 +1,7 @@
 import { ActivityIndicator, View } from 'react-native'
 import { Link, router, Stack, useLocalSearchParams } from 'expo-router'
 
-import { useGetGroupById, useGetExpenseById } from '@/hooks/use-group-api'
+import { useGetGroupById, useGetExpenseById } from '@/services/group'
 
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'

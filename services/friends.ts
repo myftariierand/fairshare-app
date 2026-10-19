@@ -2,7 +2,8 @@ import { api } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 
 import type { GroupInviteStatus } from '@/types/common'
-import { User } from '@/lib/auth'
+import type { User } from '@/lib/auth'
+import type { SearchResult } from '@/services/users'
 
 export type Friend = {
   id: string
@@ -48,31 +49,12 @@ export const useRemoveFriendMutation = () => {
   })
 }
 
-type SearchResult = User & {
-  // eslint-disable-next-line
-  friendshipsReceiver: any[]
-  invitationReceiver: { status: GroupInviteStatus }[]
-}
-
-export async function searchUser(query: string) {
-  const { data } = await api.get<SearchResult[]>(`/users/search`, { params: { query } })
-  return data
-}
-
-export const useSearchUserQuery = (query: string) => {
-  return useQuery({
-    queryKey: ['users', query],
-    queryFn: () => searchUser(query),
-    enabled: !!query,
-  })
-}
-
 export async function sendRequest(id: string) {
   const { data } = await api.post<SearchResult[]>(`/friends/requests/${id}`)
   return data
 }
 
-export const useSendFriendReuqestMutation = () => {
+export const useSendFriendRequestMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({

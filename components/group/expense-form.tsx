@@ -9,7 +9,7 @@ import * as Haptics from 'expo-haptics'
 import { useAppForm } from '@/lib/form'
 import { useAuthUser } from '@/lib/auth-context'
 import { useGroupIdParam } from '@/hooks/use-group-id-param'
-import { useCreateExpense, useGetGroupById, useUpdateExpense } from '@/hooks/use-group-api'
+import { useCreateExpense, useGetGroupById, useUpdateExpense } from '@/services/group'
 
 import {
   formatAmount,

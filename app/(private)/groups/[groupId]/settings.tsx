@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router'
 
-import { useGetGroupById } from '@/hooks/use-group-api'
+import { useGetGroupById } from '@/services/group'
 import { useGroupIdParam } from '@/hooks/use-group-id-param'
 
 import { Text } from '@/components/ui/text'
@@ -25,8 +25,7 @@ const SettingsScreen = () => {
         }}
       />
       <View className='p-4'>
-        <EditGroupForm data={data} />
-        <Text className='mt-6 mb-4' variant={'large'}>
+        <Text className='mb-4' variant={'large'}>
           Members
         </Text>
         <View className='gap-4'>
@@ -47,6 +46,8 @@ const SettingsScreen = () => {
             </View>
           ))}
         </View>
+        <Separator className='my-4' />
+        <EditGroupForm data={data} />
         <Separator className='my-4' />
         <DeleteGroup />
       </View>
