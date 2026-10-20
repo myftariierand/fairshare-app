@@ -1,19 +1,22 @@
 import { Stack } from 'expo-router'
 import { View, FlatList, Image } from 'react-native'
+import { toast } from 'sonner-native'
 
-import { GroupInviteStatus } from '@/types/common'
-
-import { Text } from '@/components/ui/text'
 import {
   useAcceptGroupInviteMutation,
   useGetGroupInvitesQuery,
   useRejectGroupInviteMutation,
 } from '@/services/group'
+
+import { getErrorMessage } from '@/lib/utils'
+
+import { GroupInviteStatus } from '@/types/common'
+
 import { CheckIcon, XIcon } from 'lucide-react-native'
+import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
-import { getErrorMessage } from '@/lib/utils'
-import { toast } from 'sonner-native'
+import { Empty } from '@/components/ui/empty'
 
 export default function GroupInvitesScreen() {
   const { data } = useGetGroupInvitesQuery({ status: GroupInviteStatus.pending })
@@ -58,6 +61,12 @@ export default function GroupInvitesScreen() {
           keyExtractor={item => item.id}
           keyboardShouldPersistTaps='handled'
           keyboardDismissMode='on-drag'
+          ListEmptyComponent={
+            <Empty
+              title='No Invites'
+              description='There seem to be no group invites for you at this moment.'
+            />
+          }
           renderItem={({ item }) => {
             return (
               <View className='flex-row items-center gap-2'>
