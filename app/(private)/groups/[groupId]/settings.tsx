@@ -5,13 +5,14 @@ import { useGroupIdParam } from '@/hooks/use-group-id-param'
 import { useAuthUser } from '@/lib/auth-context'
 
 import { Text } from '@/components/ui/text'
-import { View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { RemoveMemberDialog } from '@/components/group/remove-member-dialog'
 import { EditGroupForm } from '@/components/group/edit-group-form'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import DeleteGroup from '@/components/group/delete-group'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const SettingsScreen = () => {
   const { groupId } = useGroupIdParam()
@@ -27,42 +28,46 @@ const SettingsScreen = () => {
           title: 'Settings',
         }}
       />
-      <View className='p-4'>
-        <Text className='mb-4' variant={'large'}>
-          Members
-        </Text>
-        <View className='gap-4'>
-          {data?.members.map(member => (
-            <View key={member.id} className='flex-row items-center gap-2'>
-              <Avatar alt={member.name}>
-                <AvatarFallback className='border-border border'>
-                  <Text variant={'muted'} className='text-xs'>
-                    {member.name.slice(0, 2)}
-                  </Text>
-                </AvatarFallback>
-              </Avatar>
-              <View className='flex-1'>
-                <View className='flex-row items-center gap-1'>
-                  <Text>{member.name}</Text>
-                  {data.createdById === member.id && (
-                    <Badge variant={'secondary'}>
-                      <Text>Admin</Text>
-                    </Badge>
+      <SafeAreaView edges={['bottom']}>
+        <ScrollView>
+          <View className='p-4 pt-0'>
+            <Text className='mb-4' variant={'large'}>
+              Members
+            </Text>
+            <View className='gap-4'>
+              {data?.members.map(member => (
+                <View key={member.id} className='flex-row items-center gap-2'>
+                  <Avatar alt={member.name}>
+                    <AvatarFallback className='border-border border'>
+                      <Text variant={'muted'} className='text-xs'>
+                        {member.name.slice(0, 2)}
+                      </Text>
+                    </AvatarFallback>
+                  </Avatar>
+                  <View className='flex-1'>
+                    <View className='flex-row items-center gap-1'>
+                      <Text>{member.name}</Text>
+                      {data.createdById === member.id && (
+                        <Badge variant={'secondary'}>
+                          <Text>Admin</Text>
+                        </Badge>
+                      )}
+                    </View>
+                    <Text variant={'muted'}>{member.email}</Text>
+                  </View>
+                  {data.createdById !== member.id && data.createdById === user.id && (
+                    <RemoveMemberDialog member={member} />
                   )}
                 </View>
-                <Text variant={'muted'}>{member.email}</Text>
-              </View>
-              {data.createdById !== member.id && data.createdById === user.id && (
-                <RemoveMemberDialog member={member} />
-              )}
+              ))}
             </View>
-          ))}
-        </View>
-        <Separator className='my-4' />
-        <EditGroupForm data={data} />
-        <Separator className='my-4' />
-        <DeleteGroup />
-      </View>
+            <Separator className='my-4' />
+            <EditGroupForm data={data} />
+            <Separator className='my-4' />
+            <DeleteGroup />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </>
   )
 }
