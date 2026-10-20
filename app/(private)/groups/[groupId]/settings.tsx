@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { RemoveMemberDialog } from '@/components/group/remove-member-dialog'
 import { EditGroupForm } from '@/components/group/edit-group-form'
 import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
 import DeleteGroup from '@/components/group/delete-group'
 
 const SettingsScreen = () => {
@@ -39,7 +40,14 @@ const SettingsScreen = () => {
                 </AvatarFallback>
               </Avatar>
               <View className='flex-1'>
-                <Text>{member.name}</Text>
+                <View className='flex-row items-center gap-1'>
+                  <Text>{member.name}</Text>
+                  {data.createdById === member.id && (
+                    <Badge variant={'secondary'}>
+                      <Text>Admin</Text>
+                    </Badge>
+                  )}
+                </View>
                 <Text variant={'muted'}>{member.email}</Text>
               </View>
               <RemoveMemberDialog member={member} />
