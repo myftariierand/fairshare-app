@@ -2,13 +2,14 @@ import { View, FlatList, RefreshControl } from 'react-native'
 
 import { useGetFriendRequestsQuery, useGetFriendsQuery } from '@/services/friends'
 
-import { InboxIcon, UserPlusIcon } from 'lucide-react-native'
+import { ContactIcon, InboxIcon, UserPlusIcon } from 'lucide-react-native'
 import { Text } from '@/components/ui/text'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Link, Tabs } from 'expo-router'
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
 import { Badge } from '@/components/ui/badge'
+import { Empty } from '@/components/ui/empty'
 import RemoveFriendDialog from '@/components/friend/remove-friend-dialog'
 
 export default function FriendsScreen() {
@@ -54,7 +55,11 @@ export default function FriendsScreen() {
         contentContainerClassName='gap-3 p-4'
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
         ListEmptyComponent={
-          <Text className='text-muted-foreground text-center'>No active groups</Text>
+          <Empty
+            title='No Friends'
+            icon={ContactIcon}
+            description='Add friends by tapping in Add Friend button, searching and sending requests.'
+          />
         }
         renderItem={({ item }) => (
           <View className='flex-row items-center'>
