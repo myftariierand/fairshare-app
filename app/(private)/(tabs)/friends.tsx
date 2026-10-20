@@ -1,17 +1,19 @@
 import { View, FlatList, RefreshControl } from 'react-native'
 
-import { useGetFriendsQuery } from '@/services/friends'
+import { useGetFriendRequestsQuery, useGetFriendsQuery } from '@/services/friends'
 
+import { InboxIcon, UserPlusIcon } from 'lucide-react-native'
 import { Text } from '@/components/ui/text'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import RemoveFriendDialog from '@/components/friend/remove-friend-dialog'
 import { Link, Tabs } from 'expo-router'
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
-import { InboxIcon, UserPlusIcon } from 'lucide-react-native'
+import { Badge } from '@/components/ui/badge'
+import RemoveFriendDialog from '@/components/friend/remove-friend-dialog'
 
 export default function FriendsScreen() {
   const { data, isRefetching, refetch } = useGetFriendsQuery()
+  const { data: requests } = useGetFriendRequestsQuery()
 
   return (
     <>
@@ -29,6 +31,14 @@ export default function FriendsScreen() {
                 <Link asChild href={'/friends/requests'}>
                   <Button size={'icon'} variant={'secondary'} className='size-8'>
                     <Icon as={InboxIcon} />
+                    {!!requests?.length && (
+                      <Badge
+                        className='absolute -top-2 -right-2 h-4 w-4 p-0'
+                        variant={'destructive'}
+                      >
+                        <Text className='text-xs'>1</Text>
+                      </Badge>
+                    )}
                   </Button>
                 </Link>
               </>
