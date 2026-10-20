@@ -49,7 +49,7 @@ export default function AddFriendScreen() {
           keyboardDismissMode='on-drag'
           renderItem={({ item }) => {
             return (
-              <View className='flex-row items-center'>
+              <View className='mb-2 flex-row items-center'>
                 <Avatar alt={item.name}>
                   <AvatarFallback className='border-border border'>
                     <Text>{item.name.slice(0, 2)}</Text>
