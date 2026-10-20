@@ -50,7 +50,7 @@ const SettingsScreen = () => {
                 </View>
                 <Text variant={'muted'}>{member.email}</Text>
               </View>
-              <RemoveMemberDialog member={member} />
+              {data.createdById !== member.id && <RemoveMemberDialog member={member} />}
             </View>
           ))}
         </View>
