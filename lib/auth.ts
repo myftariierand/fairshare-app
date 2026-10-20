@@ -3,6 +3,7 @@ import axios from 'axios'
 
 import { api } from '@/lib/api'
 
+import type { Profile } from '@/types/common'
 export type LoginInput = { email: string; password: string }
 
 export type User = {
@@ -60,7 +61,7 @@ export async function signUp(input: SignUpInput) {
 }
 
 export async function getProfile() {
-  const { data } = await api.get<User>('/auth/profile')
+  const { data } = await api.get<Profile>('/auth/profile')
   return data
 }
 

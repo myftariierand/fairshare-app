@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router'
 import { useUniwind } from 'uniwind'
 import { toast } from 'sonner-native'
 
-import { signInWithGoogle } from '@/lib/auth'
+import { getProfile, signInWithGoogle } from '@/lib/auth'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -35,9 +35,10 @@ export function SocialConnections() {
       setLoading(true)
       try {
         const data = await signInWithGoogle()
-        if (!data) return // user cancelled, do nothing
-        const { accessToken, refreshToken, user } = data
+        if (!data) return
+        const { accessToken, refreshToken } = data
         await setTokens({ accessToken, refreshToken })
+        const user = await getProfile()
         setUser(user)
       } catch (e: any) {
         toast.error('Sign-in failed', e.message ?? 'Something went wrong')

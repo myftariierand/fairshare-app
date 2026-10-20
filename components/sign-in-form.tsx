@@ -6,7 +6,7 @@ import { z } from 'zod'
 import axios from 'axios'
 import { toast } from 'sonner-native'
 
-import { login } from '@/lib/auth'
+import { getProfile, login } from '@/lib/auth'
 
 import { useAuth } from '@/lib/auth-context'
 
@@ -55,8 +55,9 @@ export function SignInForm() {
     },
     onSubmit: async ({ value }) => {
       try {
-        const { accessToken, refreshToken, user } = await login(value)
+        const { accessToken, refreshToken } = await login(value)
         await setTokens({ accessToken, refreshToken })
+        const user = await getProfile()
         setUser(user)
       } catch (e) {
         if (axios.isAxiosError(e)) {
