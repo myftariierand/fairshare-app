@@ -1,5 +1,7 @@
 import { View } from 'react-native'
 
+import { cn } from '@/lib/utils'
+
 import { InboxIcon, LucideIcon } from 'lucide-react-native'
 
 import { Icon } from '@/components/ui/icon'
@@ -9,11 +11,12 @@ type Props = {
   title: string
   description?: string
   icon?: LucideIcon
+  containerClassName?: string
 }
 
-export function Empty({ title, description, icon = InboxIcon }: Props) {
+export function Empty({ title, description, icon = InboxIcon, containerClassName }: Props) {
   return (
-    <View className='text-muted-foreground mt-12 grid items-center'>
+    <View className={cn('text-muted-foreground mt-12 grid items-center', containerClassName)}>
       <View className='bg-muted size-10 items-center justify-center rounded'>
         <Icon as={icon} className='text-muted-foreground' />
       </View>
