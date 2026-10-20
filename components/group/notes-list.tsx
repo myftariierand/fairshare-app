@@ -30,6 +30,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { Icon } from '@/components/ui/icon'
+import { Empty } from '@/components/ui/empty'
 const isTempId = (id: string) => id.startsWith('temp-')
 
 const TaskRow = ({ item, groupId, userId }: { item: Task; groupId: string; userId: string }) => {
@@ -154,10 +155,11 @@ export default function NotesList() {
         />
       }
       ListEmptyComponent={
-        <View className='mt-12 items-center gap-2'>
-          <Icon as={NotebookIcon} className='text-muted-foreground' />
-          <Text variant={'muted'}>No Notes</Text>
-        </View>
+        <Empty
+          title='No Notes'
+          icon={NotebookIcon}
+          description='Add a note by typing in the field above and pressing Enter.'
+        />
       }
     />
   )
