@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner-native'
 import { Spinner } from '@/components/spinner'
+import { Empty } from '@/components/ui/empty'
 
 export default function SettleUpTab({
   debts,
@@ -49,6 +50,16 @@ export default function SettleUpTab({
     } catch (error) {
       toast.error(getErrorMessage(error))
     }
+  }
+
+  if (!debts.length) {
+    return (
+      <Empty
+        title='Nothing To Settle'
+        icon={HandCoinsIcon}
+        description='There are no debts to settle at the moment.'
+      />
+    )
   }
 
   return (
