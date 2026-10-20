@@ -62,6 +62,9 @@ const SettingsScreen = () => {
               ))}
             </View>
             <Separator className='my-4' />
+            <Text className='mb-4' variant={'large'}>
+              Edit
+            </Text>
             <EditGroupForm data={data} />
             <Separator className='my-4' />
             <DeleteGroup />
