@@ -6,9 +6,12 @@ import { formatAmount } from '@/lib/utils'
 
 import type { Group } from '@/types/common'
 
+import { ScaleIcon } from 'lucide-react-native'
+
 import { Text } from '@/components/ui/text'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { Empty } from '@/components/ui/empty'
 
 export default function BalanceTicket({
   currentUserId,
@@ -25,50 +28,59 @@ export default function BalanceTicket({
   return (
     <View className='relative'>
       <Card className='rounded-b-none border-b-0 py-0'>
-        <CardContent className='flex flex-wrap justify-between gap-4 p-6 pb-5'>
-          {currencies.map((currency, index) => {
-            const { net, owedToYou, youOwe } = balancesByCurrency[currency]
-            const positive = net >= 0
+        {!currencies.length ? (
+          <Empty
+            title='No Balance Activity'
+            description="We couldn't generate a balance from your activity at this moment."
+            icon={ScaleIcon}
+            containerClassName='mt-6 mb-4'
+          />
+        ) : (
+          <CardContent className='flex flex-wrap justify-between gap-4 p-6 pb-5'>
+            {currencies.map((currency, index) => {
+              const { net, owedToYou, youOwe } = balancesByCurrency[currency]
+              const positive = net >= 0
 
-            return (
-              <View key={currency}>
-                <View className='flex flex-wrap justify-between gap-4'>
-                  <View>
-                    <View
-                      className='font-mono text-[10px] uppercase'
-                      style={
-                        {
-                          // letterSpacing: '0.14em',
+              return (
+                <View key={currency}>
+                  <View className='flex flex-wrap justify-between gap-4'>
+                    <View>
+                      <View
+                        className='font-mono text-[10px] uppercase'
+                        style={
+                          {
+                            // letterSpacing: '0.14em',
+                          }
                         }
-                      }
-                    >
-                      <Text>Net balance · {currency}</Text>
+                      >
+                        <Text>Net balance · {currency}</Text>
+                      </View>
+                      <View className='mt-1.5 leading-none font-semibold'>
+                        <Text>{formatAmount(net, currency)}</Text>
+                      </View>
+                      <Text className='mt-2 text-xs'>
+                        {positive
+                          ? "You're owed more than you owe in this currency"
+                          : "You owe more than you're owed in this currency"}
+                      </Text>
                     </View>
-                    <View className='mt-1.5 leading-none font-semibold'>
-                      <Text>{formatAmount(net, currency)}</Text>
+                    <View className='flex-row gap-2 space-y-1 font-mono text-xs'>
+                      <View>
+                        <Text>owed to you </Text>
+                        <Text className='text-success'>{formatAmount(owedToYou, currency)}</Text>
+                      </View>
+                      <View>
+                        <Text>you owe </Text>
+                        <Text className='text-destructive'>{formatAmount(youOwe, currency)}</Text>
+                      </View>
                     </View>
-                    <Text className='mt-2 text-xs'>
-                      {positive
-                        ? "You're owed more than you owe in this currency"
-                        : "You owe more than you're owed in this currency"}
-                    </Text>
                   </View>
-                  <View className='flex-row gap-2 space-y-1 font-mono text-xs'>
-                    <View>
-                      <Text>owed to you </Text>
-                      <Text className='text-success'>{formatAmount(owedToYou, currency)}</Text>
-                    </View>
-                    <View>
-                      <Text>you owe </Text>
-                      <Text className='text-destructive'>{formatAmount(youOwe, currency)}</Text>
-                    </View>
-                  </View>
+                  {index < currencies.length - 1 && <Separator />}
                 </View>
-                {index < currencies.length - 1 && <Separator />}
-              </View>
-            )
-          })}
-        </CardContent>
+              )
+            })}
+          </CardContent>
+        )}
       </Card>
       <TornEdge color={theme === 'dark' ? '#171717' : 'oklch(1 0 0)'} />
     </View>
