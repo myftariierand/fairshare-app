@@ -4,7 +4,9 @@ import { Tabs, Link } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { format, formatDistance } from 'date-fns'
 
-import { getGroups } from '@/services/group'
+import { getGroups, useGetGroupInvitesQuery } from '@/services/group'
+
+import { GroupInviteStatus } from '@/types/common'
 
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
@@ -12,6 +14,7 @@ import { Icon } from '@/components/ui/icon'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { EyeIcon, InboxIcon, PlusIcon } from 'lucide-react-native'
+import { Badge } from '@/components/ui/badge'
 
 export default function GroupsScreen() {
   const [settledGroupsOpen, setSettleGroupsOpen] = useState(true)
@@ -20,6 +23,7 @@ export default function GroupsScreen() {
     queryKey: ['groups'],
     queryFn: getGroups,
   })
+  const { data: invites } = useGetGroupInvitesQuery({ status: GroupInviteStatus.pending })
 
   if (isPending) {
     return (
@@ -64,6 +68,11 @@ export default function GroupsScreen() {
               <Link asChild href={'/groups/invites'}>
                 <Button size={'icon'} variant={'secondary'} className='size-8'>
                   <Icon as={InboxIcon} />
+                  {!!invites?.length && (
+                    <Badge className='absolute -top-2 -right-2 h-4 w-4 p-0' variant={'destructive'}>
+                      <Text className='text-xs'>1</Text>
+                    </Badge>
+                  )}
                 </Button>
               </Link>
             </>
