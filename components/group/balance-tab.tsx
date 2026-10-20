@@ -8,7 +8,8 @@ import { TransactionType } from '@/types/group'
 import { Text } from '@/components/ui/text'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Icon } from '@/components/ui/icon'
-import { TrendingUpIcon } from 'lucide-react-native'
+import { ScaleIcon, TrendingUpIcon } from 'lucide-react-native'
+import { Empty } from '@/components/ui/empty'
 
 export default function BalanceTab({
   transactions = [],
@@ -34,6 +35,16 @@ export default function BalanceTab({
     (acc, curr) => acc + (curr.type === TransactionType.expense ? curr.amount : 0),
     0
   )
+
+  if (!entries.length) {
+    return (
+      <Empty
+        title='No Balance'
+        icon={ScaleIcon}
+        description='Spending balances are calculated from transactions. Add a transaction or check again later.'
+      />
+    )
+  }
 
   return (
     <Card>
