@@ -13,8 +13,9 @@ import { Text } from '@/components/ui/text'
 import { Icon } from '@/components/ui/icon'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
-import { EyeIcon, InboxIcon, PlusIcon } from 'lucide-react-native'
+import { EyeIcon, InboxIcon, PlusIcon, UserGroupIcon } from 'lucide-react-native'
 import { Badge } from '@/components/ui/badge'
+import { Empty } from '@/components/ui/empty'
 
 export default function GroupsScreen() {
   const [settledGroupsOpen, setSettleGroupsOpen] = useState(true)
@@ -87,7 +88,11 @@ export default function GroupsScreen() {
         contentContainerClassName='gap-3 p-4'
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
         ListEmptyComponent={
-          <Text className='text-muted-foreground text-center'>No active groups</Text>
+          <Empty
+            title='No Active Groups'
+            icon={UserGroupIcon}
+            description='Active groups are groups that have expenses and unsettled debts.'
+          />
         }
         renderItem={({ item }) => (
           <Card className='gap-0 p-0'>
