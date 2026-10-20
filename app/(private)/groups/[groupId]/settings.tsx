@@ -2,6 +2,7 @@ import { Stack } from 'expo-router'
 
 import { useGetGroupById } from '@/services/group'
 import { useGroupIdParam } from '@/hooks/use-group-id-param'
+import { useAuthUser } from '@/lib/auth-context'
 
 import { Text } from '@/components/ui/text'
 import { View } from 'react-native'
@@ -15,6 +16,7 @@ import DeleteGroup from '@/components/group/delete-group'
 const SettingsScreen = () => {
   const { groupId } = useGroupIdParam()
   const { data } = useGetGroupById(groupId)
+  const user = useAuthUser()
 
   if (!data) return null
 
@@ -50,7 +52,9 @@ const SettingsScreen = () => {
                 </View>
                 <Text variant={'muted'}>{member.email}</Text>
               </View>
-              {data.createdById !== member.id && <RemoveMemberDialog member={member} />}
+              {data.createdById !== member.id && data.createdById === user.id && (
+                <RemoveMemberDialog member={member} />
+              )}
             </View>
           ))}
         </View>
