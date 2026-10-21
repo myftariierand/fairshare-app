@@ -13,6 +13,7 @@ import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
 import { useMemo } from 'react'
 import { useGroupIdParam } from '@/hooks/use-group-id-param'
+import { Empty } from '@/components/ui/empty'
 
 type Section = { title: string; data: Transaction[] }
 
@@ -51,12 +52,10 @@ export default function TransactionList({
       className='flex-1'
       stickySectionHeadersEnabled
       ListEmptyComponent={
-        <View className='text-muted-foreground mt-12 grid items-center gap-2 space-y-2'>
-          <View className='bg-muted size-10 items-center justify-center rounded'>
-            <Icon as={InboxIcon} className='text-muted-foreground' />
-          </View>
-          <Text className='text-muted-foreground text-sm font-medium'>No Expenses Yet</Text>
-        </View>
+        <Empty
+          title='No Expenses'
+          description='None of the members has added any expenses to the group yet.'
+        />
       }
       renderSectionHeader={({ section }) => (
         <View className={'bg-background pb-2'}>
