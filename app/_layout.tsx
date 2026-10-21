@@ -6,11 +6,13 @@ import { NAV_THEME } from '@/lib/theme'
 import { ThemeProvider } from 'expo-router/react-navigation'
 import { PortalHost } from '@rn-primitives/portal'
 import { StatusBar } from 'expo-status-bar'
-import { useUniwind } from 'uniwind'
+import { useUniwind, Uniwind } from 'uniwind'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { THEME_STORAGE_KEY, type ThemePreference } from '@/components/profile/toggle-theme'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -31,6 +33,13 @@ function RootNavigator() {
   const { theme } = useUniwind()
   const { isLoading, isLoggedIn, user } = useAuth()
   const { groupId } = useLocalSearchParams<{ groupId: string }>()
+
+  // inside your RootLayout component
+  useEffect(() => {
+    AsyncStorage.getItem(THEME_STORAGE_KEY).then(saved => {
+      if (saved) Uniwind.setTheme(saved as ThemePreference)
+    })
+  }, [])
 
   useEffect(() => {
     if (!isLoading) SplashScreen.hideAsync()

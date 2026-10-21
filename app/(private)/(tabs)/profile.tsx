@@ -38,7 +38,7 @@ export default function ProfileScreen() {
       <RouterTabs.Screen
         options={{
           headerRight: () => (
-            <Link asChild href={'/profile'}>
+            <Link asChild href={'/profile/edit'}>
               <Button size={'sm'} variant={'secondary'}>
                 <Icon as={PencilIcon} size={12} />
                 <Text>Edit Profile</Text>
@@ -49,7 +49,7 @@ export default function ProfileScreen() {
         }}
       />
       <ScrollView>
-        <View className='gap-2 px-4 pb-4'>
+        <View className='gap-2 p-4'>
           <ProfileHeader user={user} />
           <BalanceTicket currentUserId={user.id} transactions={transactions} />
           <View className='flex-row gap-2'>

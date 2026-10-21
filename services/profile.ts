@@ -1,4 +1,4 @@
-import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { api } from '@/lib/api'
 
@@ -30,4 +30,35 @@ export const useRefetchProfile = () => {
       ...profileQueryOptions,
       staleTime: 0, // always hit the network
     })
+}
+
+const updateProfile = async (input: { name: string }) => {
+  const { data } = await api.post('/auth/update-profile', input)
+  return data
+}
+
+export const useUpdateProfileMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: updateProfile,
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    },
+  })
+}
+
+const updatePassword = async (input: {
+  password: string
+  newPassword: string
+  confirmPassword: string
+}) => {
+  const { data } = await api.post('/auth/change-password', input)
+  return data
+}
+
+export const useChangePasswordMutation = () => {
+  return useMutation({
+    mutationFn: updatePassword,
+  })
 }
