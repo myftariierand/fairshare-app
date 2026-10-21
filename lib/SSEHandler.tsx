@@ -66,6 +66,15 @@ const SseHandler = () => {
         queryClient.removeQueries({ queryKey: ['expenses'] })
       }
 
+      if (data.type === SseEventType.GROUP_MEMBER_REMOVED) {
+        const groupId = pathnameRef.current.split('/')[2]
+        if (pathnameRef.current.includes('groups')) {
+          router.replace('/')
+        }
+
+        queryClient.removeQueries({ queryKey: ['groups', groupId] })
+      }
+
       if (data.type === SseEventType.GROUP_DELETED) router.replace('/')
 
       if (!SILENT.includes(data.type)) toast.info(data.message)
