@@ -284,8 +284,9 @@ export const useAcceptGroupInviteMutation = () => {
 
   return useMutation({
     mutationFn: acceptGroupInvite,
-    onSuccess: ({ status }) => {
-      queryClient.invalidateQueries({ queryKey: ['group-invites', status] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['group-invites'] })
+      queryClient.invalidateQueries({ queryKey: ['groups'] })
     },
   })
 }
