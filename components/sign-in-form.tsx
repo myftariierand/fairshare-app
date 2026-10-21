@@ -6,9 +6,10 @@ import { z } from 'zod'
 import axios from 'axios'
 import { toast } from 'sonner-native'
 
-import { getProfile, login } from '@/lib/auth'
+import { login } from '@/lib/auth'
 
 import { useAuth } from '@/lib/auth-context'
+import { useRefetchProfile } from '@/services/profile'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -40,6 +41,7 @@ export function SignInForm() {
   }
 
   const { setTokens, setUser } = useAuth()
+  const refetchProfile = useRefetchProfile()
 
   const form = useAppForm({
     defaultValues: {
@@ -57,7 +59,7 @@ export function SignInForm() {
       try {
         const { accessToken, refreshToken } = await login(value)
         await setTokens({ accessToken, refreshToken })
-        const user = await getProfile()
+        const user = await refetchProfile()
         setUser(user)
       } catch (e) {
         if (axios.isAxiosError(e)) {

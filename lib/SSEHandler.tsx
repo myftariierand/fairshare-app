@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { AppState } from 'react-native'
 import EventSource from 'react-native-sse'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, usePathname } from 'expo-router'
@@ -11,21 +10,21 @@ import { useAuth, useAuthUser } from '@/lib/auth-context'
 type Key = readonly string[]
 
 const KEYS: Partial<Record<SseEventType, Key[]>> = {
-  [SseEventType.FRIEND_REMOVED]: [['friends']],
+  [SseEventType.FRIEND_REMOVED]: [['friends'], ['profile']],
   [SseEventType.FRIEND_REQUEST_RECEIVED]: [['requests']],
   [SseEventType.FRIEND_REQUEST_REJECTED]: [['users'], ['requests']],
-  [SseEventType.FRIEND_REQUEST_ACCEPTED]: [['users'], ['friends'], ['requests']],
+  [SseEventType.FRIEND_REQUEST_ACCEPTED]: [['users'], ['friends'], ['requests'], ['profile']],
   [SseEventType.GROUP_INVITE_RECEIVED]: [['group-invites']],
   [SseEventType.GROUP_INVITE_REJECTED]: [['group-invites'], ['users']],
-  [SseEventType.GROUP_INVITE_ACCEPTED]: [['groups'], ['group-invites'], ['users']],
-  [SseEventType.GROUP_JOINED]: [['groups'], ['group-invites']],
-  [SseEventType.GROUP_UDPATED]: [['groups']],
-  [SseEventType.GROUP_DELETED]: [['groups']],
+  [SseEventType.GROUP_INVITE_ACCEPTED]: [['groups'], ['group-invites'], ['users'], ['profile']],
+  [SseEventType.GROUP_JOINED]: [['groups'], ['group-invites'], ['profile']],
+  [SseEventType.GROUP_UDPATED]: [['groups'], ['profile']],
+  [SseEventType.GROUP_DELETED]: [['groups'], ['profile']],
   [SseEventType.GROUP_MEMBER_REMOVED]: [['groups'], ['group-invites']],
-  [SseEventType.TRANSACTION_ADDED]: [['groups']],
-  [SseEventType.TRANSACTION_UPDATED]: [['groups']],
-  [SseEventType.TRANSACTION_DELETED]: [['groups'], ['expenses']],
-  [SseEventType.TRANSACTION_SETTLED]: [['groups']],
+  [SseEventType.TRANSACTION_ADDED]: [['groups'], ['profile']],
+  [SseEventType.TRANSACTION_UPDATED]: [['groups'], ['profile']],
+  [SseEventType.TRANSACTION_DELETED]: [['groups'], ['expenses'], ['profile']],
+  [SseEventType.TRANSACTION_SETTLED]: [['groups'], ['profile']],
   [SseEventType.CHECKLIST_ITEM_ADDED]: [['tasks']],
   [SseEventType.CHECKLIST_ITEM_DELETED]: [['tasks']],
   [SseEventType.CHECKLIST_ITEM_UPDATED]: [['tasks']],

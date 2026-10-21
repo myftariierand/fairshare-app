@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { useRouter } from 'expo-router'
+import { Image, Platform, View } from 'react-native'
 import { useUniwind } from 'uniwind'
 import { toast } from 'sonner-native'
 
-import { getProfile, signInWithGoogle } from '@/lib/auth'
+import { useAuth } from '@/lib/auth-context'
+import { useRefetchProfile } from '@/services/profile'
 
 import { cn } from '@/lib/utils'
+import { signInWithGoogle } from '@/lib/auth'
+
 import { Button } from '@/components/ui/button'
-import { Image, Platform, View } from 'react-native'
-import { useAuth } from '@/lib/auth-context'
 
 const SOCIAL_CONNECTION_STRATEGIES = [
   {
@@ -28,6 +29,7 @@ export function SocialConnections() {
   const [loading, setLoading] = useState(false)
 
   const { setTokens, setUser } = useAuth()
+  const refetchProfile = useRefetchProfile()
 
   const handlePress = async (type: string) => {
     if (type === 'oauth_google') {
@@ -38,7 +40,7 @@ export function SocialConnections() {
         if (!data) return
         const { accessToken, refreshToken } = data
         await setTokens({ accessToken, refreshToken })
-        const user = await getProfile()
+        const user = await refetchProfile()
         setUser(user)
       } catch (e: any) {
         toast.error('Sign-in failed', e.message ?? 'Something went wrong')

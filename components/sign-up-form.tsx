@@ -1,14 +1,13 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { type TextInput, View } from 'react-native'
-import { Link } from 'expo-router'
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
-import axios from 'axios'
 import { toast } from 'sonner-native'
 
-import { getProfile, signUp } from '@/lib/auth'
+import { signUp } from '@/lib/auth'
 
 import { useAuth } from '@/lib/auth-context'
+import { useRefetchProfile } from '@/services/profile'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,6 +33,7 @@ export function SignUpForm() {
   const passwordInputRef = useRef<TextInput>(null)
 
   const { setTokens, setUser } = useAuth()
+  const refetchProfile = useRefetchProfile()
 
   const form = useAppForm({
     defaultValues: {
@@ -65,7 +65,7 @@ export function SignUpForm() {
       try {
         const { accessToken, refreshToken } = await signUp(value)
         await setTokens({ accessToken, refreshToken })
-        const user = await getProfile()
+        const user = await refetchProfile()
         setUser(user)
       } catch (e) {
         toast.error(getErrorMessage(e))

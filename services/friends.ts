@@ -45,6 +45,7 @@ export const useRemoveFriendMutation = () => {
     mutationFn: removeFriend,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friends'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 }
@@ -108,6 +109,7 @@ export const useAcceptFriendRequestMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friends'] })
       queryClient.invalidateQueries({ queryKey: ['requests'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 }

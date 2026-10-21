@@ -4,6 +4,7 @@ import axios from 'axios'
 import { api } from '@/lib/api'
 
 import type { Profile } from '@/types/common'
+import { queryOptions, useQuery } from '@tanstack/react-query'
 export type LoginInput = { email: string; password: string }
 
 export type User = {
@@ -57,11 +58,6 @@ export type SignUpInput = {
 
 export async function signUp(input: SignUpInput) {
   const { data } = await api.post<AuthResponse>(`/auth/register`, input)
-  return data
-}
-
-export async function getProfile() {
-  const { data } = await api.get<Profile>('/auth/profile')
   return data
 }
 

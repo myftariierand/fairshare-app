@@ -3,8 +3,9 @@ import { View } from 'react-native'
 import { toast } from 'sonner-native'
 
 import { useAuth } from '@/lib/auth-context'
+import { useRefetchProfile } from '@/services/profile'
 
-import { getProfile, resendOtp, verifyOtp } from '@/lib/auth'
+import { resendOtp, verifyOtp } from '@/lib/auth'
 import { getErrorMessage } from '@/lib/utils'
 
 import { MailIcon } from 'lucide-react-native'
@@ -18,11 +19,13 @@ export default function VerifyEmailScreen() {
 
   const [code, setCode] = useState('')
 
+  const refetchProfile = useRefetchProfile()
+
   const handleComplete = async (otp: string) => {
     try {
       if (!user) return
       await verifyOtp({ otp, email: user.email })
-      const profile = await getProfile()
+      const profile = await refetchProfile()
 
       if (!profile.emailVerified) {
         toast.error('Invalid or expired code. Please try again.')

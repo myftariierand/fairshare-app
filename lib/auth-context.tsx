@@ -2,10 +2,11 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
+import { useRefetchProfile } from '@/services/profile'
+
 import { setAuthFailureHandler } from './api'
 import { tokenStorage } from './token-storage'
 
-import { getProfile, type User } from '@/lib/auth'
 import { Profile } from '@/types/common'
 
 type Tokens = { accessToken: string; refreshToken?: string }
@@ -25,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Profile | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const refetchProfile = useRefetchProfile()
 
   useEffect(() => {
     tokenStorage
@@ -32,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then(async token => {
         setAccessToken(token)
         if (token) {
-          const user = await getProfile()
+          const user = await refetchProfile()
           setUser(user as Profile)
         }
       })

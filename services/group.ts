@@ -61,6 +61,7 @@ export const useCreateGroup = () => {
     mutationFn: createGroup,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 }
@@ -98,6 +99,7 @@ export const useUpdateGroup = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['groups', id] })
       queryClient.invalidateQueries({ queryKey: ['groups'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 }
@@ -114,6 +116,7 @@ export const useDeleteGroup = () => {
     mutationFn: deleteGroup,
     onSuccess: async (_, id) => {
       queryClient.removeQueries({ queryKey: ['groups', id] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
       await queryClient.invalidateQueries({ queryKey: ['groups'], exact: true })
     },
   })
@@ -138,6 +141,7 @@ export const useSettleUp = () => {
     mutationFn: settleUp,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 }
@@ -159,6 +163,7 @@ export const useRemoveMember = () => {
     mutationFn: removeMember,
     onSuccess: (_, { groupId }) => {
       queryClient.invalidateQueries({ queryKey: ['groups', groupId] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 }
@@ -195,6 +200,7 @@ export const useCreateExpense = () => {
     mutationFn: createExpense,
     onSuccess: (_, { groupId }) => {
       queryClient.invalidateQueries({ queryKey: ['groups', groupId] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 }
@@ -213,6 +219,7 @@ export const useUpdateExpense = () => {
     mutationFn: updateExpense,
     onSuccess: (_, { groupId }) => {
       queryClient.invalidateQueries({ queryKey: ['groups', groupId] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 }
@@ -223,8 +230,13 @@ export async function deleteExpense(id: string) {
 }
 
 export const useDeleteExpense = () => {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: deleteExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    },
   })
 }
 
@@ -287,6 +299,7 @@ export const useAcceptGroupInviteMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['group-invites'] })
       queryClient.invalidateQueries({ queryKey: ['groups'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
 }

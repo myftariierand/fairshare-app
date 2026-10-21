@@ -16,10 +16,15 @@ import StatCard from '@/components/profile/stat-card'
 import { useState } from 'react'
 import { GroupsTab } from '@/components/profile/groups-tab'
 import FriendsTab from '@/components/profile/friends-tabs'
+import { useGetProfileQuery } from '@/services/profile'
 
 export default function ProfileScreen() {
   const { signOut } = useAuth()
-  const user = useAuthUser()
+  const { data: user } = useGetProfileQuery()
+
+  if (!user) {
+    return null
+  }
 
   const transactions = user.groups.flatMap(group => group.transactions)
   const involvedTransactions = transactions.filter(transactions =>
