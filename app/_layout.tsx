@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Stack } from 'expo-router'
+import { Stack, useLocalSearchParams } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { AuthProvider, useAuth } from '@/lib/auth-context'
 import { NAV_THEME } from '@/lib/theme'
@@ -30,6 +30,7 @@ SplashScreen.preventAutoHideAsync()
 function RootNavigator() {
   const { theme } = useUniwind()
   const { isLoading, isLoggedIn, user } = useAuth()
+  const { groupId } = useLocalSearchParams<{ groupId: string }>()
 
   useEffect(() => {
     if (!isLoading) SplashScreen.hideAsync()
@@ -37,16 +38,18 @@ function RootNavigator() {
 
   if (isLoading) return null
 
+  const isAuthed = isLoggedIn && !!user
+
   return (
     <GestureHandlerRootView>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Protected guard={isLoggedIn && !!user && user.emailVerified}>
+        <Stack.Protected guard={isAuthed && user.emailVerified}>
           <Stack.Screen name='(private)' />
         </Stack.Protected>
-        <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Protected guard={!isAuthed}>
           <Stack.Screen name='(public)' />
         </Stack.Protected>
-        <Stack.Protected guard={!!user && !user.emailVerified}>
+        <Stack.Protected guard={isAuthed && !user.emailVerified}>
           <Stack.Screen name='verify-email' />
         </Stack.Protected>
       </Stack>
