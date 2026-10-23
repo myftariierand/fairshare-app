@@ -36,7 +36,7 @@ export default function ForgotPasswordScreen() {
     validators: {
       // Pass a schema or function to validate
       onSubmit: z.object({
-        email: z.email(),
+        email: z.email().min(1, 'Enter your email!'),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -89,8 +89,8 @@ export default function ForgotPasswordScreen() {
                       onChangeText={field.handleChange}
                     />
                     {field.state.meta.errors.length > 0 && (
-                      <Text className='text-destructive text-sm'>
-                        {field.state.meta.errors.map(e => e?.message).join(', ')}
+                      <Text className='text-destructive w-full text-sm'>
+                        {field.state.meta.errors.reverse()[0]?.message}
                       </Text>
                     )}
                   </>

@@ -46,10 +46,10 @@ export function SignUpForm() {
       // Pass a schema or function to validate
       onSubmit: z
         .object({
-          name: z.string(),
-          email: z.email(),
-          password: z.string().min(8),
-          confirmPassword: z.string().min(1),
+          name: z.string().min(1, 'Enter your name!'),
+          email: z.email().min(1, 'Enter you email!'),
+          password: z.string().min(8, 'Enter you password!'),
+          confirmPassword: z.string(),
         })
         .superRefine((args, ctx) => {
           if (args.password !== args.confirmPassword) {
@@ -91,7 +91,7 @@ export function SignUpForm() {
             />
             {field.state.meta.errors.length > 0 && (
               <Text className='text-destructive text-sm'>
-                {field.state.meta.errors.map(e => e?.message).join(', ')}
+                {field.state.meta.errors.reverse()[0]?.message}
               </Text>
             )}
           </View>
@@ -115,7 +115,7 @@ export function SignUpForm() {
             />
             {field.state.meta.errors.length > 0 && (
               <Text className='text-destructive text-sm'>
-                {field.state.meta.errors.map(e => e?.message).join(', ')}
+                {field.state.meta.errors.reverse()[0]?.message}
               </Text>
             )}
           </View>
@@ -133,10 +133,11 @@ export function SignUpForm() {
               onSubmitEditing={() => form.handleSubmit()}
               value={field.state.value}
               onChangeText={field.handleChange}
+              placeholder='********'
             />
             {field.state.meta.errors.length > 0 && (
               <Text className='text-destructive text-sm'>
-                {field.state.meta.errors.map(e => e?.message).join(', ')}
+                {field.state.meta.errors.reverse()[0]?.message}
               </Text>
             )}
           </View>
@@ -152,10 +153,11 @@ export function SignUpForm() {
               returnKeyType='send'
               value={field.state.value}
               onChangeText={field.handleChange}
+              placeholder='********'
             />
             {field.state.meta.errors.length > 0 && (
               <Text className='text-destructive text-sm'>
-                {field.state.meta.errors.map(e => e?.message).join(', ')}
+                {field.state.meta.errors.reverse()[0]?.message}
               </Text>
             )}
           </View>

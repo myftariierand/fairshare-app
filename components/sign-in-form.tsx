@@ -51,8 +51,8 @@ export function SignInForm() {
     validators: {
       // Pass a schema or function to validate
       onSubmit: z.object({
-        email: z.email(),
-        password: z.string().min(8),
+        email: z.email().min(1, 'Enter you email!'),
+        password: z.string().min(1, 'Enter you password!'),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -96,7 +96,7 @@ export function SignInForm() {
                     />
                     {field.state.meta.errors.length > 0 && (
                       <Text className='text-destructive text-sm'>
-                        {field.state.meta.errors.map(e => e?.message).join(', ')}
+                        {field.state.meta.errors.reverse()[0]?.message}
                       </Text>
                     )}
                   </>
@@ -123,10 +123,11 @@ export function SignInForm() {
                       onSubmitEditing={() => form.handleSubmit()}
                       value={field.state.value}
                       onChangeText={field.handleChange}
+                      placeholder='********'
                     />
                     {field.state.meta.errors.length > 0 && (
                       <Text className='text-destructive text-sm'>
-                        {field.state.meta.errors.map(e => e?.message).join(', ')}
+                        {field.state.meta.errors.reverse()[0]?.message}
                       </Text>
                     )}
                   </>
