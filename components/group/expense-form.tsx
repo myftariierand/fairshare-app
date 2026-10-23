@@ -5,6 +5,13 @@ import { toast } from 'sonner-native'
 import { formOptions } from '@tanstack/react-form'
 import { z } from 'zod'
 import * as Haptics from 'expo-haptics'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import {
+  KeyboardAwareScrollView,
+  KeyboardStickyView,
+  useReanimatedKeyboardAnimation,
+} from 'react-native-keyboard-controller'
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated'
 
 import { useAppForm } from '@/lib/form'
 import { useAuthUser } from '@/lib/auth-context'
@@ -46,6 +53,7 @@ export const expenseFormOpts = formOptions({
 })
 
 export function ExpenseForm({ data }: { data?: SingleTransaction }) {
+  const insets = useSafeAreaInsets()
   const user = useAuthUser()
   const { groupId } = useGroupIdParam()
   const { data: group } = useGetGroupById(groupId)
@@ -177,40 +185,34 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
     })
   }, [data])
 
+  const { progress } = useReanimatedKeyboardAnimation()
+  const footerStyle = useAnimatedStyle(() => ({
+    paddingHorizontal: interpolate(progress.value, [0, 1], [16, 0]),
+    paddingBottom: interpolate(progress.value, [0, 1], [insets.bottom, 0]),
+  }))
+
   return (
-    <View className='gap-2'>
-      <form.AppField
-        name='category'
-        children={field => (
-          <ToggleGroup
-            type='single'
-            className='flex-col'
-            value={field.state.value}
-            onValueChange={value => {
-              if (value) field.handleChange(value)
-            }}
-          >
-            <View className='flex-row flex-wrap justify-start gap-1'>
-              {Object.entries(transactionCategories)
-                .slice(0, 10)
-                .map(([value, { emoji, label }]) => (
-                  <ToggleGroupItem
-                    key={label}
-                    value={value}
-                    className='shrink-0 grow whitespace-nowrap'
-                    size={'sm'}
-                    variant={'outline'}
-                  >
-                    <Text>
-                      {emoji} {label}
-                    </Text>
-                  </ToggleGroupItem>
-                ))}
-            </View>
-            <Collapsible className='grow'>
-              <CollapsibleContent className='flex-row flex-wrap gap-1'>
+    <>
+      <KeyboardAwareScrollView
+        keyboardShouldPersistTaps='handled'
+        contentContainerClassName='p-4 gap-2'
+        keyboardDismissMode='interactive'
+        bottomOffset={200}
+      >
+        <form.AppField
+          name='category'
+          children={field => (
+            <ToggleGroup
+              type='single'
+              className='flex-col'
+              value={field.state.value}
+              onValueChange={value => {
+                if (value) field.handleChange(value)
+              }}
+            >
+              <View className='flex-row flex-wrap justify-start gap-1'>
                 {Object.entries(transactionCategories)
-                  .slice(10)
+                  .slice(0, 10)
                   .map(([value, { emoji, label }]) => (
                     <ToggleGroupItem
                       key={label}
@@ -224,112 +226,135 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
                       </Text>
                     </ToggleGroupItem>
                   ))}
-              </CollapsibleContent>
-              <CollapsibleTrigger asChild>
-                <Button variant={'link'}>
-                  <Text>More Categories</Text>
-                </Button>
-              </CollapsibleTrigger>
-            </Collapsible>
-          </ToggleGroup>
-        )}
-      />
-      <form.AppField
-        name='description'
-        children={field => (
-          <View className='gap-1'>
-            <Label>Description*</Label>
-            <field.Input
-              placeholder='Plane Tickets'
-              value={field.state.value}
-              onChangeText={field.handleChange}
-            />
-            {field.state.meta.errors.length > 0 && (
-              <Text className='text-destructive text-sm'>
-                {field.state.meta.errors.map(e => e?.message).join(', ')}
-              </Text>
-            )}
-          </View>
-        )}
-      />
-      <form.AppField
-        name='amount'
-        children={field => (
-          <View className='gap-1'>
-            <Label>Amount*</Label>
-            <field.Input
-              inputMode='decimal'
-              placeholder={formatAmount(600, group?.currency ?? 'EUR')}
-              value={field.state.value}
-              onChangeText={handleChange}
-            />
-            {field.state.meta.errors.length > 0 && (
-              <Text className='text-destructive text-sm'>
-                {field.state.meta.errors.map(e => e?.message).join(', ')}
-              </Text>
-            )}
-          </View>
-        )}
-      />
-      <form.AppField
-        name='paidBy'
-        children={field => (
-          <ToggleGroup
-            type='single'
-            className='flex-wrap justify-start'
-            value={field.state.value}
-            onValueChange={value => {
-              if (value) field.handleChange(value)
-            }}
-          >
-            {(group ? [...group.members] : [])
-              .sort(a => (a.id === user.id ? -1 : 1))
-              .map(member => (
-                <ToggleGroupItem
-                  key={member.id}
-                  value={member.id}
-                  className='shrink-0 whitespace-nowrap'
-                  variant={'outline'}
-                >
-                  <Avatar className='size-5' alt={user.name}>
-                    <AvatarFallback className='border'>
-                      <Text className='text-xs'>{member.name.slice(0, 2)}</Text>
-                    </AvatarFallback>
-                  </Avatar>
-                  <Text>{user.id === member.id ? 'You' : member.name.split(' ')[0]}</Text>
-                </ToggleGroupItem>
-              ))}
-          </ToggleGroup>
-        )}
-      />
-      <Card className='flex flex-row items-center justify-between p-4'>
-        <View className='shrink'>
-          <Text className='text-base'>Split Equally</Text>
-          <Text variant={'muted'} className='text-xs' textBreakStrategy='balanced'>
-            Disable this if you want to manually specify the split amounts for each group member.
-          </Text>
-        </View>
-        <View>
-          <Switch checked={splitEqually} onCheckedChange={handleSplitEqually} />
-        </View>
-      </Card>
-      {!splitEqually && group && <ExpenseSplits form={form} group={group} />}
-      <form.AppForm>
-        <form.Button
-          className='w-full'
-          disabled={createExpense.isPending || updateExpense.isPending}
-          onPress={() => form.handleSubmit()}
-        >
-          {createExpense.isPending || updateExpense.isPending ? (
-            <Spinner />
-          ) : (
-            <>
-              <Icon as={SaveIcon} />
-              <Text>Save</Text>
-            </>
+              </View>
+              <Collapsible className='grow'>
+                <CollapsibleContent className='flex-row flex-wrap gap-1'>
+                  {Object.entries(transactionCategories)
+                    .slice(10)
+                    .map(([value, { emoji, label }]) => (
+                      <ToggleGroupItem
+                        key={label}
+                        value={value}
+                        className='shrink-0 grow whitespace-nowrap'
+                        size={'sm'}
+                        variant={'outline'}
+                      >
+                        <Text>
+                          {emoji} {label}
+                        </Text>
+                      </ToggleGroupItem>
+                    ))}
+                </CollapsibleContent>
+                <CollapsibleTrigger asChild>
+                  <Button variant={'link'}>
+                    <Text>More Categories</Text>
+                  </Button>
+                </CollapsibleTrigger>
+              </Collapsible>
+            </ToggleGroup>
           )}
-        </form.Button>
-      </form.AppForm>
-    </View>
+        />
+        <form.AppField
+          name='description'
+          children={field => (
+            <View className='gap-1'>
+              <Label>Description*</Label>
+              <field.Input
+                placeholder='Plane Tickets'
+                value={field.state.value}
+                onChangeText={field.handleChange}
+              />
+              {field.state.meta.errors.length > 0 && (
+                <Text className='text-destructive text-sm'>
+                  {field.state.meta.errors.map(e => e?.message).join(', ')}
+                </Text>
+              )}
+            </View>
+          )}
+        />
+        <form.AppField
+          name='amount'
+          children={field => (
+            <View className='gap-1'>
+              <Label>Amount*</Label>
+              <field.Input
+                inputMode='decimal'
+                placeholder={formatAmount(600, group?.currency ?? 'EUR')}
+                value={field.state.value}
+                onChangeText={handleChange}
+              />
+              {field.state.meta.errors.length > 0 && (
+                <Text className='text-destructive text-sm'>
+                  {field.state.meta.errors.map(e => e?.message).join(', ')}
+                </Text>
+              )}
+            </View>
+          )}
+        />
+        <form.AppField
+          name='paidBy'
+          children={field => (
+            <ToggleGroup
+              type='single'
+              className='flex-wrap justify-start'
+              value={field.state.value}
+              onValueChange={value => {
+                if (value) field.handleChange(value)
+              }}
+            >
+              {(group ? [...group.members] : [])
+                .sort(a => (a.id === user.id ? -1 : 1))
+                .map(member => (
+                  <ToggleGroupItem
+                    key={member.id}
+                    value={member.id}
+                    className='shrink-0 whitespace-nowrap'
+                    variant={'outline'}
+                  >
+                    <Avatar className='size-5' alt={user.name}>
+                      <AvatarFallback className='border'>
+                        <Text className='text-xs'>{member.name.slice(0, 2)}</Text>
+                      </AvatarFallback>
+                    </Avatar>
+                    <Text>{user.id === member.id ? 'You' : member.name.split(' ')[0]}</Text>
+                  </ToggleGroupItem>
+                ))}
+            </ToggleGroup>
+          )}
+        />
+        <Card className='flex flex-row items-center justify-between p-4'>
+          <View className='shrink'>
+            <Text className='text-base'>Split Equally</Text>
+            <Text variant={'muted'} className='text-xs' textBreakStrategy='balanced'>
+              Disable this if you want to manually specify the split amounts for each group member.
+            </Text>
+          </View>
+          <View>
+            <Switch checked={splitEqually} onCheckedChange={handleSplitEqually} />
+          </View>
+        </Card>
+        {!splitEqually && group && <ExpenseSplits form={form} group={group} />}
+      </KeyboardAwareScrollView>
+      <KeyboardStickyView className='bg-background' offset={{ closed: 0, opened: 0 }}>
+        <Animated.View style={footerStyle}>
+          <form.AppForm>
+            <form.Button
+              className='w-full'
+              disabled={createExpense.isPending || updateExpense.isPending}
+              onPress={() => form.handleSubmit()}
+            >
+              {createExpense.isPending || updateExpense.isPending ? (
+                <Spinner />
+              ) : (
+                <>
+                  <Icon as={SaveIcon} />
+                  <Text>Save</Text>
+                </>
+              )}
+            </form.Button>
+          </form.AppForm>
+        </Animated.View>
+      </KeyboardStickyView>
+    </>
   )
 }

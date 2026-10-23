@@ -13,6 +13,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { THEME_STORAGE_KEY, type ThemePreference } from '@/components/profile/toggle-theme'
+import { KeyboardProvider } from 'react-native-keyboard-controller'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -71,14 +72,16 @@ export default function RootLayout() {
   const { theme } = useUniwind()
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider value={NAV_THEME[theme ?? 'light']}>
-          <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
-          <RootNavigator />
-          <PortalHost />
-        </ThemeProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <KeyboardProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ThemeProvider value={NAV_THEME[theme ?? 'light']}>
+            <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+            <RootNavigator />
+            <PortalHost />
+          </ThemeProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </KeyboardProvider>
   )
 }
