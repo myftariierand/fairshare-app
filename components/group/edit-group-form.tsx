@@ -77,7 +77,7 @@ export const EditGroupForm = ({ data }: { data: SingleGroup }) => {
     onSubmit: async ({ value }) => {
       try {
         await updateGroup.mutateAsync({ id: data.id, ...value })
-        toast.success('Group created')
+        toast.success('Group updated')
       } catch (e) {
         toast.error(e instanceof Error ? e.message : 'Something went wrong')
       }
