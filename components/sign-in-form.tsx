@@ -119,6 +119,7 @@ export function SignInForm() {
                       secureTextEntry
                       returnKeyType='send'
                       autoCapitalize='none'
+                      autoComplete='current-password'
                       ref={passwordInputRef}
                       onSubmitEditing={() => form.handleSubmit()}
                       value={field.state.value}
