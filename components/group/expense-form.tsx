@@ -75,9 +75,9 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
     validators: {
       onSubmit: z.object({
         category: z.string(),
-        description: z.string().min(4, 'Must be at least 4 characters long.'),
+        description: z.string().min(1, 'Expense description is required'),
         amount: z.string().refine(val => parseNumberInput(val) > 0, {
-          message: 'Amount must be a positive number',
+          message: 'Expense amount is required',
         }),
         paidBy: z.uuid(),
         splits: z
