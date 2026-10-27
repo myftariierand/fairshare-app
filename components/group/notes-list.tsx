@@ -31,6 +31,7 @@ import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { Icon } from '@/components/ui/icon'
 import { Empty } from '@/components/ui/empty'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 const isTempId = (id: string) => id.startsWith('temp-')
 
 const TaskRow = ({ item, groupId, userId }: { item: Task; groupId: string; userId: string }) => {
@@ -77,6 +78,7 @@ const TaskRow = ({ item, groupId, userId }: { item: Task; groupId: string; userI
 }
 
 export default function NotesList() {
+  const insets = useSafeAreaInsets()
   const inputRef = useRef<TextInput>(null)
   const [inputValue, setInputValue] = useState('')
 
@@ -143,6 +145,7 @@ export default function NotesList() {
       renderItem={renderItem}
       onReorder={handleReorder}
       keyboardShouldPersistTaps='handled'
+      style={{ marginBottom: insets.bottom + 8 }}
       ListHeaderComponent={
         <Input
           ref={inputRef}
