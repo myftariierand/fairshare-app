@@ -1,18 +1,19 @@
+import { View } from 'react-native'
 import { Stack } from 'expo-router'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 
 import { useGetGroupById } from '@/services/group'
 import { useGroupIdParam } from '@/hooks/use-group-id-param'
 import { useAuthUser } from '@/lib/auth-context'
 
 import { Text } from '@/components/ui/text'
-import { ScrollView, View } from 'react-native'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { RemoveMemberDialog } from '@/components/group/remove-member-dialog'
 import { EditGroupForm } from '@/components/group/edit-group-form'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import DeleteGroup from '@/components/group/delete-group'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 const SettingsScreen = () => {
   const { groupId } = useGroupIdParam()
@@ -29,7 +30,7 @@ const SettingsScreen = () => {
         }}
       />
       <SafeAreaView edges={['bottom']}>
-        <ScrollView>
+        <KeyboardAwareScrollView>
           <View className='p-4 pt-0'>
             <Text className='mb-4' variant={'large'}>
               Members
@@ -69,7 +70,7 @@ const SettingsScreen = () => {
             <Separator className='my-4' />
             <DeleteGroup />
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     </>
   )
