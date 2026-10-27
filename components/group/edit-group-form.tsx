@@ -69,8 +69,8 @@ export const EditGroupForm = ({ data }: { data: SingleGroup }) => {
     },
     validators: {
       onSubmit: z.object({
-        name: z.string().min(4, { message: 'Name must be at least 4 characters.' }),
-        currency: z.string().min(1, { message: 'Select a currency.' }),
+        name: z.string().min(1, { message: 'Group name is required!' }),
+        currency: z.string().min(1, { message: 'Group currency is required!' }),
         cover: coverSchema.nullable(),
       }),
     },
