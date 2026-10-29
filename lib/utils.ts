@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { extendTailwindMerge } from 'tailwind-merge'
 import axios from 'axios'
 import {
   BabyIcon,
@@ -28,6 +28,13 @@ import {
   WrenchIcon,
   ZapIcon,
 } from 'lucide-react-native'
+
+// Our custom spacing tokens from global.css (h-control, h-hairline, ...). Without them,
+// tailwind-merge doesn't see h-control as a height, so an override like h-36 was kept
+// alongside it instead of replacing it.
+const twMerge = extendTailwindMerge({
+  extend: { theme: { spacing: ['control', 'hairline'] } },
+})
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

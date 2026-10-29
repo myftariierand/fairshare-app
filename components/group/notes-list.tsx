@@ -185,7 +185,7 @@ export default function NotesList() {
             />
             <Button
               size='icon'
-              className='h-control w-control'
+              className='size-control'
               accessibilityLabel='Add item'
               disabled={!inputValue.trim()}
               onPress={handleAdd}
