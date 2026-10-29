@@ -1,17 +1,18 @@
-import { Stack } from 'expo-router'
-import { HandshakeIcon, type LucideIcon } from 'lucide-react-native'
+import { Stack, router } from 'expo-router'
+import { ArrowLeftIcon, HandshakeIcon, type LucideIcon } from 'lucide-react-native'
 import { View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useCSSVariable } from 'uniwind'
 
+import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 
 // Shared frame for the signed-out screens: a mark, title + subtitle, the form,
-// and a footer pinned to the bottom. With showBack, the native stack header
-// shows a back button, so it stays put while the content scrolls with the keyboard.
+// and a footer pinned to the bottom. With showBack, the back button lives in the
+// stack header, so it stays put while the content scrolls with the keyboard.
 export function AuthLayout({
   title,
   subtitle,
@@ -47,7 +48,12 @@ export function AuthLayout({
             headerShadowVisible: false,
             headerStyle: { backgroundColor: background },
             headerTintColor: foreground,
-            headerBackButtonDisplayMode: 'minimal',
+            headerBackVisible: false,
+            headerLeft: () => <BackButton />,
+            // iOS 26 puts header buttons on a shared glass pill; the outlined button has its own
+            unstable_headerLeftItems: () => [
+              { type: 'custom', element: <BackButton />, hidesSharedBackground: true },
+            ],
           }}
         />
       )}
@@ -108,5 +114,19 @@ export function AuthLayout({
         </View>
       </KeyboardAwareScrollView>
     </View>
+  )
+}
+
+function BackButton() {
+  return (
+    <Button
+      variant='outline'
+      size='icon'
+      accessibilityLabel='Back'
+      className='size-11'
+      onPress={() => (router.canGoBack() ? router.back() : router.replace('/login'))}
+    >
+      <Icon as={ArrowLeftIcon} />
+    </Button>
   )
 }
