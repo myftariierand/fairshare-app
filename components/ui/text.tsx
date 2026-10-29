@@ -3,6 +3,8 @@ import { Slot } from '@rn-primitives/slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 import { Platform, Text as RNText, type Role } from 'react-native'
+import { useUniwind } from 'uniwind'
+import { BRAND_THEME } from '@/lib/theme'
 
 const textVariants = cva(
   cn(
@@ -75,10 +77,16 @@ function Text({
     asChild?: boolean
   }) {
   const textClass = React.useContext(TextClassContext)
+  const { theme } = useUniwind()
   const Component = asChild ? Slot : RNText
   return (
     <Component
-      className={cn(textVariants({ variant }), textClass, className)}
+      className={cn(
+        theme === BRAND_THEME && 'font-geist',
+        textVariants({ variant }),
+        textClass,
+        className
+      )}
       role={variant ? ROLE[variant] : undefined}
       aria-level={variant ? ARIA_LEVEL[variant] : undefined}
       {...props}

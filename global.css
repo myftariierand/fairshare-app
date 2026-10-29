@@ -11,6 +11,10 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   --spacing-hairline: hairlineWidth();
+
+  /* Bundled via the expo-font config plugin in app.json */
+  --font-geist: Geist;
+  --font-geist-mono: 'Geist Mono';
 }
 
 @layer theme {
@@ -50,6 +54,7 @@
       --color-sidebar-accent-foreground: oklch(0.205 0 0);
       --color-sidebar-border: oklch(0.922 0 0);
       --color-sidebar-ring: oklch(0.708 0 0);
+      --radius: 10px;
     }
 
     @variant dark {
@@ -87,6 +92,46 @@
       --color-sidebar-accent-foreground: oklch(0.985 0 0);
       --color-sidebar-border: oklch(1 0 0 / 10%);
       --color-sidebar-ring: oklch(0.556 0 0);
+      --radius: 10px;
+    }
+
+    /* Redesign (beta): opt-in from Profile until it replaces dark */
+    @variant fairshare {
+      --color-background: #0d0e10;
+      --color-foreground: #f3f4f1;
+      --color-card: #16181b;
+      --color-card-foreground: #f3f4f1;
+      --color-popover: #1e2125;
+      --color-popover-foreground: #f3f4f1;
+      --color-primary: #c8f169;
+      --color-primary-foreground: #121405;
+      --color-secondary: #1e2125;
+      --color-secondary-foreground: #f3f4f1;
+      --color-muted: #1e2125;
+      --color-muted-foreground: #a2a7ae;
+      --color-accent: #2a2d32;
+      --color-accent-foreground: #f3f4f1;
+      --color-destructive: #ff8a7a;
+      --color-success: #6ee7b7;
+      --color-owed: #6ee7b7;
+      --color-owe: #ffa26b;
+      --color-border: #2a2d32;
+      --color-input: #2a2d32;
+      --color-ring: #c8f169;
+      --color-chart-1: #c8f169;
+      --color-chart-2: #8fd3ff;
+      --color-chart-3: #ffc08a;
+      --color-chart-4: #e2a8ff;
+      --color-chart-5: #6ee7b7;
+      --color-sidebar: #16181b;
+      --color-sidebar-foreground: #f3f4f1;
+      --color-sidebar-primary: #c8f169;
+      --color-sidebar-primary-foreground: #121405;
+      --color-sidebar-accent: #2a2d32;
+      --color-sidebar-accent-foreground: #f3f4f1;
+      --color-sidebar-border: #2a2d32;
+      --color-sidebar-ring: #c8f169;
+      --radius: 14px;
     }
   }
 }
