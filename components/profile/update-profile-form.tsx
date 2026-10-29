@@ -1,4 +1,6 @@
 import { ActivityIndicator, View } from 'react-native'
+import { Stack } from 'expo-router'
+import { LockIcon } from 'lucide-react-native'
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
 import { toast } from 'sonner-native'
@@ -9,6 +11,7 @@ import { useUpdateProfileMutation } from '@/services/profile'
 import { getErrorMessage } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
+import { Icon } from '@/components/ui/icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
@@ -57,8 +60,36 @@ export function UpdateProfileForm() {
   })
 
   return (
-    <View className='gap-6'>
-      <View className='gap-1.5'>
+    <View className='gap-5'>
+      {/* Save sits in the header, disabled until the name changes */}
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <form.Subscribe
+              selector={state => ({
+                isDefaultValue: state.isDefaultValue,
+                isSubmitting: state.isSubmitting,
+              })}
+              children={({ isDefaultValue, isSubmitting }) => (
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  disabled={isSubmitting || isDefaultValue}
+                  onPress={() => form.handleSubmit()}
+                >
+                  {isSubmitting ? (
+                    <ActivityIndicator />
+                  ) : (
+                    <Text className='text-primary'>Save</Text>
+                  )}
+                </Button>
+              )}
+            />
+          ),
+        }}
+      />
+
+      <View className='gap-2'>
         <Label htmlFor='name'>Name</Label>
         <form.AppField
           name='name'
@@ -84,20 +115,32 @@ export function UpdateProfileForm() {
         />
       </View>
 
-      <View className='gap-1.5'>
+      <View className='gap-2'>
         <Label htmlFor='email'>Email</Label>
         <form.AppField
           name='email'
           children={field => (
             <>
-              <field.Input
-                id='email'
-                editable={false}
-                keyboardType='email-address'
-                autoCapitalize='none'
-                value={field.state.value}
-                onChangeText={field.handleChange}
-              />
+              <View className='justify-center'>
+                <field.Input
+                  id='email'
+                  editable={false}
+                  keyboardType='email-address'
+                  autoCapitalize='none'
+                  className='bg-muted pr-11 opacity-100'
+                  value={field.state.value}
+                  onChangeText={field.handleChange}
+                />
+                <View
+                  pointerEvents='none'
+                  className='absolute inset-y-0 right-0 w-11 items-center justify-center'
+                >
+                  <Icon as={LockIcon} className='text-muted-foreground size-4' />
+                </View>
+              </View>
+              <Text className='text-muted-foreground text-sm'>
+                Your email is how you sign in, so it can't be changed.
+              </Text>
               {field.state.meta.errors.length > 0 && (
                 <Text className='text-destructive text-sm'>
                   {field.state.meta.errors.map(e => e?.message).join(', ')}
@@ -107,22 +150,6 @@ export function UpdateProfileForm() {
           )}
         />
       </View>
-
-      <form.Subscribe
-        selector={state => ({
-          isDefaultValue: state.isDefaultValue,
-          isSubmitting: state.isSubmitting,
-        })}
-        children={({ isDefaultValue, isSubmitting }) => (
-          <Button
-            className='w-full'
-            disabled={isSubmitting || isDefaultValue}
-            onPress={() => form.handleSubmit()}
-          >
-            {isSubmitting ? <ActivityIndicator /> : <Text>Update Account</Text>}
-          </Button>
-        )}
-      />
     </View>
   )
 }

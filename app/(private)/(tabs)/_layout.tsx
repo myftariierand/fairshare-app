@@ -79,6 +79,7 @@ export default function RootLayout() {
         name='profile'
         options={{
           title: 'Profile',
+          headerShown: false,
           tabBarIcon: () => (
             <InitialsAvatar name={user.name} className='size-7' textClassName='text-[10px]' />
           ),
