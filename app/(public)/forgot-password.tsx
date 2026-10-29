@@ -64,6 +64,7 @@ export default function ForgotPasswordScreen() {
     return (
       <AuthLayout
         showBack
+        centered
         icon={MailCheckIcon}
         title='Check your inbox'
         subtitle={`If an account exists for ${forgotPassword.variables?.email}, a reset link is on its way. It can take a minute, so check spam too.`}
@@ -85,6 +86,7 @@ export default function ForgotPasswordScreen() {
   return (
     <AuthLayout
       showBack
+      centered
       icon={MailIcon}
       title='Reset your password'
       subtitle="Enter the email you signed up with and we'll send you a link to choose a new password."

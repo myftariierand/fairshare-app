@@ -14,6 +14,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { THEME_STORAGE_KEY, type ThemePreference } from '@/components/profile/toggle-theme'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
+import { SafeAreaListener } from 'react-native-safe-area-context'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -78,16 +79,24 @@ export default function RootLayout() {
   const navTheme = useNavTheme()
 
   return (
-    <KeyboardProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ThemeProvider value={navTheme}>
-            <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
-            <RootNavigator />
-            <PortalHost />
-          </ThemeProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </KeyboardProvider>
+    // Uniwind's *-safe classes (pt-safe, pb-safe-offset-4, …) read insets from here
+    <SafeAreaListener
+      style={{ flex: 1 }}
+      onChange={({ insets }) => {
+        Uniwind.updateInsets(insets)
+      }}
+    >
+      <KeyboardProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ThemeProvider value={navTheme}>
+              <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+              <RootNavigator />
+              <PortalHost />
+            </ThemeProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </KeyboardProvider>
+    </SafeAreaListener>
   )
 }
