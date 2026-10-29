@@ -18,6 +18,7 @@ import { InboxIcon, XIcon } from 'lucide-react-native'
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
+import { Empty } from '@/components/ui/empty'
 import { SectionLabel } from '@/components/ui/section-label'
 import { GroupAvatar } from '@/components/group/group-avatar'
 import { Spinner } from '@/components/spinner'
@@ -127,16 +128,11 @@ function InviteCard({ invite }: { invite: GroupInvite }) {
 // or a quiet "that's all" under the last invite
 function AllCaughtUp({ hasInvites }: { hasInvites: boolean }) {
   return (
-    <View className='grow items-center justify-center gap-2 py-12'>
-      <View className='bg-secondary size-14 items-center justify-center rounded-xl'>
-        <Icon as={InboxIcon} className='text-muted-foreground size-6' />
-      </View>
-      <Text className='mt-1 font-semibold'>
-        {hasInvites ? "That's everything" : 'No invites right now'}
-      </Text>
-      <Text className='text-muted-foreground max-w-60 text-center text-sm'>
-        New invites show up here, and we'll notify you.
-      </Text>
-    </View>
+    <Empty
+      icon={InboxIcon}
+      title={hasInvites ? "That's everything" : 'No invites right now'}
+      description="New invites show up here, and we'll notify you."
+      containerClassName='grow justify-center'
+    />
   )
 }

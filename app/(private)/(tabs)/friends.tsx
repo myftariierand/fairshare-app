@@ -68,11 +68,7 @@ export default function FriendsScreen() {
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
         ListHeaderComponent={
           <View className='gap-4 pt-2 pb-2'>
-            <View className='justify-center'>
-              <Icon
-                as={SearchIcon}
-                className='text-muted-foreground absolute left-3.5 z-10 size-5'
-              />
+            <View>
               <Input
                 value={query}
                 onChangeText={setQuery}
@@ -83,6 +79,13 @@ export default function FriendsScreen() {
                 clearButtonMode='while-editing'
                 className='h-12 pl-11'
               />
+              {/* Drawn after the input so it sits on top of the field's background */}
+              <View
+                pointerEvents='none'
+                className='absolute inset-y-0 left-0 w-11 items-center justify-center'
+              >
+                <Icon as={SearchIcon} className='text-muted-foreground size-5' />
+              </View>
             </View>
             <Link asChild href='/friends/requests'>
               <ListRow
@@ -93,7 +96,7 @@ export default function FriendsScreen() {
                 }
                 accessibilityLabel={`Friend requests${incomingCount ? `, ${incomingCount} waiting` : ''}`}
                 leading={
-                  <View className='bg-primary size-9 items-center justify-center rounded-lg'>
+                  <View className='bg-primary size-9 items-center justify-center rounded-[10px]'>
                     <Icon as={UserPlusIcon} className='text-primary-foreground size-5' />
                   </View>
                 }
