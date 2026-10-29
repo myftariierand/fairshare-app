@@ -125,13 +125,6 @@ export default function HomeScreen() {
         <GetStarted />
       ) : (
         <>
-          {profile.data && (
-            <BalanceSummary
-              userId={profile.data.id}
-              transactions={details.flatMap(g => g.transactions)}
-            />
-          )}
-
           {featured && (
             <View className='gap-2.5'>
               <View className='flex-row items-center justify-between'>
@@ -148,6 +141,13 @@ export default function HomeScreen() {
                 userId={user.id}
               />
             </View>
+          )}
+
+          {profile.data && (
+            <BalanceSummary
+              userId={profile.data.id}
+              transactions={details.flatMap(g => g.transactions)}
+            />
           )}
 
           {stats && <MonthStats stats={stats} />}
