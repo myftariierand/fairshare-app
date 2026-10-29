@@ -218,7 +218,7 @@ function ActiveGroupCard({
 
       {group._count.transactions > 0 && (
         <View className='flex-row gap-2.5'>
-          <View className='bg-secondary flex-1 rounded-lg p-3'>
+          <View className='bg-secondary shrink-0 rounded-lg p-3'>
             <Text className='text-muted-foreground text-xs'>
               {net > SETTLED_EPSILON
                 ? 'Owed to you'
@@ -234,7 +234,7 @@ function ActiveGroupCard({
             />
           </View>
           {lastExpense && (
-            <View className='bg-secondary flex-1 rounded-lg p-3'>
+            <View className='bg-secondary min-w-0 flex-1 rounded-lg p-3'>
               <Text className='text-muted-foreground text-xs'>Last expense</Text>
               <Text className='mt-0.5 font-semibold' numberOfLines={1}>
                 {lastExpense.description} ·{' '}
