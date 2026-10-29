@@ -88,7 +88,6 @@ export default function AddFriendScreen() {
                 onChangeText={setInput}
                 placeholder='Name or email'
                 accessibilityLabel='Search people'
-                autoFocus
                 autoCapitalize='none'
                 autoCorrect={false}
                 returnKeyType='search'
