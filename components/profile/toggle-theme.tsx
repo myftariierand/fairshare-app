@@ -1,4 +1,4 @@
-import { MoonIcon, SunIcon } from 'lucide-react-native'
+import { MoonIcon, SparklesIcon, SunIcon } from 'lucide-react-native'
 import { Uniwind, useUniwind } from 'uniwind'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -12,13 +12,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { BRAND_THEME } from '@/lib/theme'
 
 export const THEME_STORAGE_KEY = 'theme'
 
-export type ThemePreference = 'light' | 'dark' | 'system'
+export type ThemePreference = 'light' | 'dark' | 'system' | typeof BRAND_THEME
 
 const ToggleTheme = () => {
-  // `theme` is the resolved theme ('light' | 'dark'), even when following the system
+  // `theme` is the resolved theme ('light' | 'dark' | 'fairshare'), even when following the system
   const { theme } = useUniwind()
 
   function setTheme(next: ThemePreference) {
@@ -38,7 +39,10 @@ const ToggleTheme = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='icon' accessibilityLabel='Toggle theme'>
-          <Icon as={theme === 'dark' ? MoonIcon : SunIcon} className='size-5' />
+          <Icon
+            as={theme === BRAND_THEME ? SparklesIcon : theme === 'dark' ? MoonIcon : SunIcon}
+            className='size-5'
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='start' insets={contentInsets}>
@@ -50,6 +54,9 @@ const ToggleTheme = () => {
         </DropdownMenuItem>
         <DropdownMenuItem onPress={() => setTheme('system')}>
           <Text>System</Text>
+        </DropdownMenuItem>
+        <DropdownMenuItem onPress={() => setTheme(BRAND_THEME)}>
+          <Text>New design (beta)</Text>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

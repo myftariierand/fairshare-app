@@ -9,4 +9,6 @@ module.exports = withUniwindConfig(config, {
   // (optional) path where we gonna auto-generate typings
   // defaults to project's root
   dtsFile: './uniwind-types.d.ts',
+  // redesign (beta) palette, see @variant fairshare in global.css
+  extraThemes: ['fairshare'],
 })

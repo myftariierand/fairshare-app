@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { AuthProvider, useAuth } from '@/lib/auth-context'
-import { useNavTheme } from '@/lib/theme'
+import { isDarkTheme, useNavTheme } from '@/lib/theme'
 import { ThemeProvider } from 'expo-router/react-navigation'
 import { PortalHost } from '@rn-primitives/portal'
 import { StatusBar } from 'expo-status-bar'
@@ -63,7 +63,7 @@ function RootNavigator() {
           <Stack.Screen name='verify-email' />
         </Stack.Protected>
       </Stack>
-      <Toaster theme={theme} />
+      <Toaster theme={isDarkTheme(theme) ? 'dark' : 'light'} />
     </GestureHandlerRootView>
   )
 }
@@ -77,7 +77,7 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <ThemeProvider value={navTheme}>
-            <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+            <StatusBar style={isDarkTheme(theme) ? 'light' : 'dark'} />
             <RootNavigator />
             <PortalHost />
           </ThemeProvider>
