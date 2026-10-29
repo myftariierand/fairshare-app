@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import { useAuth } from '@/lib/auth-context'
 import { useGetProfileQuery } from '@/services/profile'
 
-import { LogOutIcon, UserIcon } from 'lucide-react-native'
+import { BugIcon, LogOutIcon, UserIcon } from 'lucide-react-native'
 
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
@@ -79,6 +79,18 @@ export default function ProfileScreen() {
         <ToggleTheme />
         <Separator />
         <AccentPicker />
+      </Card>
+
+      <SectionLabel className='mt-2'>Support</SectionLabel>
+      <Card className='gap-0 px-4 py-0'>
+        <Link asChild href={'/report-bug'}>
+          <ListRow
+            title='Report a bug'
+            subtitle='Something broken? Let us know'
+            leading={<Icon as={BugIcon} className='text-muted-foreground size-5' />}
+            showChevron
+          />
+        </Link>
       </Card>
 
       <Button variant='destructive' className='mt-2 w-full' onPress={signOut}>

@@ -20,6 +20,7 @@ import { SectionLabel } from '@/components/ui/section-label'
 import { InboxIcon, PlusIcon, ReceiptTextIcon, UserGroupIcon } from 'lucide-react-native'
 
 import { BalanceSummary } from '@/components/balance-summary'
+import { BugReportHint } from '@/components/bug-report-hint'
 import { GroupAvatar } from '@/components/group/group-avatar'
 import { HeaderIconButton } from '@/components/header-icon-button'
 import { headerRightOptions } from '@/components/header-button'
@@ -87,6 +88,7 @@ export default function GroupsScreen() {
         }
         ListHeaderComponent={
           <View className='gap-6 pt-2 pb-2'>
+            <BugReportHint />
             {profile && (
               <BalanceSummary
                 userId={profile.id}
