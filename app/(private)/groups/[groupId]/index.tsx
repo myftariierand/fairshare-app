@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, ActivityIndicator, ScrollView } from 'react-native'
-import { Link, Stack, router } from 'expo-router'
+import { Link, Stack, router, useLocalSearchParams } from 'expo-router'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { useGetTasks } from '@/services/tasks'
@@ -21,7 +21,9 @@ import BalanceTab from '@/components/group/balance-tab'
 import NotesList from '@/components/group/notes-list'
 
 export default function GroupScreen() {
-  const [tabValue, setTabValue] = useState('expenses')
+  // Home's Settle up opens the group on its debts tab
+  const { tab } = useLocalSearchParams<{ tab?: string }>()
+  const [tabValue, setTabValue] = useState(tab ?? 'expenses')
 
   const insets = useSafeAreaInsets()
 

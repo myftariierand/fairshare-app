@@ -5,10 +5,9 @@ import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 
 import { computeBalances } from '@/lib/balances'
-import { getGroups, useGetGroupInvitesQuery } from '@/services/group'
+import { getGroups } from '@/services/group'
 import { useGetProfileQuery } from '@/services/profile'
 
-import { GroupInviteStatus } from '@/types/common'
 import type { Group } from '@/types/group'
 
 import { Button } from '@/components/ui/button'
@@ -20,9 +19,8 @@ import { Empty } from '@/components/ui/empty'
 import { Input } from '@/components/ui/input'
 import { ListRow } from '@/components/ui/list-row'
 import { SectionLabel } from '@/components/ui/section-label'
-import { InboxIcon, PlusIcon, SearchIcon, UserGroupIcon } from 'lucide-react-native'
+import { PlusIcon, SearchIcon, UserGroupIcon } from 'lucide-react-native'
 
-import { BugReportHint } from '@/components/bug-report-hint'
 import { GroupAvatar } from '@/components/group/group-avatar'
 import { HeaderIconButton } from '@/components/header-icon-button'
 import { headerRightOptions } from '@/components/header-button'
@@ -35,7 +33,6 @@ export default function GroupsScreen() {
     queryKey: ['groups'],
     queryFn: getGroups,
   })
-  const { data: invites } = useGetGroupInvitesQuery({ status: GroupInviteStatus.pending })
   const { data: profile } = useGetProfileQuery()
 
   // Your net balance in each group, from the transactions the profile carries
@@ -80,15 +77,7 @@ export default function GroupsScreen() {
     <>
       <Stack.Screen
         options={headerRightOptions(
-          <View className='flex-row gap-2'>
-            <HeaderIconButton
-              href='/groups/invites'
-              icon={InboxIcon}
-              label='Group invites'
-              count={invites?.length ?? 0}
-            />
-            <HeaderIconButton href='/groups/new' icon={PlusIcon} label='New group' />
-          </View>
+          <HeaderIconButton href='/groups/new' icon={PlusIcon} label='New group' />
         )}
       />
       <FlatList
@@ -104,7 +93,6 @@ export default function GroupsScreen() {
         }
         ListHeaderComponent={
           <View className='gap-6 pt-2 pb-2'>
-            <BugReportHint />
             {data.length > 0 && (
               <View>
                 <Input

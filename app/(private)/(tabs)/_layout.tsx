@@ -64,15 +64,20 @@ export default function TabsLayout() {
         // Android's Material bar labels only the selected tab unless told otherwise
         labelVisibilityMode='labeled'
       >
+        <NativeTabs.Trigger name='(home)'>
+          <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md='home' />
+          <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+          {pendingInvites > 0 && (
+            <NativeTabs.Trigger.Badge>{badge(pendingInvites)}</NativeTabs.Trigger.Badge>
+          )}
+        </NativeTabs.Trigger>
+
         <NativeTabs.Trigger name='(groups)'>
           <NativeTabs.Trigger.Icon
             sf={{ default: 'person.3', selected: 'person.3.fill' }}
             md='groups'
           />
           <NativeTabs.Trigger.Label>Groups</NativeTabs.Trigger.Label>
-          {pendingInvites > 0 && (
-            <NativeTabs.Trigger.Badge>{badge(pendingInvites)}</NativeTabs.Trigger.Badge>
-          )}
         </NativeTabs.Trigger>
 
         <NativeTabs.Trigger name='(friends)'>
