@@ -34,6 +34,16 @@ export function headerLeftOptions(element: React.ReactElement) {
   }
 }
 
+// Same as headerLeftOptions, for the right side of the header
+export function headerRightOptions(element: React.ReactElement) {
+  return {
+    headerRight: () => element,
+    unstable_headerRightItems: () => [
+      { type: 'custom' as const, element, hidesSharedBackground: true },
+    ],
+  }
+}
+
 // Header used across stack screens: centered title on the screen background,
 // no divider, and an outlined button on the left (back unless `left` is given)
 export function useCenteredHeader(title: string, left?: React.ReactElement) {

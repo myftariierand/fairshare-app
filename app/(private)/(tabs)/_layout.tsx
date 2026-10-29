@@ -1,90 +1,84 @@
-import { Icon } from '@/components/ui/icon'
-import { InitialsAvatar } from '@/components/ui/initials-avatar'
 import '@/global.css'
-import { useAuthUser } from '@/lib/auth-context'
-
-import { Tabs, router } from 'expo-router'
-import { Pressable, View } from 'react-native'
+import { Platform } from 'react-native'
+import { router } from 'expo-router'
+import { NativeTabs } from 'expo-router/native-tabs'
 import { useCSSVariable } from 'uniwind'
 
-import { ActivityIcon, ContactIcon, PlusIcon, UserGroupIcon } from 'lucide-react-native'
+import { useAuthUser } from '@/lib/auth-context'
+import { useGetFriendRequestsQuery } from '@/services/friends'
+import { useGetGroupInvitesQuery } from '@/services/group'
+import { GroupInviteStatus } from '@/types/common'
 
-export default function RootLayout() {
+const badge = (count: number) => (count > 9 ? '9+' : String(count))
+
+// Native tab bar: UITabBarController on iOS (glass on iOS 26), Material bottom
+// navigation on Android. Each tab folder has its own Stack for its header.
+export default function TabsLayout() {
   const user = useAuthUser()
-  const [mutedForeground, background] = useCSSVariable([
+  const [primary, mutedForeground, card] = useCSSVariable([
+    '--color-primary',
     '--color-muted-foreground',
-    '--color-background',
+    '--color-card',
   ]) as string[]
-  // Navigation text isn't styled by Uniwind, so set the bundled font directly
-  const fontFamily = 'Geist'
+
+  const { data: invites } = useGetGroupInvitesQuery({ status: GroupInviteStatus.pending })
+  const { data: requests } = useGetFriendRequestsQuery()
+  const pendingInvites = invites?.length ?? 0
+  const incomingRequests = requests?.filter(r => r.receiverId === user.id).length ?? 0
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarInactiveTintColor: mutedForeground,
-        headerTitleAlign: 'left',
-        headerShadowVisible: false,
-        // Same ground as the screen, not the card color the navigation theme uses for headers
-        headerStyle: { backgroundColor: background },
-        headerTitleStyle: { fontSize: 28, fontWeight: '700', fontFamily },
-        headerLeftContainerStyle: { paddingLeft: 4 },
-        tabBarLabelStyle: { fontFamily, fontWeight: '500' },
-      }}
+    <NativeTabs
+      tintColor={primary}
+      iconColor={{ default: mutedForeground, selected: primary }}
+      labelStyle={{ fontFamily: 'Geist' }}
+      // iOS draws its own glass bar; Android gets the card color
+      backgroundColor={Platform.OS === 'android' ? card : undefined}
+      minimizeBehavior='onScrollDown'
     >
-      <Tabs.Screen
-        name='index'
-        options={{
-          title: 'Groups',
-          tabBarIcon: ({ color, size }) => <UserGroupIcon size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name='friends'
-        options={{
-          title: 'Friends',
-          tabBarIcon: ({ color, size }) => <ContactIcon size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
+      <NativeTabs.Trigger name='(groups)'>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'person.3', selected: 'person.3.fill' }}
+          md='groups'
+        />
+        <NativeTabs.Trigger.Label>Groups</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Badge hidden={!pendingInvites}>
+          {badge(pendingInvites)}
+        </NativeTabs.Trigger.Badge>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name='(friends)'>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'person.2', selected: 'person.2.fill' }}
+          md='group'
+        />
+        <NativeTabs.Trigger.Label>Friends</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Badge hidden={!incomingRequests}>
+          {badge(incomingRequests)}
+        </NativeTabs.Trigger.Badge>
+      </NativeTabs.Trigger>
+
+      {/* Never selected: the tap is turned off natively and opens the "Add expense to…" sheet */}
+      <NativeTabs.Trigger
         name='add'
-        options={{
-          title: 'Add expense',
-          tabBarLabel: () => null,
-          tabBarButton: ({ style }) => (
-            <View style={style} className='items-center justify-center'>
-              <Pressable
-                accessibilityRole='button'
-                accessibilityLabel='Add expense'
-                onPress={() => router.push('/new-expense')}
-                className='bg-primary h-12 w-14 items-center justify-center rounded-2xl active:opacity-80'
-              >
-                <Icon as={PlusIcon} className='text-primary-foreground size-6' />
-              </Pressable>
-            </View>
-          ),
-        }}
-        listeners={{
-          // never switch to the placeholder tab
-          tabPress: e => e.preventDefault(),
-        }}
-      />
-      <Tabs.Screen
-        name='activity'
-        options={{
-          title: 'Activity',
-          tabBarIcon: ({ color, size }) => <ActivityIcon size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name='profile'
-        options={{
-          title: 'Profile',
-          headerShown: false,
-          tabBarIcon: () => (
-            <InitialsAvatar name={user.name} className='size-7' textClassName='text-[10px]' />
-          ),
-        }}
-      />
-    </Tabs>
+        disabled
+        listeners={{ tabPress: () => router.push('/new-expense') }}
+      >
+        <NativeTabs.Trigger.Icon sf='plus.circle.fill' md='add_circle' />
+        <NativeTabs.Trigger.Label>Add</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name='(activity)'>
+        <NativeTabs.Trigger.Icon sf='clock.arrow.circlepath' md='history' />
+        <NativeTabs.Trigger.Label>Activity</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name='(profile)'>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'person.crop.circle', selected: 'person.crop.circle.fill' }}
+          md='account_circle'
+        />
+        <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   )
 }

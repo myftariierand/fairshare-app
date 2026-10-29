@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { View, FlatList, RefreshControl } from 'react-native'
-import { Link, Tabs } from 'expo-router'
+import { Link, Stack } from 'expo-router'
 
 import { useAuthUser } from '@/lib/auth-context'
 import { useGetFriendRequestsQuery, useGetFriendsQuery, type Friend } from '@/services/friends'
@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { HeaderIconButton } from '@/components/header-icon-button'
+import { headerRightOptions } from '@/components/header-button'
 import RemoveFriendDialog from '@/components/friend/remove-friend-dialog'
 
 export default function FriendsScreen() {
@@ -51,15 +52,14 @@ export default function FriendsScreen() {
 
   return (
     <>
-      <Tabs.Screen
-        options={{
-          headerRight: () => (
-            <HeaderIconButton href='/friends/add' icon={UserPlusIcon} label='Add friend' />
-          ),
-          headerRightContainerStyle: { paddingRight: 16 },
-        }}
+      <Stack.Screen
+        options={headerRightOptions(
+          <HeaderIconButton href='/friends/add' icon={UserPlusIcon} label='Add friend' />
+        )}
       />
       <FlatList
+        // Lets iOS collapse the large title and keep content clear of the tab bar
+        contentInsetAdjustmentBehavior='automatic'
         className='flex-1'
         data={friends}
         keyExtractor={f => f.id}

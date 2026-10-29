@@ -1,4 +1,4 @@
-import { ScrollView, View } from 'react-native'
+import { Platform, ScrollView, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Link } from 'expo-router'
 import { format } from 'date-fns'
@@ -36,10 +36,12 @@ export default function ProfileScreen() {
   ).length
 
   return (
-    // No header on this tab, so the content starts below the status bar itself
+    // No header on this tab. iOS adds the safe areas itself (automatic insets, which
+    // also clear the tab bar); Android needs the status bar offset by hand.
     <ScrollView
+      contentInsetAdjustmentBehavior='automatic'
       contentContainerClassName='gap-4 px-4 pb-10'
-      contentContainerStyle={{ paddingTop: insets.top + 16 }}
+      contentContainerStyle={{ paddingTop: Platform.OS === 'ios' ? 16 : insets.top + 16 }}
     >
       <View className='flex-row items-center gap-4'>
         <InitialsAvatar name={user.name} className='size-16' textClassName='text-xl' />

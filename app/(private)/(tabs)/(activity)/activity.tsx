@@ -308,6 +308,8 @@ export default function ActivityScreen() {
 
   return (
     <SectionList
+      // Lets iOS collapse the large title and keep content clear of the tab bar
+      contentInsetAdjustmentBehavior='automatic'
       sections={sections}
       keyExtractor={entry => entry.key}
       stickySectionHeadersEnabled={false}

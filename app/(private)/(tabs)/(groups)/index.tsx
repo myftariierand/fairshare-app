@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native'
-import { Tabs, Link } from 'expo-router'
+import { Stack, Link } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 
@@ -22,6 +22,7 @@ import { InboxIcon, PlusIcon, ReceiptTextIcon, UserGroupIcon } from 'lucide-reac
 import { BalanceSummary } from '@/components/balance-summary'
 import { GroupAvatar } from '@/components/group/group-avatar'
 import { HeaderIconButton } from '@/components/header-icon-button'
+import { headerRightOptions } from '@/components/header-button'
 
 export default function GroupsScreen() {
   const [settledGroupsOpen, setSettleGroupsOpen] = useState(true)
@@ -61,23 +62,22 @@ export default function GroupsScreen() {
 
   return (
     <>
-      <Tabs.Screen
-        options={{
-          headerRight: () => (
-            <View className='flex-row gap-2'>
-              <HeaderIconButton
-                href='/groups/invites'
-                icon={InboxIcon}
-                label='Group invites'
-                count={invites?.length ?? 0}
-              />
-              <HeaderIconButton href='/groups/new' icon={PlusIcon} label='New group' />
-            </View>
-          ),
-          headerRightContainerStyle: { paddingRight: 16 },
-        }}
+      <Stack.Screen
+        options={headerRightOptions(
+          <View className='flex-row gap-2'>
+            <HeaderIconButton
+              href='/groups/invites'
+              icon={InboxIcon}
+              label='Group invites'
+              count={invites?.length ?? 0}
+            />
+            <HeaderIconButton href='/groups/new' icon={PlusIcon} label='New group' />
+          </View>
+        )}
       />
       <FlatList
+        // Lets iOS collapse the large title and keep content clear of the tab bar
+        contentInsetAdjustmentBehavior='automatic'
         className='flex-1'
         data={activeGroups}
         keyExtractor={g => g.id}
