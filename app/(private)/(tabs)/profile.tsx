@@ -19,6 +19,7 @@ import { Separator } from '@/components/ui/separator'
 
 import { BalanceSummary } from '@/components/balance-summary'
 import ToggleTheme from '@/components/profile/toggle-theme'
+import AccentPicker from '@/components/profile/accent-picker'
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets()
@@ -74,6 +75,8 @@ export default function ProfileScreen() {
         </Link>
         <Separator />
         <ToggleTheme />
+        <Separator />
+        <AccentPicker />
       </Card>
 
       <Button variant='destructive' className='mt-2 w-full' onPress={signOut}>

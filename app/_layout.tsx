@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { AuthProvider, useAuth } from '@/lib/auth-context'
 import { useNavTheme } from '@/lib/theme'
+import { loadAccent } from '@/lib/accent'
 import { ThemeProvider } from 'expo-router/react-navigation'
 import { PortalHost } from '@rn-primitives/portal'
 import { StatusBar } from 'expo-status-bar'
@@ -35,6 +36,7 @@ function RootNavigator() {
   const { theme } = useUniwind()
   const { isLoading, isLoggedIn, user } = useAuth()
   const { groupId } = useLocalSearchParams<{ groupId: string }>()
+  const [accentReady, setAccentReady] = useState(false)
 
   // inside your RootLayout component
   useEffect(() => {
@@ -46,11 +48,13 @@ function RootNavigator() {
       }
       if (saved) Uniwind.setTheme(saved as ThemePreference)
     })
+    // Apply the saved accent before the splash hides, so it doesn't flash lime first
+    loadAccent().finally(() => setAccentReady(true))
   }, [])
 
   useEffect(() => {
-    if (!isLoading) SplashScreen.hideAsync()
-  }, [isLoading])
+    if (!isLoading && accentReady) SplashScreen.hideAsync()
+  }, [isLoading, accentReady])
 
   if (isLoading) return null
 
