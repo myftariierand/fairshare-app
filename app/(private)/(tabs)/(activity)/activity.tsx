@@ -308,10 +308,12 @@ export default function ActivityScreen() {
 
   return (
     <SectionList
+      // Lets iOS collapse the large title and keep content clear of the tab bar
+      contentInsetAdjustmentBehavior='automatic'
       sections={sections}
       keyExtractor={entry => entry.key}
       stickySectionHeadersEnabled={false}
-      contentContainerClassName='px-4 pb-8'
+      contentContainerClassName='px-4 pb-28'
       refreshing={isRefetching}
       onRefresh={refetch}
       onEndReachedThreshold={0.5}
@@ -353,7 +355,7 @@ export default function ActivityScreen() {
           }
         />
       }
-      ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className='py-4' /> : null}
+      ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className='py-4' /> : undefined}
       renderSectionHeader={({ section }) => (
         <SectionLabel className='bg-background pt-5 pb-2'>{section.title}</SectionLabel>
       )}
@@ -395,9 +397,8 @@ function ActivityRow({ entry, currentUserId }: { entry: Entry; currentUserId: st
     <View className='flex-row gap-3 py-2'>
       <IconTile
         as={config.icon}
-        size='sm'
-        className={cn('mt-0.5', tone.tile)}
-        iconClassName={tone.icon}
+        className={cn('size-10 rounded-sm', tone.tile)}
+        iconClassName={cn('size-5', tone.icon)}
       />
       <View className='flex-1'>
         <Text className='leading-5'>

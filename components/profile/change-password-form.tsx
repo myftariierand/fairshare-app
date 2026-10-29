@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { ActivityIndicator, type TextInput, View } from 'react-native'
+import { ActivityIndicator, type TextInputInstance, View } from 'react-native'
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
 import { toast } from 'sonner-native'
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
+import { PasswordInput } from '@/components/password-input'
 
 const PasswordChangeSchema = z
   .object({
@@ -51,8 +52,8 @@ const { useAppForm } = createFormHook({
 })
 
 export function ChangePasswordForm() {
-  const newPasswordRef = useRef<TextInput>(null)
-  const confirmPasswordRef = useRef<TextInput>(null)
+  const newPasswordRef = useRef<TextInputInstance>(null)
+  const confirmPasswordRef = useRef<TextInputInstance>(null)
 
   const changePassword = useChangePasswordMutation()
 
@@ -77,17 +78,16 @@ export function ChangePasswordForm() {
   })
 
   return (
-    <View className='gap-6'>
-      <View className='gap-1.5'>
-        <Label htmlFor='password'>Current Password</Label>
+    <View className='gap-5'>
+      <View className='gap-2'>
+        <Label htmlFor='password'>Current password</Label>
         <form.AppField
           name='password'
           children={field => (
             <>
-              <field.Input
+              <PasswordInput
                 id='password'
                 placeholder='Current password'
-                secureTextEntry
                 autoCapitalize='none'
                 autoComplete='current-password'
                 returnKeyType='next'
@@ -107,17 +107,16 @@ export function ChangePasswordForm() {
         />
       </View>
 
-      <View className='gap-1.5'>
-        <Label htmlFor='newPassword'>New Password</Label>
+      <View className='gap-2'>
+        <Label htmlFor='newPassword'>New password</Label>
         <form.AppField
           name='newPassword'
           children={field => (
             <>
-              <field.Input
+              <PasswordInput
                 id='newPassword'
                 ref={newPasswordRef}
                 placeholder='New password'
-                secureTextEntry
                 autoCapitalize='none'
                 autoComplete='new-password'
                 returnKeyType='next'
@@ -137,17 +136,16 @@ export function ChangePasswordForm() {
         />
       </View>
 
-      <View className='gap-1.5'>
-        <Label htmlFor='confirmPassword'>Confirm New Password</Label>
+      <View className='gap-2'>
+        <Label htmlFor='confirmPassword'>Confirm new password</Label>
         <form.AppField
           name='confirmPassword'
           children={field => (
             <>
-              <field.Input
+              <PasswordInput
                 id='confirmPassword'
                 ref={confirmPasswordRef}
-                placeholder='Confirm new password'
-                secureTextEntry
+                placeholder='Type it again'
                 autoCapitalize='none'
                 autoComplete='new-password'
                 returnKeyType='send'
@@ -173,11 +171,12 @@ export function ChangePasswordForm() {
         })}
         children={({ isDefaultValue, isSubmitting }) => (
           <Button
+            variant='outline'
             className='w-full'
             disabled={isSubmitting || isDefaultValue}
             onPress={() => form.handleSubmit()}
           >
-            {isSubmitting ? <ActivityIndicator /> : <Text>Update Password</Text>}
+            {isSubmitting ? <ActivityIndicator /> : <Text>Update password</Text>}
           </Button>
         )}
       />

@@ -16,11 +16,13 @@ import { Separator } from '@/components/ui/separator'
 import { RemoveMemberDialog } from '@/components/group/remove-member-dialog'
 import { EditGroupForm } from '@/components/group/edit-group-form'
 import DeleteGroup from '@/components/group/delete-group'
+import { useCenteredHeader } from '@/components/header-button'
 
 const SettingsScreen = () => {
   const { groupId } = useGroupIdParam()
   const { data } = useGetGroupById(groupId)
   const user = useAuthUser()
+  const headerOptions = useCenteredHeader('Group settings')
 
   if (!data) return null
 
@@ -28,18 +30,11 @@ const SettingsScreen = () => {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: 'Group settings',
-        }}
-      />
+      <Stack.Screen options={headerOptions} />
       <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
-        <KeyboardAwareScrollView>
-          <View className='gap-8 p-4'>
-            <View className='gap-3'>
-              <SectionLabel>Details</SectionLabel>
-              <EditGroupForm data={data} />
-            </View>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps='handled' bottomOffset={24}>
+          <View className='gap-8 p-5'>
+            <EditGroupForm data={data} />
 
             <View className='gap-3'>
               <View className='flex-row items-center justify-between'>

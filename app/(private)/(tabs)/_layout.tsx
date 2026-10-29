@@ -1,89 +1,106 @@
-import { Icon } from '@/components/ui/icon'
-import { InitialsAvatar } from '@/components/ui/initials-avatar'
 import '@/global.css'
-import { useAuthUser } from '@/lib/auth-context'
-
-import { Tabs, router } from 'expo-router'
-import { Pressable, View } from 'react-native'
+import { useMemo } from 'react'
+import { Platform, View } from 'react-native'
+import { useSegments } from 'expo-router'
+import { NativeTabs } from 'expo-router/native-tabs'
 import { useCSSVariable } from 'uniwind'
 
-import { ActivityIcon, ContactIcon, PlusIcon, UserGroupIcon } from 'lucide-react-native'
+import { useAuthUser } from '@/lib/auth-context'
+import { useGetFriendRequestsQuery } from '@/services/friends'
+import { useGetGroupInvitesQuery } from '@/services/group'
+import { GroupInviteStatus } from '@/types/common'
+import { FloatingAddButton } from '@/components/floating-add-button'
 
-export default function RootLayout() {
+// Badges are rendered only when there's something to count: with any text, including
+// "0", the native badge shows and its `hidden` prop is ignored
+const badge = (count: number) => (count > 9 ? '9+' : String(count))
+
+// #rrggbb plus an alpha byte; other formats come back unchanged
+const withAlpha = (hex: string, alpha: number) =>
+  /^#[0-9a-f]{6}$/i.test(hex)
+    ? hex +
+      Math.round(alpha * 255)
+        .toString(16)
+        .padStart(2, '0')
+    : hex
+
+// Native tab bar: UITabBarController on iOS (glass on iOS 26), Material bottom
+// navigation on Android. Each tab folder has its own Stack for its header.
+export default function TabsLayout() {
   const user = useAuthUser()
-  const [mutedForeground, background] = useCSSVariable([
+  const segments = useSegments() as string[]
+  const [primary, mutedForeground, card] = useCSSVariable([
+    '--color-primary',
     '--color-muted-foreground',
-    '--color-background',
+    '--color-card',
   ]) as string[]
-  // Navigation text isn't styled by Uniwind, so set the bundled font directly
-  const fontFamily = 'Geist'
+
+  const { data: invites } = useGetGroupInvitesQuery({ status: GroupInviteStatus.pending })
+  const { data: requests } = useGetFriendRequestsQuery()
+  const pendingInvites = invites?.length ?? 0
+  const incomingRequests = requests?.filter(r => r.receiverId === user.id).length ?? 0
+
+  // Stable objects: native tabs re-apply the whole bar appearance whenever these change
+  const iconColor = useMemo(
+    () => ({ default: mutedForeground, selected: primary }),
+    [mutedForeground, primary]
+  )
+  const labelStyle = useMemo(() => ({ fontFamily: 'Geist' }), [])
+  const indicatorColor = useMemo(() => withAlpha(primary, 0.16), [primary])
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarInactiveTintColor: mutedForeground,
-        headerTitleAlign: 'left',
-        headerShadowVisible: false,
-        // Same ground as the screen, not the card color the navigation theme uses for headers
-        headerStyle: { backgroundColor: background },
-        headerTitleStyle: { fontSize: 28, fontWeight: '700', fontFamily },
-        headerLeftContainerStyle: { paddingLeft: 4 },
-        tabBarLabelStyle: { fontFamily, fontWeight: '500' },
-      }}
-    >
-      <Tabs.Screen
-        name='index'
-        options={{
-          title: 'Groups',
-          tabBarIcon: ({ color, size }) => <UserGroupIcon size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name='friends'
-        options={{
-          title: 'Friends',
-          tabBarIcon: ({ color, size }) => <ContactIcon size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name='add'
-        options={{
-          title: 'Add expense',
-          tabBarLabel: () => null,
-          tabBarButton: ({ style }) => (
-            <View style={style} className='items-center justify-center'>
-              <Pressable
-                accessibilityRole='button'
-                accessibilityLabel='Add expense'
-                onPress={() => router.push('/new-expense')}
-                className='bg-primary h-12 w-14 items-center justify-center rounded-2xl active:opacity-80'
-              >
-                <Icon as={PlusIcon} className='text-primary-foreground size-6' />
-              </Pressable>
-            </View>
-          ),
-        }}
-        listeners={{
-          // never switch to the placeholder tab
-          tabPress: e => e.preventDefault(),
-        }}
-      />
-      <Tabs.Screen
-        name='activity'
-        options={{
-          title: 'Activity',
-          tabBarIcon: ({ color, size }) => <ActivityIcon size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name='profile'
-        options={{
-          title: 'Profile',
-          tabBarIcon: () => (
-            <InitialsAvatar name={user.name} className='size-7' textClassName='text-[10px]' />
-          ),
-        }}
-      />
-    </Tabs>
+    <View style={{ flex: 1 }}>
+      <NativeTabs
+        tintColor={primary}
+        iconColor={iconColor}
+        labelStyle={labelStyle}
+        // Android: the selected pill is a soft accent tint instead of the wallpaper-based
+        // system color, and no ripple, which flashed in that system color on every tap
+        indicatorColor={indicatorColor}
+        rippleColor='transparent'
+        // iOS draws its own glass bar; Android gets the card color
+        backgroundColor={Platform.OS === 'android' ? card : undefined}
+        minimizeBehavior='onScrollDown'
+        // Android's Material bar labels only the selected tab unless told otherwise
+        labelVisibilityMode='labeled'
+      >
+        <NativeTabs.Trigger name='(groups)'>
+          <NativeTabs.Trigger.Icon
+            sf={{ default: 'person.3', selected: 'person.3.fill' }}
+            md='groups'
+          />
+          <NativeTabs.Trigger.Label>Groups</NativeTabs.Trigger.Label>
+          {pendingInvites > 0 && (
+            <NativeTabs.Trigger.Badge>{badge(pendingInvites)}</NativeTabs.Trigger.Badge>
+          )}
+        </NativeTabs.Trigger>
+
+        <NativeTabs.Trigger name='(friends)'>
+          <NativeTabs.Trigger.Icon
+            sf={{ default: 'person.2', selected: 'person.2.fill' }}
+            md='group'
+          />
+          <NativeTabs.Trigger.Label>Friends</NativeTabs.Trigger.Label>
+          {incomingRequests > 0 && (
+            <NativeTabs.Trigger.Badge>{badge(incomingRequests)}</NativeTabs.Trigger.Badge>
+          )}
+        </NativeTabs.Trigger>
+
+        <NativeTabs.Trigger name='(activity)'>
+          <NativeTabs.Trigger.Icon sf='clock.arrow.circlepath' md='history' />
+          <NativeTabs.Trigger.Label>Activity</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+
+        <NativeTabs.Trigger name='(profile)'>
+          <NativeTabs.Trigger.Icon
+            sf={{ default: 'person.crop.circle', selected: 'person.crop.circle.fill' }}
+            md='account_circle'
+          />
+          <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+      </NativeTabs>
+      {/* Above every tab except Profile; pushed screens and sheets cover it */}
+      {!segments.includes('(profile)') && <FloatingAddButton />}
+    </View>
   )
 }

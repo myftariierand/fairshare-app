@@ -1,11 +1,12 @@
-import { ScrollView, View } from 'react-native'
+import { Platform, ScrollView, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Link } from 'expo-router'
 import { format } from 'date-fns'
 
 import { useAuth } from '@/lib/auth-context'
 import { useGetProfileQuery } from '@/services/profile'
 
-import { LogOutIcon, PencilIcon, UserIcon } from 'lucide-react-native'
+import { LogOutIcon, UserIcon } from 'lucide-react-native'
 
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
@@ -18,8 +19,10 @@ import { Separator } from '@/components/ui/separator'
 
 import { BalanceSummary } from '@/components/balance-summary'
 import ToggleTheme from '@/components/profile/toggle-theme'
+import AccentPicker from '@/components/profile/accent-picker'
 
 export default function ProfileScreen() {
+  const insets = useSafeAreaInsets()
   const { signOut } = useAuth()
   const { data: user } = useGetProfileQuery()
 
@@ -33,7 +36,13 @@ export default function ProfileScreen() {
   ).length
 
   return (
-    <ScrollView contentContainerClassName='gap-4 p-4 pb-10'>
+    // No header on this tab. iOS adds the safe areas itself (automatic insets, which
+    // also clear the tab bar); Android needs the status bar offset by hand.
+    <ScrollView
+      contentInsetAdjustmentBehavior='automatic'
+      contentContainerClassName='gap-4 px-4 pb-10'
+      contentContainerStyle={{ paddingTop: Platform.OS === 'ios' ? 16 : insets.top + 16 }}
+    >
       <View className='flex-row items-center gap-4'>
         <InitialsAvatar name={user.name} className='size-16' textClassName='text-xl' />
         <View className='flex-1'>
@@ -47,11 +56,6 @@ export default function ProfileScreen() {
             Member since {format(user.createdAt, 'MMMM yyyy')}
           </Text>
         </View>
-        <Link asChild href={'/profile/edit'}>
-          <Button size='icon' variant='outline' accessibilityLabel='Edit profile'>
-            <Icon as={PencilIcon} className='size-4' />
-          </Button>
-        </Link>
       </View>
 
       <BalanceSummary userId={user.id} transactions={transactions} />
@@ -73,6 +77,8 @@ export default function ProfileScreen() {
         </Link>
         <Separator />
         <ToggleTheme />
+        <Separator />
+        <AccentPicker />
       </Card>
 
       <Button variant='destructive' className='mt-2 w-full' onPress={signOut}>

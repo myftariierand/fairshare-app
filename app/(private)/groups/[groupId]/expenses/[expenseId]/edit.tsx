@@ -2,32 +2,18 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 
 import { useGetExpenseById } from '@/services/group'
 import { ExpenseForm } from '@/components/group/expense-form'
+import { useCenteredHeader } from '@/components/header-button'
 
 export default function EditExpenseScreen() {
-  const { groupId, expenseId } = useLocalSearchParams<{ groupId: string; expenseId: string }>()
+  const { expenseId } = useLocalSearchParams<{ groupId: string; expenseId: string }>()
   const { data: expense } = useGetExpenseById(expenseId)
+  const headerOptions = useCenteredHeader('Edit expense')
 
   if (!expense) return null
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: 'Edit expense',
-          // headerRight: () => (
-          //   <>
-          //     <Link asChild href={`/groups/${groupId}/expenses/${expenseId}/edit`}>
-          //       <Button className="mr-2">
-          //         <Icon as={PencilIcon} />
-          //         <Text>Edit</Text>
-          //       </Button>
-          //     </Link>
-          //     <DeleteExpenseDialog expense={expense} groupId={groupId} />
-          //   </>
-          // ),
-        }}
-      />
+      <Stack.Screen options={{ headerShown: true, ...headerOptions }} />
       <ExpenseForm data={expense} />
     </>
   )

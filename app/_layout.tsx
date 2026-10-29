@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { AuthProvider, useAuth } from '@/lib/auth-context'
 import { useNavTheme } from '@/lib/theme'
+import { loadAccent } from '@/lib/accent'
 import { ThemeProvider } from 'expo-router/react-navigation'
 import { PortalHost } from '@rn-primitives/portal'
 import { StatusBar } from 'expo-status-bar'
@@ -35,6 +36,7 @@ function RootNavigator() {
   const { theme } = useUniwind()
   const { isLoading, isLoggedIn, user } = useAuth()
   const { groupId } = useLocalSearchParams<{ groupId: string }>()
+  const [accentReady, setAccentReady] = useState(false)
 
   // inside your RootLayout component
   useEffect(() => {
@@ -46,30 +48,36 @@ function RootNavigator() {
       }
       if (saved) Uniwind.setTheme(saved as ThemePreference)
     })
+    // Apply the saved accent before the splash hides, so it doesn't flash lime first
+    loadAccent().finally(() => setAccentReady(true))
   }, [])
 
   useEffect(() => {
-    if (!isLoading) SplashScreen.hideAsync()
-  }, [isLoading])
+    if (!isLoading && accentReady) SplashScreen.hideAsync()
+  }, [isLoading, accentReady])
 
   if (isLoading) return null
 
   const isAuthed = isLoggedIn && !!user
+  // Where each signed-in state belongs. Every guard below redirects here when it fails:
+  // without an explicit target, SDK 58 falls back to the first allowed group, and the
+  // (public) group has no index route, so "/" ended up on Unmatched Route.
+  const home = !isAuthed ? '/login' : user.emailVerified ? '/' : '/verify-email'
 
   return (
     <GestureHandlerRootView>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Protected guard={isAuthed && user.emailVerified}>
+        <Stack.Protected guard={isAuthed && user.emailVerified} redirectTo={home}>
           <Stack.Screen name='(private)' />
         </Stack.Protected>
-        <Stack.Protected guard={!isAuthed}>
+        <Stack.Protected guard={!isAuthed} redirectTo={home}>
           <Stack.Screen name='(public)' />
         </Stack.Protected>
-        <Stack.Protected guard={isAuthed && !user.emailVerified}>
+        <Stack.Protected guard={isAuthed && !user.emailVerified} redirectTo={home}>
           <Stack.Screen name='verify-email' />
         </Stack.Protected>
       </Stack>
-      <Toaster theme={theme} />
+      <Toaster theme={theme === 'dark' ? 'dark' : 'light'} />
     </GestureHandlerRootView>
   )
 }

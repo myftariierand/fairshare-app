@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { View, FlatList, RefreshControl } from 'react-native'
-import { Link, Tabs } from 'expo-router'
+import { Link, Stack } from 'expo-router'
 
 import { useAuthUser } from '@/lib/auth-context'
 import { useGetFriendRequestsQuery, useGetFriendsQuery, type Friend } from '@/services/friends'
@@ -9,7 +9,6 @@ import {
   ChevronRightIcon,
   ContactIcon,
   EllipsisIcon,
-  InboxIcon,
   SearchIcon,
   UserMinusIcon,
   UserPlusIcon,
@@ -31,6 +30,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { HeaderIconButton } from '@/components/header-icon-button'
+import { headerRightOptions } from '@/components/header-button'
 import RemoveFriendDialog from '@/components/friend/remove-friend-dialog'
 
 export default function FriendsScreen() {
@@ -52,64 +52,70 @@ export default function FriendsScreen() {
 
   return (
     <>
-      <Tabs.Screen
-        options={{
-          headerRight: () => (
-            <View className='flex-row gap-2'>
-              <HeaderIconButton
-                href='/friends/requests'
-                icon={InboxIcon}
-                label='Friend requests'
-                count={incomingCount}
-              />
-              <HeaderIconButton href='/friends/add' icon={UserPlusIcon} label='Add friend' />
-            </View>
-          ),
-          headerRightContainerStyle: { paddingRight: 16 },
-        }}
+      <Stack.Screen
+        options={headerRightOptions(
+          <HeaderIconButton href='/friends/add' icon={UserPlusIcon} label='Add friend' />
+        )}
       />
       <FlatList
+        // Lets iOS collapse the large title and keep content clear of the tab bar
+        contentInsetAdjustmentBehavior='automatic'
         className='flex-1'
         data={friends}
         keyExtractor={f => f.id}
-        contentContainerClassName='px-4 pb-8'
+        contentContainerClassName='px-4 pb-28'
         keyboardShouldPersistTaps='handled'
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={() => void refetch()} />
+        }
         ListHeaderComponent={
           <View className='gap-4 pt-2 pb-2'>
-            {!!data?.length && (
-              <View className='justify-center'>
-                <Icon
-                  as={SearchIcon}
-                  className='text-muted-foreground absolute left-3.5 z-10 size-5'
-                />
-                <Input
-                  value={query}
-                  onChangeText={setQuery}
-                  placeholder='Search by name or email'
-                  accessibilityLabel='Search friends'
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  clearButtonMode='while-editing'
-                  className='pl-11'
-                />
+            <View>
+              <Input
+                value={query}
+                onChangeText={setQuery}
+                placeholder='Search by name or email'
+                accessibilityLabel='Search friends'
+                autoCapitalize='none'
+                autoCorrect={false}
+                clearButtonMode='while-editing'
+                className='h-12 pl-11'
+              />
+              {/* Drawn after the input so it sits on top of the field's background */}
+              <View
+                pointerEvents='none'
+                className='absolute inset-y-0 left-0 w-11 items-center justify-center'
+              >
+                <Icon as={SearchIcon} className='text-muted-foreground size-5' />
               </View>
-            )}
-            {incomingCount > 0 && (
-              <Link asChild href='/friends/requests'>
-                <ListRow
-                  className='bg-primary/10 border-primary/30 rounded-xl border px-4'
-                  title={`${incomingCount} friend request${incomingCount > 1 ? 's' : ''}`}
-                  subtitle='Review who wants to connect'
-                  leading={
-                    <View className='bg-primary size-9 items-center justify-center rounded-lg'>
-                      <Icon as={UserPlusIcon} className='text-primary-foreground size-5' />
-                    </View>
-                  }
-                  trailing={<Icon as={ChevronRightIcon} className='text-muted-foreground size-5' />}
-                />
-              </Link>
-            )}
+            </View>
+            <Link asChild href='/friends/requests'>
+              <ListRow
+                className='bg-primary/10 border-primary/30 rounded-xl border px-3.5'
+                title='Friend requests'
+                subtitle={
+                  incomingCount ? `${incomingCount} waiting for you` : 'Review who wants to connect'
+                }
+                accessibilityLabel={`Friend requests${incomingCount ? `, ${incomingCount} waiting` : ''}`}
+                leading={
+                  <View className='bg-primary size-9 items-center justify-center rounded-[10px]'>
+                    <Icon as={UserPlusIcon} className='text-primary-foreground size-5' />
+                  </View>
+                }
+                trailing={
+                  <View className='flex-row items-center gap-2'>
+                    {incomingCount > 0 && (
+                      <View className='bg-primary h-6 min-w-6 items-center justify-center rounded-full px-1.5'>
+                        <Text className='text-primary-foreground text-xs font-semibold'>
+                          {incomingCount > 9 ? '9+' : incomingCount}
+                        </Text>
+                      </View>
+                    )}
+                    <Icon as={ChevronRightIcon} className='text-muted-foreground size-5' />
+                  </View>
+                }
+              />
+            </Link>
             {!!data?.length && (
               <SectionLabel>
                 {query ? `${friends.length} of ${data.length}` : `${data.length}`} friend

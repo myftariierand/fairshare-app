@@ -51,7 +51,11 @@ const RemoveFriendDialog = (props: Props) => {
           <AlertDialogCancel>
             <Text>Cancel</Text>
           </AlertDialogCancel>
-          <AlertDialogAction disabled={removeFriend.isPending} onPress={handleDelete}>
+          <AlertDialogAction
+            variant='destructive'
+            disabled={removeFriend.isPending}
+            onPress={handleDelete}
+          >
             {removeFriend.isPending ? <Spinner /> : <Text>Remove</Text>}
           </AlertDialogAction>
         </AlertDialogFooter>

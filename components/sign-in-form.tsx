@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { type TextInput, View } from 'react-native'
+import { type TextInputInstance, View } from 'react-native'
 import { Link } from 'expo-router'
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
@@ -35,7 +35,7 @@ const { useAppForm } = createFormHook({
 })
 
 export function SignInForm() {
-  const passwordInputRef = useRef<TextInput>(null)
+  const passwordInputRef = useRef<TextInputInstance>(null)
 
   function onEmailSubmitEditing() {
     passwordInputRef.current?.focus()

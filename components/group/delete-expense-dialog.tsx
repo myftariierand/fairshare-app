@@ -49,29 +49,27 @@ export function DeleteExpenseDialog(props: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button size={'icon'} variant={'destructive'}>
-          <Icon as={TrashIcon} />
+        <Button size='icon' variant='outline' accessibilityLabel='Delete expense'>
+          <Icon as={TrashIcon} className='text-destructive size-4' />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete {props.expense.description}?</AlertDialogTitle>
           <AlertDialogDescription textBreakStrategy='balanced'>
-            Are you sure you want to delete this expense? This action cannot be undone.
+            Everyone's balances in the group will be recalculated without it. This can't be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>
             <Text>Cancel</Text>
           </AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <Button
-              variant={'destructive'}
-              disabled={deleteExpense.isPending}
-              onPress={handleDeleteExpense}
-            >
-              {deleteExpense.isPending ? <Spinner /> : <Text>Delete</Text>}
-            </Button>
+          <AlertDialogAction
+            variant='destructive'
+            disabled={deleteExpense.isPending}
+            onPress={handleDeleteExpense}
+          >
+            {deleteExpense.isPending ? <Spinner /> : <Text>Delete</Text>}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

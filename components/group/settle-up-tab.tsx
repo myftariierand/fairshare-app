@@ -161,22 +161,31 @@ export default function SettleUpTab({
       {payments.length > 0 && (
         <View className='gap-1'>
           <SectionLabel>Payment history</SectionLabel>
-          {payments.map(payment => (
-            <View key={payment.id} className='flex-row items-center gap-3 py-2'>
-              <View className='bg-owed/10 size-8 items-center justify-center rounded-md'>
-                <Icon as={CheckIcon} className='text-owed size-4' />
-              </View>
-              <Text className='flex-1' numberOfLines={2}>
-                {payment.description}
-              </Text>
-              <View className='items-end'>
-                <Amount value={payment.amount} currency={currency} className='text-sm' />
-                <Text className='text-muted-foreground text-xs'>
+          {payments.map(payment => {
+            // A settlement is paid by one person; the split names who received it
+            const receiverId =
+              payment.splits.find(s => s.userId !== payment.paidBy.id)?.userId ??
+              payment.splits[0]?.userId
+            const receiver = members.find(m => m.id === receiverId)
+
+            return (
+              <View key={payment.id} className='flex-row items-center gap-3 py-2.5'>
+                <View className='bg-owed/10 size-8 items-center justify-center rounded-[10px]'>
+                  <Icon as={CheckIcon} className='text-owed size-4' />
+                </View>
+                <Text className='flex-1' numberOfLines={1}>
+                  <Text className='font-semibold'>{firstName(payment.paidBy)}</Text>
+                  <Text className='text-muted-foreground'> paid </Text>
+                  <Text className='font-semibold'>
+                    {receiver ? firstName(receiver).replace(/^You$/, 'you') : 'someone'}
+                  </Text>
+                </Text>
+                <Text className='text-muted-foreground text-sm'>
                   {format(payment.createdAt, 'd MMM')}
                 </Text>
               </View>
-            </View>
-          ))}
+            )
+          })}
         </View>
       )}
     </View>

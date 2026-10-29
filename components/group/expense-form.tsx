@@ -297,7 +297,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
           children={field => (
             <View className='items-center pt-4'>
               <SectionLabel>Amount</SectionLabel>
-              <View className='mt-1 flex-row items-baseline justify-center gap-2'>
+              <View className='mt-1 flex-row items-center justify-center gap-2'>
                 <Text className='text-muted-foreground font-mono text-xl font-medium'>
                   {currency}
                 </Text>
@@ -308,7 +308,10 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
                   value={field.state.value}
                   onChangeText={handleAmountChange}
                   autoFocus={!data}
-                  className='text-foreground min-w-24 font-mono text-5xl font-semibold tracking-tight'
+                  className='text-foreground min-w-24 font-mono font-semibold tracking-tight'
+                  // Font size without a line height and a fixed height: on iOS a tight line
+                  // height draws the empty placeholder too high and it jumps when typing starts
+                  style={{ fontSize: 48, height: 64, paddingVertical: 0 }}
                   placeholderTextColorClassName='accent-muted-foreground'
                 />
               </View>
@@ -328,13 +331,12 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
               <field.Input
                 accessibilityLabel='Description'
                 placeholder='What was it for?'
-                className='text-center'
                 returnKeyType='done'
                 value={field.state.value}
                 onChangeText={field.handleChange}
               />
               {field.state.meta.errors.length > 0 && (
-                <Text className='text-destructive text-center text-sm'>
+                <Text className='text-destructive text-sm'>
                   {field.state.meta.errors[0]?.message}
                 </Text>
               )}

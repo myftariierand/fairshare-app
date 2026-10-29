@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { View, TextInput, Pressable } from 'react-native'
+import { View, TextInput, Pressable, type TextInputInstance } from 'react-native'
 import ReorderableList, {
   reorderItems,
   useReorderableDrag,
@@ -94,7 +94,7 @@ const TaskRow = ({ item, groupId, userId }: { item: Task; groupId: string; userI
 
 export default function NotesList() {
   const insets = useSafeAreaInsets()
-  const inputRef = useRef<TextInput>(null)
+  const inputRef = useRef<TextInputInstance>(null)
   const [inputValue, setInputValue] = useState('')
 
   const user = useAuthUser()

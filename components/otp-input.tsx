@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native'
+import { StyleSheet, Text, TextInput, View, ViewStyle, type TextInputInstance } from 'react-native'
 import { useCSSVariable } from 'uniwind'
 
 export type OtpInputHandle = {
@@ -28,20 +28,12 @@ type OtpInputProps = {
  */
 export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(
   (
-    {
-      value,
-      onChange,
-      onComplete,
-      length = 6,
-      disabled = false,
-      autoFocus = false,
-      accentColor,
-    },
+    { value, onChange, onComplete, length = 6, disabled = false, autoFocus = false, accentColor },
     ref
   ) => {
     const primary = useCSSVariable('--color-primary') as string
     const activeColor = accentColor ?? primary
-    const inputRef = useRef<TextInput>(null)
+    const inputRef = useRef<TextInputInstance>(null)
     const [focused, setFocused] = useState(false)
 
     useImperativeHandle(ref, () => ({

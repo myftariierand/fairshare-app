@@ -66,10 +66,12 @@ export function RemoveMemberDialog(props: Props) {
           <AlertDialogCancel>
             <Text>Cancel</Text>
           </AlertDialogCancel>
-          <AlertDialogAction asChild disabled={removeMember.isPending} onPress={handleRemoveMember}>
-            <Button variant={'destructive'}>
-              {removeMember.isPending ? <Spinner /> : <Text>Remove</Text>}
-            </Button>
+          <AlertDialogAction
+            variant='destructive'
+            disabled={removeMember.isPending}
+            onPress={handleRemoveMember}
+          >
+            {removeMember.isPending ? <Spinner /> : <Text>Remove</Text>}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

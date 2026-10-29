@@ -1,10 +1,19 @@
+import { Stack, router } from 'expo-router'
+import { XIcon } from 'lucide-react-native'
+
 import CreateGroupForm from '@/components/group/create-group-form'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { HeaderButton, useCenteredHeader } from '@/components/header-button'
 
 export default function NewGroupScreen() {
+  const headerOptions = useCenteredHeader(
+    'New group',
+    <HeaderButton icon={XIcon} label='Close' onPress={() => router.back()} />
+  )
+
   return (
-    <SafeAreaView edges={['bottom']} style={{ height: '100%' }}>
+    <>
+      <Stack.Screen options={headerOptions} />
       <CreateGroupForm />
-    </SafeAreaView>
+    </>
   )
 }

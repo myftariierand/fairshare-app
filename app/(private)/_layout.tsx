@@ -28,7 +28,7 @@ export default function RootLayout() {
         <Stack.Screen
           name='groups/new'
           options={{
-            title: 'New Group',
+            title: 'New group',
             presentation: 'modal',
           }}
         />

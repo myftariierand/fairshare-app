@@ -5,13 +5,18 @@ import { ImagePlus, Trash } from 'lucide-react-native'
 
 import { Text } from '@/components/ui/text'
 import { Icon } from '@/components/ui/icon'
+import { cn } from '@/lib/utils'
 
 type Props = {
   value: ImagePicker.ImagePickerAsset | { uri: string } | null
   onChange: (asset: ImagePicker.ImagePickerAsset | null) => void
+  /** 'banner' is a full-width strip, 'tile' a compact square next to a field */
+  variant?: 'banner' | 'tile'
 }
 
-export const CoverPicker = ({ value, onChange }: Props) => {
+export const CoverPicker = ({ value, onChange, variant = 'banner' }: Props) => {
+  const tile = variant === 'tile'
+
   const pick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -22,7 +27,7 @@ export const CoverPicker = ({ value, onChange }: Props) => {
   }
 
   return (
-    <View className='gap-4'>
+    <View className={cn(!tile && 'gap-4')}>
       <Pressable
         onPress={pick}
         accessibilityRole='button'
@@ -30,20 +35,33 @@ export const CoverPicker = ({ value, onChange }: Props) => {
       >
         {value ? (
           <View>
-            <Image source={{ uri: value.uri }} className='h-28 rounded-2xl' />
+            <Image
+              source={{ uri: value.uri }}
+              className={cn('rounded-2xl', tile ? 'size-22' : 'h-28')}
+            />
             <Pressable
               onPress={() => onChange(null)}
               hitSlop={8}
-              className='border-background bg-destructive absolute -bottom-4 left-1/2 h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border-2'
+              accessibilityRole='button'
+              accessibilityLabel='Remove cover image'
+              className={cn(
+                'border-background bg-destructive absolute size-8 items-center justify-center rounded-full border-2',
+                tile ? '-top-2 -right-2' : '-bottom-4 left-1/2 -translate-x-1/2'
+              )}
             >
               <Icon as={Trash} size={14} className='text-white' />
             </Pressable>
           </View>
         ) : (
-          <View className='border-input bg-card h-28 items-center justify-center gap-1 rounded-2xl border border-dashed'>
-            <Icon as={ImagePlus} className='text-muted-foreground' />
+          <View
+            className={cn(
+              'border-input bg-card items-center justify-center gap-1 rounded-2xl border border-dashed',
+              tile ? 'size-22' : 'h-28'
+            )}
+          >
+            <Icon as={ImagePlus} className={cn('text-muted-foreground', tile && 'size-6')} />
             <Text variant={'muted'} className='text-xs'>
-              Add a cover image
+              {tile ? 'Cover' : 'Add a cover image'}
             </Text>
           </View>
         )}
