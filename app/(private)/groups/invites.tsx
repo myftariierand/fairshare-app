@@ -56,7 +56,6 @@ export default function GroupInvitesScreen() {
               <Button
                 size='icon'
                 variant='outline'
-                className='size-11 rounded-xl'
                 accessibilityLabel='Close'
                 onPress={() => router.back()}
               >

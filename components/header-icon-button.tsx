@@ -23,7 +23,6 @@ export function HeaderIconButton({
       <Button
         size='icon'
         variant='outline'
-        className='size-11 rounded-xl'
         accessibilityLabel={count > 0 ? `${label}, ${count} pending` : label}
       >
         <Icon as={icon} className='size-5' />

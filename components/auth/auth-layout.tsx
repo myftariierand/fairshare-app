@@ -123,7 +123,6 @@ function BackButton() {
       variant='outline'
       size='icon'
       accessibilityLabel='Back'
-      className='size-11'
       onPress={() => (router.canGoBack() ? router.back() : router.replace('/login'))}
     >
       <Icon as={ArrowLeftIcon} />
