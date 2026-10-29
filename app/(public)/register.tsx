@@ -1,37 +1,35 @@
 import { Link } from 'expo-router'
-import { ScrollView, View, KeyboardAvoidingView } from 'react-native'
+import { View } from 'react-native'
 
-import { HandshakeIcon } from 'lucide-react-native'
-
-import { Icon } from '@/components/ui/icon'
+import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
 
+import { AuthLayout } from '@/components/auth/auth-layout'
 import { SignUpForm } from '@/components/sign-up-form'
+import { SocialConnections } from '@/components/social-connections'
 
 export default function RegisterScreen() {
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior='padding'>
-      <ScrollView
-        keyboardShouldPersistTaps='handled'
-        contentContainerClassName='sm:flex-1 items-center justify-center p-4 mt-safe'
-        keyboardDismissMode='interactive'
-      >
-        <View className='w-full max-w-sm'>
-          <View className='mb-2 items-center'>
-            <Icon as={HandshakeIcon} size={64} />
-            <Text variant={'large'}>Register to FairShare</Text>
-          </View>
-          <View className='mb-4 flex-row justify-center'>
-            <Text variant={'muted'} className='text-xs'>
-              Already have an account?{' '}
-            </Text>
-            <Link asChild href={'/login'} className='text-xs underline underline-offset-4'>
-              <Text>Sign In</Text>
-            </Link>
-          </View>
-          <SignUpForm />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <AuthLayout
+      showBack
+      title='Create your account'
+      subtitle='Takes a minute. Friends can find you by your email.'
+      footer={
+        <>
+          <Text className='text-muted-foreground'>Already have an account? </Text>
+          <Link asChild href={'/login'}>
+            <Text className='text-primary font-semibold'>Sign in</Text>
+          </Link>
+        </>
+      }
+    >
+      <SignUpForm />
+      <View className='my-5 flex-row items-center'>
+        <Separator className='flex-1' />
+        <Text className='text-muted-foreground px-4 text-sm'>or</Text>
+        <Separator className='flex-1' />
+      </View>
+      <SocialConnections label='Sign up with Google' />
+    </AuthLayout>
   )
 }

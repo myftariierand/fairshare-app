@@ -1,18 +1,21 @@
-import { KeyboardAvoidingView, ScrollView } from 'react-native'
+import { View } from 'react-native'
+import { Link } from 'expo-router'
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
+import { toast } from 'sonner-native'
 
 import { useForgotPassword } from '@/hooks/use-forgot-password'
+import { getErrorMessage } from '@/lib/utils'
 
-import { HandshakeIcon } from 'lucide-react-native'
+import { MailCheckIcon, MailIcon } from 'lucide-react-native'
 
-import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner-native'
-import { getErrorMessage } from '@/lib/utils'
-import { Link } from 'expo-router'
+
+import { AuthLayout } from '@/components/auth/auth-layout'
+import { Spinner } from '@/components/spinner'
 
 const { fieldContext, formContext } = createFormHookContexts()
 const { useAppForm } = createFormHook({
@@ -36,80 +39,91 @@ export default function ForgotPasswordScreen() {
     validators: {
       // Pass a schema or function to validate
       onSubmit: z.object({
-        email: z.email().min(1, 'Enter your email!'),
+        email: z.email('Enter a valid email').min(1, 'Enter your email'),
       }),
     },
     onSubmit: async ({ value }) => {
       try {
-        await forgotPassword.mutate(value)
+        await forgotPassword.mutateAsync(value)
       } catch (e) {
         toast.error(getErrorMessage(e))
       }
     },
   })
 
-  return (
+  const footer = (
     <>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior='padding'>
-        <ScrollView
-          keyboardShouldPersistTaps='handled'
-          contentContainerClassName='sm:flex-1 items-center justify-center p-4 py-8 sm:py-4 sm:p-6 mt-safe'
-          keyboardDismissMode='interactive'
-        >
-          <Icon as={HandshakeIcon} size={64} />
-          {forgotPassword.isSuccess ? (
-            <>
-              <Text variant={'muted'} textBreakStrategy='balanced' className='my-4 text-center'>
-                If the email exists, we've sent you a reset link. Please check your inbox.
-              </Text>
-              <Link asChild href={'/(public)/login'}>
-                <Text variant={'small'} className='underline'>
-                  Back to Login
-                </Text>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Text variant={'muted'} textBreakStrategy='balanced' className='my-4 text-center'>
-                Enter your email address and we will send you a link to reset your password.
-              </Text>
-              <form.AppField
-                name='email'
-                children={field => (
-                  <>
-                    <field.Input
-                      id='email'
-                      placeholder='Email'
-                      keyboardType='email-address'
-                      autoComplete='email'
-                      autoCapitalize='none'
-                      returnKeyType='next'
-                      submitBehavior='submit'
-                      value={field.state.value}
-                      onChangeText={field.handleChange}
-                    />
-                    {field.state.meta.errors.length > 0 && (
-                      <Text className='text-destructive w-full text-sm'>
-                        {field.state.meta.errors.reverse()[0]?.message}
-                      </Text>
-                    )}
-                  </>
-                )}
-              />
-              <form.AppForm>
-                <form.Button
-                  disabled={forgotPassword.isPaused}
-                  className='mt-3'
-                  variant={'outline'}
-                  onPress={() => form.handleSubmit()}
-                >
-                  <Text>Send Reset Link</Text>
-                </form.Button>
-              </form.AppForm>
-            </>
-          )}
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <Text className='text-muted-foreground'>Remembered it? </Text>
+      <Link asChild href={'/login'}>
+        <Text className='text-primary font-semibold'>Back to sign in</Text>
+      </Link>
     </>
+  )
+
+  if (forgotPassword.isSuccess) {
+    return (
+      <AuthLayout
+        showBack
+        icon={MailCheckIcon}
+        title='Check your inbox'
+        subtitle={`If an account exists for ${forgotPassword.variables?.email}, a reset link is on its way. It can take a minute, so check spam too.`}
+      >
+        <View className='gap-3'>
+          <Link asChild href={'/login'}>
+            <Button className='w-full'>
+              <Text>Back to sign in</Text>
+            </Button>
+          </Link>
+          <Button variant='ghost' className='w-full' onPress={() => forgotPassword.reset()}>
+            <Text>Use a different email</Text>
+          </Button>
+        </View>
+      </AuthLayout>
+    )
+  }
+
+  return (
+    <AuthLayout
+      showBack
+      icon={MailIcon}
+      title='Reset your password'
+      subtitle="Enter the email you signed up with and we'll send you a link to choose a new password."
+      footer={footer}
+    >
+      <View className='gap-5'>
+        <form.AppField
+          name='email'
+          children={field => (
+            <View className='gap-2'>
+              <Label htmlFor='email'>Email</Label>
+              <field.Input
+                id='email'
+                placeholder='you@example.com'
+                keyboardType='email-address'
+                autoComplete='email'
+                autoCapitalize='none'
+                returnKeyType='send'
+                onSubmitEditing={() => form.handleSubmit()}
+                value={field.state.value}
+                onChangeText={field.handleChange}
+              />
+              {field.state.meta.errors.length > 0 && (
+                <Text className='text-destructive text-sm'>
+                  {field.state.meta.errors.reverse()[0]?.message}
+                </Text>
+              )}
+            </View>
+          )}
+        />
+        <Button
+          className='w-full'
+          disabled={forgotPassword.isPending}
+          onPress={() => form.handleSubmit()}
+        >
+          {forgotPassword.isPending ? <Spinner /> : null}
+          <Text>Send reset link</Text>
+        </Button>
+      </View>
+    </AuthLayout>
   )
 }

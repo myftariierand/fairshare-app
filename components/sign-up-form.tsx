@@ -13,7 +13,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
-import { getErrorMessage } from '@/lib/utils'
+import { cn, getErrorMessage } from '@/lib/utils'
+
+import { PasswordInput } from '@/components/password-input'
+import { Spinner } from '@/components/spinner'
 
 const { fieldContext, formContext } = createFormHookContexts()
 
@@ -28,9 +31,27 @@ const { useAppForm } = createFormHook({
   formContext,
 })
 
+// Rough guide only: the server rule is just 8+ characters
+function getPasswordStrength(password: string) {
+  if (!password) return null
+  const checks = [
+    password.length >= 8,
+    password.length >= 12,
+    /\d/.test(password),
+    /[a-z]/.test(password) && /[A-Z]/.test(password),
+    /[^A-Za-z0-9]/.test(password),
+  ]
+  const score = Math.min(4, checks.filter(Boolean).length)
+  if (password.length < 8) return { score: 1, label: 'Too short · use at least 8 characters' }
+  if (score <= 2) return { score: 2, label: 'Okay · add a number or symbol to make it stronger' }
+  if (score === 3) return { score: 3, label: 'Good' }
+  return { score: 4, label: 'Strong' }
+}
+
 export function SignUpForm() {
   const emailInputRef = useRef<TextInput>(null)
   const passwordInputRef = useRef<TextInput>(null)
+  const confirmInputRef = useRef<TextInput>(null)
 
   const { setTokens, setUser } = useAuth()
   const refetchProfile = useRefetchProfile()
@@ -46,9 +67,9 @@ export function SignUpForm() {
       // Pass a schema or function to validate
       onSubmit: z
         .object({
-          name: z.string().min(1, 'Enter your name!'),
-          email: z.email().min(1, 'Enter you email!'),
-          password: z.string().min(8, 'Enter you password!'),
+          name: z.string().min(1, 'Enter your name'),
+          email: z.email('Enter a valid email').min(1, 'Enter your email'),
+          password: z.string().min(8, 'Use at least 8 characters'),
           confirmPassword: z.string(),
         })
         .superRefine((args, ctx) => {
@@ -74,14 +95,14 @@ export function SignUpForm() {
   })
 
   return (
-    <View className='gap-3'>
+    <View className='gap-5'>
       <form.AppField
         name='name'
         children={field => (
-          <View className='gap-1.5'>
+          <View className='gap-2'>
             <Label>Name</Label>
             <field.Input
-              placeholder='John'
+              placeholder='What friends call you'
               autoComplete='name'
               autoCapitalize='words'
               returnKeyType='next'
@@ -100,10 +121,10 @@ export function SignUpForm() {
       <form.AppField
         name='email'
         children={field => (
-          <View className='gap-1.5'>
+          <View className='gap-2'>
             <Label>Email</Label>
             <field.Input
-              placeholder='m@example.com'
+              placeholder='you@example.com'
               keyboardType='email-address'
               autoComplete='email'
               autoCapitalize='none'
@@ -124,21 +145,23 @@ export function SignUpForm() {
       <form.AppField
         name='password'
         children={field => (
-          <View className='gap-1.5'>
+          <View className='gap-2'>
             <Label>Password</Label>
-            <field.Input
-              secureTextEntry
-              returnKeyType='send'
+            <PasswordInput
+              returnKeyType='next'
+              autoComplete='new-password'
               ref={passwordInputRef}
-              onSubmitEditing={() => form.handleSubmit()}
+              onSubmitEditing={() => confirmInputRef.current?.focus()}
               value={field.state.value}
               onChangeText={field.handleChange}
-              placeholder='********'
+              placeholder='At least 8 characters'
             />
-            {field.state.meta.errors.length > 0 && (
+            {field.state.meta.errors.length > 0 ? (
               <Text className='text-destructive text-sm'>
                 {field.state.meta.errors.reverse()[0]?.message}
               </Text>
+            ) : (
+              <PasswordStrength password={field.state.value} />
             )}
           </View>
         )}
@@ -146,14 +169,16 @@ export function SignUpForm() {
       <form.AppField
         name='confirmPassword'
         children={field => (
-          <View className='gap-1.5'>
-            <Label>Confirm Password</Label>
-            <field.Input
-              secureTextEntry
+          <View className='gap-2'>
+            <Label>Confirm password</Label>
+            <PasswordInput
               returnKeyType='send'
+              autoComplete='new-password'
+              ref={confirmInputRef}
+              onSubmitEditing={() => form.handleSubmit()}
               value={field.state.value}
               onChangeText={field.handleChange}
-              placeholder='********'
+              placeholder='Type it again'
             />
             {field.state.meta.errors.length > 0 && (
               <Text className='text-destructive text-sm'>
@@ -163,11 +188,49 @@ export function SignUpForm() {
           </View>
         )}
       />
-      <form.AppForm>
-        <form.Button className='w-full' onPress={() => form.handleSubmit()}>
-          <Text>Register</Text>
-        </form.Button>
-      </form.AppForm>
+      <form.Subscribe
+        selector={state => state.isSubmitting}
+        children={isSubmitting => (
+          <Button
+            className='mt-2 w-full'
+            disabled={isSubmitting}
+            onPress={() => form.handleSubmit()}
+          >
+            {isSubmitting ? <Spinner /> : null}
+            <Text>Create account</Text>
+          </Button>
+        )}
+      />
+    </View>
+  )
+}
+
+function PasswordStrength({ password }: { password: string }) {
+  const strength = getPasswordStrength(password)
+  if (!strength) return null
+
+  return (
+    <View
+      className='gap-1.5'
+      accessible
+      accessibilityLabel={`Password strength: ${strength.label}`}
+    >
+      <View className='flex-row gap-1.5'>
+        {[1, 2, 3, 4].map(step => (
+          <View
+            key={step}
+            className={cn(
+              'h-1 flex-1 rounded-full',
+              step <= strength.score
+                ? strength.score === 1
+                  ? 'bg-destructive'
+                  : 'bg-primary'
+                : 'bg-border'
+            )}
+          />
+        ))}
+      </View>
+      <Text className='text-muted-foreground text-sm'>{strength.label}</Text>
     </View>
   )
 }
