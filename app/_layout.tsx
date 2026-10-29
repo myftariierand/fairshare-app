@@ -69,7 +69,7 @@ function RootNavigator() {
           <Stack.Screen name='verify-email' />
         </Stack.Protected>
       </Stack>
-      <Toaster theme={theme} />
+      <Toaster theme={theme === 'dark' ? 'dark' : 'light'} />
     </GestureHandlerRootView>
   )
 }
