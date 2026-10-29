@@ -14,6 +14,7 @@ import { Text } from '@/components/ui/text'
 import { useMemo } from 'react'
 import { useGroupIdParam } from '@/hooks/use-group-id-param'
 import { Empty } from '@/components/ui/empty'
+import { CategoryIcon } from '@/components/category-icon'
 
 type Section = { title: string; data: Transaction[] }
 
@@ -68,9 +69,7 @@ export default function TransactionList({
         transaction.type === TransactionType.expense ? (
           <Link asChild href={`/groups/${groupId}/expenses/${transaction.id}`}>
             <Pressable className='mb-2 w-full flex-row items-center gap-3'>
-              <View className='bg-secondary size-8 shrink-0 items-center justify-center rounded'>
-                <Text>{transactionCategories[transaction.category].emoji}</Text>
-              </View>
+              <CategoryIcon category={transaction.category} />
               <View className='flex-1 overflow-hidden text-ellipsis'>
                 <Text className='overflow-hidden font-semibold text-ellipsis whitespace-nowrap'>
                   {transaction.description}

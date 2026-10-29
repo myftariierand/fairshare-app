@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Icon } from '@/components/ui/icon'
 import { ScaleIcon, TrendingUpIcon } from 'lucide-react-native'
 import { Empty } from '@/components/ui/empty'
+import { CategoryIcon } from '@/components/category-icon'
 
 export default function BalanceTab({
   transactions = [],
@@ -58,9 +59,7 @@ export default function BalanceTab({
 
           return (
             <View key={key} className='flex-row items-center gap-2'>
-              <View className='text-muted-foreground bg-secondary size-8 shrink-0 items-center justify-center rounded'>
-                <Text>{transactionCategories[key].emoji}</Text>
-              </View>
+              <CategoryIcon category={key} />
               <View className='flex-1'>
                 <View className='flex-row justify-between'>
                   <Text>{transactionCategories[key].label}</Text>
