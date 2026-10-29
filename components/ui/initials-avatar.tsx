@@ -19,7 +19,7 @@ export function getInitials(name: string) {
 }
 
 // Same name always gets the same tint
-function getTint(name: string) {
+export function getTint(name: string) {
   let hash = 0
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0
   return TINTS[Math.abs(hash) % TINTS.length]

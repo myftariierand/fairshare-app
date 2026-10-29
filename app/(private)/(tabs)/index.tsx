@@ -1,21 +1,27 @@
 import { useState } from 'react'
-import { ActivityIndicator, FlatList, RefreshControl, View, Image } from 'react-native'
+import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native'
 import { Tabs, Link } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
-import { format, formatDistance } from 'date-fns'
+import { format } from 'date-fns'
 
 import { getGroups, useGetGroupInvitesQuery } from '@/services/group'
+import { useGetProfileQuery } from '@/services/profile'
 
 import { GroupInviteStatus } from '@/types/common'
+import type { Group } from '@/types/group'
 
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { Icon } from '@/components/ui/icon'
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
-import { EyeIcon, InboxIcon, PlusIcon, UserGroupIcon } from 'lucide-react-native'
-import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { Empty } from '@/components/ui/empty'
+import { ListRow } from '@/components/ui/list-row'
+import { SectionLabel } from '@/components/ui/section-label'
+import { InboxIcon, PlusIcon, ReceiptTextIcon, UserGroupIcon } from 'lucide-react-native'
+
+import { BalanceSummary } from '@/components/balance-summary'
+import { GroupAvatar } from '@/components/group/group-avatar'
+import { HeaderIconButton } from '@/components/header-icon-button'
 
 export default function GroupsScreen() {
   const [settledGroupsOpen, setSettleGroupsOpen] = useState(true)
@@ -25,6 +31,7 @@ export default function GroupsScreen() {
     queryFn: getGroups,
   })
   const { data: invites } = useGetGroupInvitesQuery({ status: GroupInviteStatus.pending })
+  const { data: profile } = useGetProfileQuery()
 
   if (isPending) {
     return (
@@ -45,7 +52,6 @@ export default function GroupsScreen() {
     )
   }
 
-  const now = new Date()
   const activeGroups = data.filter(
     group => group._count.transactions === 0 || group.remainingDebts > 0
   )
@@ -57,26 +63,16 @@ export default function GroupsScreen() {
     <>
       <Tabs.Screen
         options={{
-          title: 'Groups',
           headerRight: () => (
-            <>
-              <Link asChild href={'/groups/new'}>
-                <Button size={'sm'} variant={'secondary'} className='mr-2'>
-                  <Icon as={PlusIcon} />
-                  <Text>Create Group</Text>
-                </Button>
-              </Link>
-              <Link asChild href={'/groups/invites'}>
-                <Button size={'icon'} variant={'secondary'} className='size-8'>
-                  <Icon as={InboxIcon} />
-                  {!!invites?.length && (
-                    <Badge className='absolute -top-2 -right-2 h-4 w-4 p-0' variant={'destructive'}>
-                      <Text className='text-xs'>1</Text>
-                    </Badge>
-                  )}
-                </Button>
-              </Link>
-            </>
+            <View className='flex-row gap-2'>
+              <HeaderIconButton
+                href='/groups/invites'
+                icon={InboxIcon}
+                label='Group invites'
+                count={invites?.length ?? 0}
+              />
+              <HeaderIconButton href='/groups/new' icon={PlusIcon} label='New group' />
+            </View>
           ),
           headerRightContainerStyle: { paddingRight: 16 },
         }}
@@ -85,95 +81,86 @@ export default function GroupsScreen() {
         className='flex-1'
         data={activeGroups}
         keyExtractor={g => g.id}
-        contentContainerClassName='gap-3 p-4'
+        contentContainerClassName='gap-2 px-4 pb-8'
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
-        ListEmptyComponent={
-          <Empty
-            title='No Active Groups'
-            icon={UserGroupIcon}
-            description='Active groups are groups that have expenses and unsettled debts.'
-          />
-        }
-        renderItem={({ item }) => (
-          <Card className='gap-0 p-0'>
-            {!!item.cover && (
-              <Image
-                src={`${process.env.EXPO_PUBLIC_IMG_URL}/${item.cover}`}
-                alt='active group cover'
-                className='relative h-36 w-full rounded-xl object-cover'
+        ListHeaderComponent={
+          <View className='gap-6 pt-2 pb-2'>
+            {profile && (
+              <BalanceSummary
+                userId={profile.id}
+                transactions={profile.groups.flatMap(g => g.transactions)}
               />
             )}
-            <CardHeader className='p-4'>
-              <CardTitle>{item.name}</CardTitle>
-              <CardDescription>
-                {format(item.createdAt, 'MMM dd, yyyy')} &bull; {item.remainingDebts} remaining
-                debts
-              </CardDescription>
-            </CardHeader>
-            <CardFooter className='gap-2 p-2 pt-0'>
-              <Link asChild href={`/groups/${item.id}/add-expense`}>
-                <Button variant='outline' className='flex-1'>
-                  <Icon as={PlusIcon} />
-                  <Text>Add Expense</Text>
-                </Button>
-              </Link>
-              <Link asChild href={`/groups/${item.id}`}>
-                <Button variant='outline' className='flex-1'>
-                  <Icon as={EyeIcon} />
-                  <Text>View Group</Text>
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        )}
+            {activeGroups.length > 0 && <SectionLabel>Active · {activeGroups.length}</SectionLabel>}
+          </View>
+        }
+        ListEmptyComponent={
+          data.length === 0 ? (
+            <Empty
+              title='No groups yet'
+              icon={UserGroupIcon}
+              description='Create a group for a trip, a flat or a night out, then add friends to it.'
+            />
+          ) : null
+        }
+        renderItem={({ item }) => <ActiveGroupRow group={item} />}
         ListFooterComponent={
           settledGroups.length > 0 ? (
-            <Collapsible open={settledGroupsOpen} onOpenChange={setSettleGroupsOpen}>
-              <CollapsibleTrigger asChild>
-                <Button variant='ghost' className='w-full'>
-                  <Text>
-                    {settledGroupsOpen ? 'Hide' : 'View'} Settled Groups ({settledGroups.length})
+            <View className='mt-6'>
+              <View className='flex-row items-center justify-between'>
+                <SectionLabel>Settled · {settledGroups.length}</SectionLabel>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onPress={() => setSettleGroupsOpen(open => !open)}
+                  accessibilityState={{ expanded: settledGroupsOpen }}
+                >
+                  <Text className='text-muted-foreground'>
+                    {settledGroupsOpen ? 'Hide' : 'Show'}
                   </Text>
                 </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className='gap-2 pt-2'>
-                {settledGroups.length === 0 ? (
-                  <Text className='text-muted-foreground text-center'>No settled groups yet</Text>
-                ) : (
-                  settledGroups.map(item => (
-                    <Link
-                      key={item.id}
-                      asChild
-                      href={`/groups/${item.id}`}
-                      className='h-auto w-full'
-                    >
-                      <Button variant='ghost' className='h-auto w-full items-center gap-4 p-1'>
-                        <Image
-                          className='size-12 shrink-0 rounded-lg'
-                          src={
-                            item.cover
-                              ? `${process.env.EXPO_PUBLIC_IMG_URL}/c_fill,w_100,h_100,g_auto,f_auto,q_auto/${item.cover}`
-                              : undefined
-                          }
-                        />
-                        <View className='flex-1'>
-                          <Text className='font-semibold'>{item.name}</Text>
-                          <Text className='text-muted-foreground text-xs'>
-                            {item._count.members} member(s)
-                          </Text>
-                        </View>
-                        <Text className='text-muted-foreground text-xs'>
-                          {formatDistance(item.createdAt, now, { addSuffix: true })}
-                        </Text>
-                      </Button>
-                    </Link>
-                  ))
-                )}
-              </CollapsibleContent>
-            </Collapsible>
+              </View>
+              {settledGroupsOpen &&
+                settledGroups.map(item => (
+                  <Link key={item.id} asChild href={`/groups/${item.id}`}>
+                    <ListRow
+                      title={item.name}
+                      subtitle={`${item._count.members} member${item._count.members === 1 ? '' : 's'} · ${format(item.createdAt, 'MMM yyyy')}`}
+                      leading={<GroupAvatar name={item.name} cover={item.cover} />}
+                      showChevron
+                    />
+                  </Link>
+                ))}
+            </View>
           ) : null
         }
       />
     </>
+  )
+}
+
+function ActiveGroupRow({ group }: { group: Group }) {
+  const debts = group.remainingDebts
+  const status =
+    group._count.transactions === 0
+      ? 'No expenses yet'
+      : `${debts} open debt${debts === 1 ? '' : 's'}`
+
+  return (
+    <Card className='flex-row items-center gap-0 py-0 pr-2 pl-3'>
+      <Link asChild href={`/groups/${group.id}`}>
+        <ListRow
+          className='flex-1 py-3'
+          title={group.name}
+          subtitle={`${group._count.members} member${group._count.members === 1 ? '' : 's'} · ${status}`}
+          leading={<GroupAvatar name={group.name} cover={group.cover} />}
+        />
+      </Link>
+      <Link asChild href={`/groups/${group.id}/add-expense`}>
+        <Button size='icon' variant='ghost' accessibilityLabel={`Add expense to ${group.name}`}>
+          <Icon as={ReceiptTextIcon} className='text-primary' />
+        </Button>
+      </Link>
+    </Card>
   )
 }
