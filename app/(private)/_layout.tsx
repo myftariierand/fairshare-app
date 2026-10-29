@@ -32,6 +32,15 @@ export default function RootLayout() {
             presentation: 'modal',
           }}
         />
+        <Stack.Screen
+          name='new-expense'
+          options={{
+            title: 'Add expense to…',
+            presentation: 'formSheet',
+            sheetAllowedDetents: [0.6, 1],
+            sheetGrabberVisible: true,
+          }}
+        />
       </Stack>
       <SseHandler />
     </>

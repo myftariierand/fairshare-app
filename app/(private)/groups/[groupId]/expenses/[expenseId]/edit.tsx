@@ -1,7 +1,5 @@
 import { Stack, useLocalSearchParams } from 'expo-router'
 
-import { View } from 'react-native'
-import { Text } from '@/components/ui/text'
 import { useGetExpenseById } from '@/services/group'
 import { ExpenseForm } from '@/components/group/expense-form'
 
@@ -16,7 +14,7 @@ export default function EditExpenseScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: `Edit ${expense.description}`,
+          title: 'Edit expense',
           // headerRight: () => (
           //   <>
           //     <Link asChild href={`/groups/${groupId}/expenses/${expenseId}/edit`}>
@@ -30,10 +28,7 @@ export default function EditExpenseScreen() {
           // ),
         }}
       />
-
-      <View className='p-4'>
-        <ExpenseForm data={expense} />
-      </View>
+      <ExpenseForm data={expense} />
     </>
   )
 }
