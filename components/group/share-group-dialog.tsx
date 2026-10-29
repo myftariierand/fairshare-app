@@ -36,7 +36,7 @@ export default function ShareGroupDialog({ groupId }: { groupId: string }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button size={'icon'} variant={'ghost'}>
+        <Button size='icon' variant='outline' accessibilityLabel='Share invite link or QR code'>
           <Icon as={Share2Icon} />
         </Button>
       </AlertDialogTrigger>
@@ -44,14 +44,16 @@ export default function ShareGroupDialog({ groupId }: { groupId: string }) {
         <AlertDialogHeader className='items-center'>
           <AlertDialogTitle>Invite to {groupName}</AlertDialogTitle>
           <AlertDialogDescription className='text-center'>
-            Ask people to scan this code with their phone camera, or share the link directly.
+            Friends scan this with their phone camera, or you send them the link.
           </AlertDialogDescription>
         </AlertDialogHeader>
+        {/* QR codes need dark-on-light to scan, whatever the theme */}
         <View
-          className='self-center'
-          style={{ padding: 16, backgroundColor: '#fff', borderRadius: 12 }}
+          className='self-center rounded-2xl bg-white p-4'
+          accessible
+          accessibilityLabel='QR code for the group invite link'
         >
-          <QRCode value={joinUrl} size={220} color='#000' backgroundColor='#fff' />
+          <QRCode value={joinUrl} size={200} color='#000' backgroundColor='#fff' />
         </View>
         <AlertDialogFooter className='flex-col'>
           <AlertDialogAction asChild>
@@ -60,7 +62,7 @@ export default function ShareGroupDialog({ groupId }: { groupId: string }) {
             </Button>
           </AlertDialogAction>
           <AlertDialogCancel>
-            <Text>Cancel</Text>
+            <Text>Done</Text>
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>

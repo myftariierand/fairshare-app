@@ -1,18 +1,30 @@
-import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { toast } from 'sonner-native'
+import { View } from 'react-native'
 
 import { useDeleteGroup, useGetGroupById } from '@/services/group'
 import { useAuthUser } from '@/lib/auth-context'
-
-import { Input } from '@/components/ui/input'
-import { Text } from '@/components/ui/text'
 import { getErrorMessage } from '@/lib/utils'
 import { useGroupIdParam } from '@/hooks/use-group-id-param'
-import { View } from 'react-native'
-import { Badge } from '@/components/ui/badge'
 
-const CONFIRM_WORD = 'DELETE'
+import { Trash2Icon } from 'lucide-react-native'
+
+import { Button } from '@/components/ui/button'
+import { Icon } from '@/components/ui/icon'
+import { Text } from '@/components/ui/text'
+import { SectionLabel } from '@/components/ui/section-label'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Spinner } from '@/components/spinner'
 
 const DeleteGroup = () => {
   const { groupId } = useGroupIdParam()
@@ -21,49 +33,54 @@ const DeleteGroup = () => {
   const { data } = useGetGroupById(groupId)
   const user = useAuthUser()
 
-  const [value, setValue] = useState('')
+  const isAdmin = user.id === data?.createdById
+  const hasOpenDebts = (data?.remainingDebts ?? 0) > 0
+  const reason = !isAdmin
+    ? 'Only the group admin can delete it.'
+    : hasOpenDebts
+      ? 'Everyone needs to settle up before the group can be deleted.'
+      : null
 
-  const handleSubmit = () => {
-    if (deleteGroup.isPending) return
-
-    if (value.trim() !== CONFIRM_WORD) {
-      toast.error(`Type "${CONFIRM_WORD}" exactly to delete this group.`)
-      return
-    }
-
+  const handleDelete = () => {
     deleteGroup.mutate(groupId, {
-      onSuccess: () => {
-        setValue('')
-        router.replace('/') // adjust to your groups list route
-      },
-      onError: error => {
-        toast.error(getErrorMessage(error))
-      },
+      onSuccess: () => router.replace('/'),
+      onError: error => toast.error(getErrorMessage(error)),
     })
   }
 
   return (
-    <>
-      <View className='mb-1 flex-row gap-2'>
-        <Text variant={'large'}>Delete</Text>
-        <Badge variant={'secondary'}>
-          <Text>Admin Only</Text>
-        </Badge>
-      </View>
-      <Text className='mb-4' variant={'muted'} textBreakStrategy='balanced'>
-        A group can be deleted only if all members have settled their debts.
+    <View className='gap-3'>
+      <SectionLabel>Danger zone</SectionLabel>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant='destructive' disabled={!!reason || deleteGroup.isPending}>
+            <Icon as={Trash2Icon} className='size-4' />
+            <Text>Delete group</Text>
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {data?.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This deletes the group for every member. It can't be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              <Text>Cancel</Text>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild disabled={deleteGroup.isPending} onPress={handleDelete}>
+              <Button variant='destructive'>
+                {deleteGroup.isPending ? <Spinner /> : <Text>Delete group</Text>}
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <Text className='text-muted-foreground text-sm'>
+        {reason ?? 'A group can be deleted once every member is settled up.'}
       </Text>
-      <Input
-        value={value}
-        onChangeText={setValue}
-        onSubmitEditing={handleSubmit}
-        editable={!deleteGroup.isPending && user.id === data?.createdById}
-        autoCapitalize='characters'
-        autoCorrect={false}
-        placeholder='Type "DELETE" and press Enter to confirm'
-        submitBehavior='blurAndSubmit'
-      />
-    </>
+    </View>
   )
 }
 
