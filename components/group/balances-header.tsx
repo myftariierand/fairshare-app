@@ -100,7 +100,7 @@ export default function BalancesHeader({
               <View>
                 <Text className='text-foreground text-sm leading-none'>{name.split(' ')[0]}</Text>
                 <Text
-                  className={`mt-0.5 font-mono text-xs font-bold whitespace-nowrap ${balance > 0.01 ? 'text-success' : balance < -0.01 ? 'text-destructive' : 'text-muted-foreground'}`}
+                  className={`mt-0.5 font-mono text-xs font-bold whitespace-nowrap ${balance > 0.01 ? 'text-owed' : balance < -0.01 ? 'text-owe' : 'text-muted-foreground'}`}
                 >
                   {formatAmount(Math.abs(balance), currency)}
                 </Text>

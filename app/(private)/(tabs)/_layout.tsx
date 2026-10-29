@@ -4,16 +4,18 @@ import '@/global.css'
 import { useAuthUser } from '@/lib/auth-context'
 
 import { Tabs } from 'expo-router'
+import { useCSSVariable } from 'uniwind'
 
 import { ActivityIcon, ContactIcon, UserGroupIcon, UserIcon } from 'lucide-react-native'
 
 export default function RootLayout() {
   const user = useAuthUser()
+  const mutedForeground = useCSSVariable('--color-muted-foreground') as string
 
   return (
     <Tabs
       screenOptions={{
-        tabBarInactiveTintColor: '#9ca3af',
+        tabBarInactiveTintColor: mutedForeground,
       }}
     >
       <Tabs.Screen

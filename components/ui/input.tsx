@@ -1,12 +1,10 @@
 import { cn } from '@/lib/utils'
 import { TextInput } from 'react-native'
-import { useUniwind } from 'uniwind'
 
 function Input({
   className,
   ...props
 }: React.ComponentProps<typeof TextInput> & React.RefAttributes<TextInput>) {
-  const { theme } = useUniwind()
   return (
     <TextInput
       className={cn(
@@ -14,7 +12,7 @@ function Input({
         props.editable === false && cn('opacity-50'),
         className
       )}
-      placeholderTextColor={theme === 'dark' ? '#a1a1a1' : '#a1a1aa'}
+      placeholderTextColorClassName='accent-muted-foreground'
       {...props}
     />
   )

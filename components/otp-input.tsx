@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native'
+import { useCSSVariable } from 'uniwind'
 
 export type OtpInputHandle = {
   focus: () => void
@@ -34,10 +35,12 @@ export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(
       length = 6,
       disabled = false,
       autoFocus = false,
-      accentColor = '#0F766E',
+      accentColor,
     },
     ref
   ) => {
+    const primary = useCSSVariable('--color-primary') as string
+    const activeColor = accentColor ?? primary
     const inputRef = useRef<TextInput>(null)
     const [focused, setFocused] = useState(false)
 
@@ -68,7 +71,7 @@ export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(
                 className='bg-background dark:bg-input/30 text-foreground border-input size-10 items-center justify-center rounded-md border'
                 style={[
                   // styles.cell,
-                  isActive && { borderColor: accentColor, borderWidth: 2 },
+                  isActive && { borderColor: activeColor, borderWidth: 2 },
                 ]}
               >
                 <Text className='text-foreground text-base'>{char ?? ''}</Text>

@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
-import { useUniwind } from 'uniwind'
+import { useCSSVariable } from 'uniwind'
 
 import { formatAmount } from '@/lib/utils'
 
@@ -20,7 +20,7 @@ export default function BalanceTicket({
   currentUserId: string
   transactions: Group['transactions']
 }) {
-  const { theme } = useUniwind()
+  const cardColor = useCSSVariable('--color-card') as string
 
   const balancesByCurrency = computeBalancesByCurrency(currentUserId, transactions)
   const currencies = Object.keys(balancesByCurrency)
@@ -67,11 +67,11 @@ export default function BalanceTicket({
                     <View className='flex-row gap-2 space-y-1 font-mono text-xs'>
                       <View>
                         <Text>owed to you </Text>
-                        <Text className='text-success'>{formatAmount(owedToYou, currency)}</Text>
+                        <Text className='text-owed'>{formatAmount(owedToYou, currency)}</Text>
                       </View>
                       <View>
                         <Text>you owe </Text>
-                        <Text className='text-destructive'>{formatAmount(youOwe, currency)}</Text>
+                        <Text className='text-owe'>{formatAmount(youOwe, currency)}</Text>
                       </View>
                     </View>
                   </View>
@@ -82,7 +82,7 @@ export default function BalanceTicket({
           </CardContent>
         )}
       </Card>
-      <TornEdge color={theme === 'dark' ? '#171717' : 'oklch(1 0 0)'} />
+      <TornEdge color={cardColor} />
     </View>
   )
 }
