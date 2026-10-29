@@ -120,8 +120,9 @@ export default function TabsLayout() {
           <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
       </NativeTabs>
-      {/* Above every tab except Profile; pushed screens and sheets cover it */}
-      {!segments.includes('(profile)') && <FloatingAddButton />}
+      {/* Not on Home, which has its own Add expense for the active group, or Profile.
+          Pushed screens and sheets cover it. */}
+      {!segments.includes('(home)') && !segments.includes('(profile)') && <FloatingAddButton />}
     </View>
   )
 }
