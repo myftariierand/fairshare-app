@@ -87,10 +87,12 @@ export default function TabsLayout() {
       <NativeTabs.Trigger
         name='add'
         disabled
+        accessibilityLabel='Add expense'
         listeners={{ tabPress: () => router.push('/new-expense') }}
       >
         <NativeTabs.Trigger.Icon sf='plus.circle.fill' md='add_circle' />
-        <NativeTabs.Trigger.Label>Add</NativeTabs.Trigger.Label>
+        {/* Icon only; screen readers use the accessibility label */}
+        <NativeTabs.Trigger.Label hidden />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name='(activity)'>
