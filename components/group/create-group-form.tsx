@@ -3,7 +3,13 @@ import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
 import { toast } from 'sonner-native'
 import { router } from 'expo-router'
-import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller'
+import {
+  KeyboardAwareScrollView,
+  KeyboardStickyView,
+  useReanimatedKeyboardAnimation,
+} from 'react-native-keyboard-controller'
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { inviteToGroup, useCreateGroup } from '@/services/group'
 import { useGetFriendsQuery } from '@/services/friends'
@@ -61,6 +67,7 @@ const coverSchema = z.object({
 type CoverSchemaType = z.infer<typeof coverSchema>
 
 const CreateGroupForm = () => {
+  const insets = useSafeAreaInsets()
   const createGroup = useCreateGroup()
   const { data: friends = [] } = useGetFriendsQuery()
 
@@ -101,6 +108,14 @@ const CreateGroupForm = () => {
       }
     },
   })
+
+  // Same footer as the expense form: inset while the keyboard is closed,
+  // flush against it while it's open
+  const { progress } = useReanimatedKeyboardAnimation()
+  const footerStyle = useAnimatedStyle(() => ({
+    paddingHorizontal: interpolate(progress.value, [0, 1], [16, 0]),
+    paddingBottom: interpolate(progress.value, [0, 1], [insets.bottom + 8, 0]),
+  }))
 
   return (
     <View className='flex-1'>
@@ -242,16 +257,28 @@ const CreateGroupForm = () => {
         )}
       </KeyboardAwareScrollView>
 
-      <KeyboardStickyView className='border-border bg-background border-t px-5 pt-3 pb-2'>
-        <form.Subscribe
-          selector={state => state.isSubmitting}
-          children={isSubmitting => (
-            <Button disabled={isSubmitting} onPress={() => form.handleSubmit()}>
-              {isSubmitting ? <Spinner /> : <Icon as={Check} />}
-              <Text>Create group</Text>
-            </Button>
-          )}
-        />
+      <KeyboardStickyView className='bg-background' offset={{ closed: 0, opened: 0 }}>
+        <Animated.View style={footerStyle}>
+          <form.Subscribe
+            selector={state => state.isSubmitting}
+            children={isSubmitting => (
+              <Button
+                className='w-full'
+                disabled={isSubmitting}
+                onPress={() => form.handleSubmit()}
+              >
+                {isSubmitting ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <Icon as={Check} />
+                    <Text>Create group</Text>
+                  </>
+                )}
+              </Button>
+            )}
+          />
+        </Animated.View>
       </KeyboardStickyView>
     </View>
   )

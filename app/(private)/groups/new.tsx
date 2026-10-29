@@ -1,5 +1,4 @@
 import { Stack, router } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { useCSSVariable } from 'uniwind'
 import { XIcon } from 'lucide-react-native'
 
@@ -23,9 +22,7 @@ export default function NewGroupScreen() {
           ),
         }}
       />
-      <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
-        <CreateGroupForm />
-      </SafeAreaView>
+      <CreateGroupForm />
     </>
   )
 }
