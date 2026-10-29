@@ -1,30 +1,28 @@
-import { ScrollView, View } from 'react-native'
-import { Stack } from 'expo-router'
+import { Link, Stack } from 'expo-router'
 
-import { HandshakeIcon } from 'lucide-react-native'
-
-import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
 
+import { AuthLayout } from '@/components/auth/auth-layout'
 import { SignInForm } from '@/components/sign-in-form'
 
 export default function SignInScreen() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <ScrollView
-        keyboardShouldPersistTaps='handled'
-        contentContainerClassName='sm:flex-1 items-center justify-center p-4 py-8 sm:py-4 sm:p-6 mt-safe'
-        keyboardDismissMode='interactive'
+      <AuthLayout
+        title={'Split costs,\nnot friendships.'}
+        subtitle='Sign in to see what you owe and who owes you.'
+        footer={
+          <>
+            <Text className='text-muted-foreground'>New to FairShare? </Text>
+            <Link asChild href={'/register'}>
+              <Text className='text-primary font-semibold'>Create an account</Text>
+            </Link>
+          </>
+        }
       >
-        <View className='w-full max-w-sm'>
-          <View className='mb-4 items-center'>
-            <Icon as={HandshakeIcon} size={64} />
-            <Text variant={'large'}>Welcome to FairShare</Text>
-          </View>
-          <SignInForm />
-        </View>
-      </ScrollView>
+        <SignInForm />
+      </AuthLayout>
     </>
   )
 }

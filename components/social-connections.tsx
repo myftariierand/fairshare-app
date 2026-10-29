@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { signInWithGoogle } from '@/lib/auth'
 
 import { Button } from '@/components/ui/button'
+import { Text } from '@/components/ui/text'
 
 const SOCIAL_CONNECTION_STRATEGIES = [
   {
@@ -25,7 +26,7 @@ const SOCIAL_CONNECTION_STRATEGIES = [
   // },
 ]
 
-export function SocialConnections() {
+export function SocialConnections({ label = 'Continue with Google' }: { label?: string }) {
   const { theme } = useUniwind()
   const [loading, setLoading] = useState(false)
 
@@ -52,24 +53,25 @@ export function SocialConnections() {
   }
 
   return (
-    <View className='gap-2 sm:flex-row sm:gap-3'>
+    <View className='gap-2'>
       {SOCIAL_CONNECTION_STRATEGIES.map(strategy => {
         return (
           <Button
             key={strategy.type}
             variant='outline'
-            size='sm'
-            className='sm:flex-1'
+            className='w-full'
             disabled={loading}
             onPress={() => handlePress(strategy.type)}
           >
             <Image
-              className={cn('size-4', strategy.useTint && Platform.select({ web: 'dark:invert' }))}
+              className={cn('size-5', strategy.useTint && Platform.select({ web: 'dark:invert' }))}
               tintColor={Platform.select({
                 native: strategy.useTint ? (isDarkTheme(theme) ? 'white' : 'black') : undefined,
               })}
               source={strategy.source}
+              accessibilityIgnoresInvertColors
             />
+            <Text>{label}</Text>
           </Button>
         )
       })}
