@@ -3,7 +3,6 @@ import { View } from 'react-native'
 import { Stack, router } from 'expo-router'
 import { useStore } from '@tanstack/react-form'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
-import { useCSSVariable } from 'uniwind'
 import { toast } from 'sonner-native'
 import { z } from 'zod'
 
@@ -11,18 +10,15 @@ import { useAppForm } from '@/lib/form'
 import { useAuthUser } from '@/lib/auth-context'
 import { getDeviceSummary } from '@/lib/device-info'
 import { getErrorMessage } from '@/lib/utils'
-import { useFullSheetTopInset } from '@/hooks/use-full-sheet-top-inset'
 import { BUG_SEVERITIES, useReportBugMutation, type BugSeverity } from '@/services/bug-report'
-
-import { XIcon } from 'lucide-react-native'
 
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
-import { Icon } from '@/components/ui/icon'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Spinner } from '@/components/spinner'
+import { useCenteredHeader } from '@/components/header-button'
 
 const SEVERITY: Record<BugSeverity, { label: string; hint: string }> = {
   CRITICAL: {
@@ -36,8 +32,7 @@ const SEVERITY: Record<BugSeverity, { label: string; hint: string }> = {
 
 export default function ReportBugScreen() {
   const user = useAuthUser()
-  const card = useCSSVariable('--color-card') as string
-  const topInset = useFullSheetTopInset()
+  const headerOptions = useCenteredHeader('Report a bug')
   const reportBug = useReportBugMutation()
   const device = useMemo(getDeviceSummary, [])
 
@@ -78,44 +73,16 @@ export default function ReportBugScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          // Full height: iOS stretches a shorter custom detent when the keyboard opens
-          sheetAllowedDetents: [1],
-          contentStyle: { backgroundColor: card },
-        }}
-      />
+      {/* A regular pushed screen: as a sheet, focusing a field made the sheet jump */}
+      <Stack.Screen options={headerOptions} />
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps='handled'
         bottomOffset={24}
-        style={{ backgroundColor: card }}
-        contentContainerStyle={{
-          padding: 20,
-          paddingTop: topInset + 24,
-          paddingBottom: 40,
-          gap: 20,
-        }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 20 }}
       >
-        <View className='flex-row items-start gap-3'>
-          <View className='flex-1'>
-            <Text role='heading' className='text-2xl font-bold tracking-tight'>
-              Report a bug
-            </Text>
-            <Text className='text-muted-foreground mt-1'>
-              Tell us what went wrong and we'll look into it.
-            </Text>
-          </View>
-          <Button
-            size='icon'
-            variant='outline'
-            accessibilityLabel='Close'
-            onPress={() => router.back()}
-          >
-            <Icon as={XIcon} className='size-5' />
-          </Button>
-        </View>
+        <Text className='text-muted-foreground'>
+          Tell us what went wrong and we'll look into it.
+        </Text>
 
         <form.AppField
           name='title'
@@ -126,7 +93,6 @@ export default function ReportBugScreen() {
                 aria-labelledby='bug-title'
                 placeholder="e.g. Balance doesn't update after settling"
                 returnKeyType='next'
-                className='bg-secondary'
                 value={field.state.value}
                 onChangeText={field.handleChange}
               />
@@ -149,7 +115,7 @@ export default function ReportBugScreen() {
                 placeholder='What did you do, what did you expect, and what happened instead?'
                 multiline
                 textAlignVertical='top'
-                className='bg-secondary h-36 py-3'
+                className='h-36 py-3'
                 value={field.state.value}
                 onChangeText={field.handleChange}
               />
