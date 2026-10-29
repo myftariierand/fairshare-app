@@ -9,7 +9,6 @@ import { useGroupIdParam } from '@/hooks/use-group-id-param'
 
 import { Trash2Icon } from 'lucide-react-native'
 
-import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
 import { SectionLabel } from '@/components/ui/section-label'
@@ -75,7 +74,9 @@ const DeleteGroup = () => {
               >
                 Delete group
               </Text>
-              {!isAdmin && <Text className='text-muted-foreground text-xs'>Admin only</Text>}
+              <View className='bg-secondary rounded-full px-2.5 py-1'>
+                <Text className='text-muted-foreground text-xs font-semibold'>Admin only</Text>
+              </View>
             </Pressable>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -89,10 +90,12 @@ const DeleteGroup = () => {
               <AlertDialogCancel>
                 <Text>Cancel</Text>
               </AlertDialogCancel>
-              <AlertDialogAction asChild disabled={deleteGroup.isPending} onPress={handleDelete}>
-                <Button variant='destructive'>
-                  {deleteGroup.isPending ? <Spinner /> : <Text>Delete group</Text>}
-                </Button>
+              <AlertDialogAction
+                variant='destructive'
+                disabled={deleteGroup.isPending}
+                onPress={handleDelete}
+              >
+                {deleteGroup.isPending ? <Spinner /> : <Text>Delete group</Text>}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

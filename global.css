@@ -39,6 +39,7 @@
       --color-accent: #e6e7e2;
       --color-accent-foreground: #15171a;
       --color-destructive: #c8372d;
+      --color-destructive-foreground: #ffffff;
       --color-success: #0b7a53;
       --color-owed: #0b7a53;
       --color-owe: #b45309;
@@ -79,6 +80,7 @@
       --color-accent: #2a2d32;
       --color-accent-foreground: #f3f4f1;
       --color-destructive: #ff8a7a;
+      --color-destructive-foreground: #2a0b07;
       --color-success: #6ee7b7;
       --color-owed: #6ee7b7;
       --color-owe: #ffa26b;

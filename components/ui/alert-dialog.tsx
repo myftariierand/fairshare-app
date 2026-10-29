@@ -116,11 +116,26 @@ function AlertDialogDescription({
 
 function AlertDialogAction({
   className,
+  variant = 'default',
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Action>) {
+}: React.ComponentProps<typeof AlertDialogPrimitive.Action> & {
+  /** 'destructive' is a solid red button for confirming deletes and removals */
+  variant?: 'default' | 'destructive'
+}) {
+  const destructive = variant === 'destructive'
   return (
-    <TextClassContext.Provider value={buttonTextVariants({ className })}>
-      <AlertDialogPrimitive.Action className={cn(buttonVariants(), className)} {...props} />
+    <TextClassContext.Provider
+      value={cn(buttonTextVariants(), destructive && 'text-destructive-foreground')}
+    >
+      <AlertDialogPrimitive.Action
+        className={cn(
+          buttonVariants(),
+          destructive && 'bg-destructive active:bg-destructive/90',
+          props.disabled && 'opacity-50',
+          className
+        )}
+        {...props}
+      />
     </TextClassContext.Provider>
   )
 }

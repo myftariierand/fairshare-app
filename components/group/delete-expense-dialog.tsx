@@ -64,14 +64,12 @@ export function DeleteExpenseDialog(props: Props) {
           <AlertDialogCancel>
             <Text>Cancel</Text>
           </AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <Button
-              variant={'destructive'}
-              disabled={deleteExpense.isPending}
-              onPress={handleDeleteExpense}
-            >
-              {deleteExpense.isPending ? <Spinner /> : <Text>Delete</Text>}
-            </Button>
+          <AlertDialogAction
+            variant='destructive'
+            disabled={deleteExpense.isPending}
+            onPress={handleDeleteExpense}
+          >
+            {deleteExpense.isPending ? <Spinner /> : <Text>Delete</Text>}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
