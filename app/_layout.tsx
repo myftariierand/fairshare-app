@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { AuthProvider, useAuth } from '@/lib/auth-context'
-import { isDarkTheme, useNavTheme } from '@/lib/theme'
+import { useNavTheme } from '@/lib/theme'
 import { ThemeProvider } from 'expo-router/react-navigation'
 import { PortalHost } from '@rn-primitives/portal'
 import { StatusBar } from 'expo-status-bar'
@@ -38,6 +38,11 @@ function RootNavigator() {
   // inside your RootLayout component
   useEffect(() => {
     AsyncStorage.getItem(THEME_STORAGE_KEY).then(saved => {
+      // "New design (beta)" was a separate theme before it became the dark theme
+      if (saved === 'fairshare') {
+        AsyncStorage.setItem(THEME_STORAGE_KEY, 'dark').catch(() => {})
+        saved = 'dark'
+      }
       if (saved) Uniwind.setTheme(saved as ThemePreference)
     })
   }, [])
@@ -63,7 +68,7 @@ function RootNavigator() {
           <Stack.Screen name='verify-email' />
         </Stack.Protected>
       </Stack>
-      <Toaster theme={isDarkTheme(theme) ? 'dark' : 'light'} />
+      <Toaster theme={theme} />
     </GestureHandlerRootView>
   )
 }
@@ -77,7 +82,7 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <ThemeProvider value={navTheme}>
-            <StatusBar style={isDarkTheme(theme) ? 'light' : 'dark'} />
+            <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
             <RootNavigator />
             <PortalHost />
           </ThemeProvider>

@@ -76,7 +76,7 @@ function ToggleGroupItem({
           }),
           props.disabled && 'opacity-50',
           ToggleGroupPrimitive.utils.getIsSelected(value, props.value) &&
-            'bg-accent fairshare:border-primary fairshare:bg-primary/10',
+            'border-primary bg-primary/10',
           'min-w-0 shrink-0 shadow-none',
           className
         )}

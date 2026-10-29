@@ -4,123 +4,66 @@
 @import 'tw-animate-css';
 
 @theme {
-  --radius: 10px;
+  /* md = 14px for controls, xl = 20px for cards */
+  --radius: 16px;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
   --spacing-hairline: hairlineWidth();
-  /* Height of buttons and inputs; set per theme below */
-  --spacing-control: 40px;
+  /* Height of buttons and inputs */
+  --spacing-control: 52px;
 
   /* Bundled via the expo-font config plugin in app.json */
-  --font-geist: Geist;
-  --font-geist-mono: 'Geist Mono';
+  --font-sans: Geist;
+  --font-mono: 'Geist Mono';
 }
 
 @layer theme {
   :root {
     @variant light {
-      --color-background: oklch(1 0 0);
-      --color-foreground: oklch(0.145 0 0);
-      --color-card: oklch(1 0 0);
-      --color-card-foreground: oklch(0.145 0 0);
-      --color-popover: oklch(1 0 0);
-      --color-popover-foreground: oklch(0.145 0 0);
-      --color-primary: oklch(0.205 0 0);
-      --color-primary-foreground: oklch(0.985 0 0);
-      --color-secondary: oklch(0.97 0 0);
-      --color-secondary-foreground: oklch(0.205 0 0);
-      --color-muted: oklch(0.97 0 0);
-      --color-muted-foreground: oklch(0.556 0 0);
-      --color-accent: oklch(0.97 0 0);
-      --color-accent-foreground: oklch(0.205 0 0);
-      --color-destructive: oklch(0.577 0.245 27.325);
-      --color-success: oklch(77.19% 0.152 167.95);
-      --color-owed: oklch(77.19% 0.152 167.95);
-      --color-owe: oklch(0.577 0.245 27.325);
-      --color-border: oklch(0.922 0 0);
-      --color-input: oklch(0.922 0 0);
-      --color-ring: oklch(0.708 0 0);
-      --color-chart-1: oklch(0.646 0.222 41.116);
-      --color-chart-2: oklch(0.6 0.118 184.704);
-      --color-chart-3: oklch(0.398 0.07 227.392);
-      --color-chart-4: oklch(0.828 0.189 84.429);
-      --color-chart-5: oklch(0.769 0.188 70.08);
-      --color-sidebar: oklch(0.985 0 0);
-      --color-sidebar-foreground: oklch(0.145 0 0);
-      --color-sidebar-primary: oklch(0.205 0 0);
-      --color-sidebar-primary-foreground: oklch(0.985 0 0);
-      --color-sidebar-accent: oklch(0.97 0 0);
-      --color-sidebar-accent-foreground: oklch(0.205 0 0);
-      --color-sidebar-border: oklch(0.922 0 0);
-      --color-sidebar-ring: oklch(0.708 0 0);
-      --radius: 10px;
-      --spacing-control: 40px;
-      --color-tint-1: oklch(0.97 0 0);
-      --color-tint-1-foreground: oklch(0.205 0 0);
-      --color-tint-2: oklch(0.97 0 0);
-      --color-tint-2-foreground: oklch(0.205 0 0);
-      --color-tint-3: oklch(0.97 0 0);
-      --color-tint-3-foreground: oklch(0.205 0 0);
-      --color-tint-4: oklch(0.97 0 0);
-      --color-tint-4-foreground: oklch(0.205 0 0);
-      --color-tint-5: oklch(0.97 0 0);
-      --color-tint-5-foreground: oklch(0.205 0 0);
+      --color-background: #fafaf7;
+      --color-foreground: #15171a;
+      --color-card: #ffffff;
+      --color-card-foreground: #15171a;
+      --color-popover: #ffffff;
+      --color-popover-foreground: #15171a;
+      /* Lime is too light for text or white-on-fill on a light ground, so light uses a deep olive */
+      --color-primary: #46720d;
+      --color-primary-foreground: #ffffff;
+      --color-secondary: #f0f0ec;
+      --color-secondary-foreground: #15171a;
+      --color-muted: #f0f0ec;
+      --color-muted-foreground: #5f646b;
+      --color-accent: #e6e7e2;
+      --color-accent-foreground: #15171a;
+      --color-destructive: #c8372d;
+      --color-success: #0b7a53;
+      --color-owed: #0b7a53;
+      --color-owe: #b45309;
+      --color-border: #e2e3de;
+      --color-input: #d9dad4;
+      --color-ring: #46720d;
+      --color-chart-1: #46720d;
+      --color-chart-2: #0c5a82;
+      --color-chart-3: #9a4a0b;
+      --color-chart-4: #7a2e99;
+      --color-chart-5: #0b7a53;
+      /* Avatar and group tiles: lime, sky, peach, lilac, mint */
+      --color-tint-1: #ecf5d6;
+      --color-tint-1-foreground: #3f6212;
+      --color-tint-2: #dceffb;
+      --color-tint-2-foreground: #0c5a82;
+      --color-tint-3: #fce9d9;
+      --color-tint-3-foreground: #9a4a0b;
+      --color-tint-4: #f1e3f8;
+      --color-tint-4-foreground: #7a2e99;
+      --color-tint-5: #ddf4ea;
+      --color-tint-5-foreground: #0b6b4a;
     }
 
     @variant dark {
-      --color-background: oklch(0.145 0 0);
-      --color-foreground: oklch(0.985 0 0);
-      --color-card: oklch(0.205 0 0);
-      --color-card-foreground: oklch(0.985 0 0);
-      --color-popover: oklch(0.205 0 0);
-      --color-popover-foreground: oklch(0.985 0 0);
-      --color-primary: oklch(0.922 0 0);
-      --color-primary-foreground: oklch(0.205 0 0);
-      --color-secondary: oklch(0.269 0 0);
-      --color-secondary-foreground: oklch(0.985 0 0);
-      --color-muted: oklch(0.269 0 0);
-      --color-muted-foreground: oklch(0.708 0 0);
-      --color-accent: oklch(0.269 0 0);
-      --color-accent-foreground: oklch(0.985 0 0);
-      --color-destructive: oklch(0.704 0.191 22.216);
-      --color-success: oklch(77.19% 0.152 167.95);
-      --color-owed: oklch(77.19% 0.152 167.95);
-      --color-owe: oklch(0.704 0.191 22.216);
-      --color-border: oklch(1 0 0 / 10%);
-      --color-input: oklch(1 0 0 / 15%);
-      --color-ring: oklch(0.556 0 0);
-      --color-chart-1: oklch(0.488 0.243 264.376);
-      --color-chart-2: oklch(0.696 0.17 162.48);
-      --color-chart-3: oklch(0.769 0.188 70.08);
-      --color-chart-4: oklch(0.627 0.265 303.9);
-      --color-chart-5: oklch(0.645 0.246 16.439);
-      --color-sidebar: oklch(0.205 0 0);
-      --color-sidebar-foreground: oklch(0.985 0 0);
-      --color-sidebar-primary: oklch(0.488 0.243 264.376);
-      --color-sidebar-primary-foreground: oklch(0.985 0 0);
-      --color-sidebar-accent: oklch(0.269 0 0);
-      --color-sidebar-accent-foreground: oklch(0.985 0 0);
-      --color-sidebar-border: oklch(1 0 0 / 10%);
-      --color-sidebar-ring: oklch(0.556 0 0);
-      --radius: 10px;
-      --spacing-control: 40px;
-      --color-tint-1: oklch(0.269 0 0);
-      --color-tint-1-foreground: oklch(0.985 0 0);
-      --color-tint-2: oklch(0.269 0 0);
-      --color-tint-2-foreground: oklch(0.985 0 0);
-      --color-tint-3: oklch(0.269 0 0);
-      --color-tint-3-foreground: oklch(0.985 0 0);
-      --color-tint-4: oklch(0.269 0 0);
-      --color-tint-4-foreground: oklch(0.985 0 0);
-      --color-tint-5: oklch(0.269 0 0);
-      --color-tint-5-foreground: oklch(0.985 0 0);
-    }
-
-    /* Redesign (beta): opt-in from Profile until it replaces dark */
-    @variant fairshare {
       --color-background: #0d0e10;
       --color-foreground: #f3f4f1;
       --color-card: #16181b;
@@ -147,18 +90,6 @@
       --color-chart-3: #ffc08a;
       --color-chart-4: #e2a8ff;
       --color-chart-5: #6ee7b7;
-      --color-sidebar: #16181b;
-      --color-sidebar-foreground: #f3f4f1;
-      --color-sidebar-primary: #c8f169;
-      --color-sidebar-primary-foreground: #121405;
-      --color-sidebar-accent: #2a2d32;
-      --color-sidebar-accent-foreground: #f3f4f1;
-      --color-sidebar-border: #2a2d32;
-      --color-sidebar-ring: #c8f169;
-      /* md = 14px for controls, xl = 20px for cards */
-      --radius: 16px;
-      --spacing-control: 52px;
-      /* Avatar and group tiles: lime, sky, peach, lilac, mint */
       --color-tint-1: #2b3a1e;
       --color-tint-1-foreground: #c8f169;
       --color-tint-2: #1e3340;

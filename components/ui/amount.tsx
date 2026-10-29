@@ -30,10 +30,7 @@ function Amount({
         : 'text-muted-foreground')
 
   return (
-    <Text
-      className={cn('fairshare:font-geist-mono font-mono tabular-nums', toneClass, className)}
-      {...props}
-    >
+    <Text className={cn('font-mono tabular-nums', toneClass, className)} {...props}>
       {signed
         ? formatAmount(value, currency, 'exceptZero')
         : formatAmount(Math.abs(value), currency)}

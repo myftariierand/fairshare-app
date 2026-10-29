@@ -11,7 +11,7 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
   return (
     <TabsPrimitive.List
       className={cn(
-        'bg-card fairshare:h-12 fairshare:rounded-xl fairshare:border fairshare:border-border fairshare:p-1 flex h-9 flex-row items-center justify-center rounded-lg p-0.75',
+        'bg-card border-border flex h-12 flex-row items-center justify-center rounded-xl border p-1',
         Platform.select({ web: 'inline-flex w-fit', native: 'mr-auto' }),
         className
       )}
@@ -25,9 +25,8 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
   return (
     <TextClassContext.Provider
       value={cn(
-        'text-foreground dark:text-muted-foreground fairshare:text-muted-foreground text-sm font-medium',
-        value === props.value &&
-          'dark:text-foreground fairshare:text-foreground fairshare:font-semibold'
+        'text-muted-foreground text-sm font-medium',
+        value === props.value && 'text-foreground font-semibold'
       )}
     >
       <TabsPrimitive.Trigger
@@ -37,8 +36,7 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
             web: 'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring web:h-[calc(100%-1px)] inline-flex cursor-default whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
           }),
           props.disabled && 'opacity-50',
-          props.value === value &&
-            'bg-background dark:border-foreground/10 dark:bg-input/30 fairshare:bg-accent fairshare:rounded-lg',
+          props.value === value && 'bg-accent rounded-lg',
           className
         )}
         {...props}

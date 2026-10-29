@@ -1,13 +1,11 @@
 import { View } from 'react-native'
 
 import { Icon } from '@/components/ui/icon'
-import { Text } from '@/components/ui/text'
 import { cn, transactionCategories } from '@/lib/utils'
 
 import type { TransactionCategory } from '@/types/group'
 
-// Emoji in the light/dark themes, line icon in the redesign theme. Both render
-// and the theme hides one, so no JS theme check is needed.
+// Line icon for a transaction category
 export function CategoryGlyph({
   category,
   iconClassName,
@@ -15,17 +13,8 @@ export function CategoryGlyph({
   category: TransactionCategory
   iconClassName?: string
 }) {
-  const { emoji, icon } = transactionCategories[category]
-  return (
-    <>
-      <View className='fairshare:hidden'>
-        <Text>{emoji}</Text>
-      </View>
-      <View className='fairshare:flex hidden'>
-        <Icon as={icon} className={cn('text-muted-foreground size-5', iconClassName)} />
-      </View>
-    </>
-  )
+  const { icon } = transactionCategories[category]
+  return <Icon as={icon} className={cn('text-muted-foreground size-5', iconClassName)} />
 }
 
 export function CategoryIcon({
@@ -38,7 +27,7 @@ export function CategoryIcon({
   return (
     <View
       className={cn(
-        'bg-secondary fairshare:size-11 fairshare:rounded-lg size-8 shrink-0 items-center justify-center rounded',
+        'bg-secondary size-11 shrink-0 items-center justify-center rounded-lg',
         className
       )}
     >

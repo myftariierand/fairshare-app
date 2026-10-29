@@ -86,7 +86,7 @@ export default function ProfileScreen() {
 function Stat({ value, label }: { value: number; label: string }) {
   return (
     <Card className='flex-1 gap-0.5 p-4'>
-      <Text className='fairshare:font-geist-mono font-mono text-xl font-semibold'>{value}</Text>
+      <Text className='font-mono text-xl font-semibold'>{value}</Text>
       <Text className='text-muted-foreground text-sm'>{label}</Text>
     </Card>
   )

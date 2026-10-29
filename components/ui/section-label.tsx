@@ -7,7 +7,7 @@ function SectionLabel({ className, ...props }: React.ComponentProps<typeof Text>
     <Text
       role='heading'
       className={cn(
-        'text-muted-foreground fairshare:font-geist-mono font-mono text-xs font-medium tracking-widest uppercase',
+        'text-muted-foreground font-mono text-xs font-medium tracking-widest uppercase',
         className
       )}
       {...props}
