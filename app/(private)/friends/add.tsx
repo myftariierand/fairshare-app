@@ -48,7 +48,9 @@ export default function AddFriendScreen() {
         options={{
           presentation: 'formSheet',
           sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.9],
+          // Full-height sheet: iOS stretches a shorter custom detent toward full screen when
+          // the keyboard opens, which made the sheet jump. At full height it stays put.
+          sheetAllowedDetents: [1],
           // Same card-colored sheet as group invites
           contentStyle: { backgroundColor: card },
         }}
@@ -88,6 +90,7 @@ export default function AddFriendScreen() {
                 onChangeText={setInput}
                 placeholder='Name or email'
                 accessibilityLabel='Search people'
+                autoFocus
                 autoCapitalize='none'
                 autoCorrect={false}
                 returnKeyType='search'
