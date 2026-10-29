@@ -63,7 +63,7 @@ export default function FriendsScreen() {
         className='flex-1'
         data={friends}
         keyExtractor={f => f.id}
-        contentContainerClassName='px-4 pb-8'
+        contentContainerClassName='px-4 pb-28'
         keyboardShouldPersistTaps='handled'
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={() => void refetch()} />

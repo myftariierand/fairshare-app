@@ -313,7 +313,7 @@ export default function ActivityScreen() {
       sections={sections}
       keyExtractor={entry => entry.key}
       stickySectionHeadersEnabled={false}
-      contentContainerClassName='px-4 pb-8'
+      contentContainerClassName='px-4 pb-28'
       refreshing={isRefetching}
       onRefresh={refetch}
       onEndReachedThreshold={0.5}

@@ -81,7 +81,7 @@ export default function GroupsScreen() {
         className='flex-1'
         data={activeGroups}
         keyExtractor={g => g.id}
-        contentContainerClassName='gap-2 px-4 pb-8'
+        contentContainerClassName='gap-2 px-4 pb-28'
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={() => void refetch()} />
         }
