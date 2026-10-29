@@ -11,6 +11,9 @@ import { GroupInviteStatus } from '@/types/common'
 
 const badge = (count: number) => (count > 9 ? '9+' : String(count))
 
+// Rendered only when there's something to count: with any text, including "0", the
+// native badge shows and its `hidden` prop is ignored
+
 // Native tab bar: UITabBarController on iOS (glass on iOS 26), Material bottom
 // navigation on Android. Each tab folder has its own Stack for its header.
 export default function TabsLayout() {
@@ -34,6 +37,8 @@ export default function TabsLayout() {
       // iOS draws its own glass bar; Android gets the card color
       backgroundColor={Platform.OS === 'android' ? card : undefined}
       minimizeBehavior='onScrollDown'
+      // Android's Material bar labels only the selected tab unless told otherwise
+      labelVisibilityMode='labeled'
     >
       <NativeTabs.Trigger name='(groups)'>
         <NativeTabs.Trigger.Icon
@@ -41,9 +46,9 @@ export default function TabsLayout() {
           md='groups'
         />
         <NativeTabs.Trigger.Label>Groups</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Badge hidden={!pendingInvites}>
-          {badge(pendingInvites)}
-        </NativeTabs.Trigger.Badge>
+        {pendingInvites > 0 && (
+          <NativeTabs.Trigger.Badge>{badge(pendingInvites)}</NativeTabs.Trigger.Badge>
+        )}
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name='(friends)'>
@@ -52,9 +57,9 @@ export default function TabsLayout() {
           md='group'
         />
         <NativeTabs.Trigger.Label>Friends</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Badge hidden={!incomingRequests}>
-          {badge(incomingRequests)}
-        </NativeTabs.Trigger.Badge>
+        {incomingRequests > 0 && (
+          <NativeTabs.Trigger.Badge>{badge(incomingRequests)}</NativeTabs.Trigger.Badge>
+        )}
       </NativeTabs.Trigger>
 
       {/* Never selected: the tap is turned off natively and opens the "Add expense to…" sheet */}
