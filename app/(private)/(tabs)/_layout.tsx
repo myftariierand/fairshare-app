@@ -1,4 +1,5 @@
 import '@/global.css'
+import { useMemo } from 'react'
 import { Platform } from 'react-native'
 import { router } from 'expo-router'
 import { NativeTabs } from 'expo-router/native-tabs'
@@ -9,10 +10,18 @@ import { useGetFriendRequestsQuery } from '@/services/friends'
 import { useGetGroupInvitesQuery } from '@/services/group'
 import { GroupInviteStatus } from '@/types/common'
 
+// Badges are rendered only when there's something to count: with any text, including
+// "0", the native badge shows and its `hidden` prop is ignored
 const badge = (count: number) => (count > 9 ? '9+' : String(count))
 
-// Rendered only when there's something to count: with any text, including "0", the
-// native badge shows and its `hidden` prop is ignored
+// #rrggbb plus an alpha byte; other formats come back unchanged
+const withAlpha = (hex: string, alpha: number) =>
+  /^#[0-9a-f]{6}$/i.test(hex)
+    ? hex +
+      Math.round(alpha * 255)
+        .toString(16)
+        .padStart(2, '0')
+    : hex
 
 // Native tab bar: UITabBarController on iOS (glass on iOS 26), Material bottom
 // navigation on Android. Each tab folder has its own Stack for its header.
@@ -29,11 +38,23 @@ export default function TabsLayout() {
   const pendingInvites = invites?.length ?? 0
   const incomingRequests = requests?.filter(r => r.receiverId === user.id).length ?? 0
 
+  // Stable objects: native tabs re-apply the whole bar appearance whenever these change
+  const iconColor = useMemo(
+    () => ({ default: mutedForeground, selected: primary }),
+    [mutedForeground, primary]
+  )
+  const labelStyle = useMemo(() => ({ fontFamily: 'Geist' }), [])
+  const indicatorColor = useMemo(() => withAlpha(primary, 0.16), [primary])
+
   return (
     <NativeTabs
       tintColor={primary}
-      iconColor={{ default: mutedForeground, selected: primary }}
-      labelStyle={{ fontFamily: 'Geist' }}
+      iconColor={iconColor}
+      labelStyle={labelStyle}
+      // Android: the selected pill is a soft accent tint instead of the wallpaper-based
+      // system color, and no ripple, which flashed in that system color on every tap
+      indicatorColor={indicatorColor}
+      rippleColor='transparent'
       // iOS draws its own glass bar; Android gets the card color
       backgroundColor={Platform.OS === 'android' ? card : undefined}
       minimizeBehavior='onScrollDown'
