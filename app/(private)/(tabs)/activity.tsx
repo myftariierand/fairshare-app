@@ -395,9 +395,8 @@ function ActivityRow({ entry, currentUserId }: { entry: Entry; currentUserId: st
     <View className='flex-row gap-3 py-2'>
       <IconTile
         as={config.icon}
-        size='sm'
-        className={cn('mt-0.5', tone.tile)}
-        iconClassName={tone.icon}
+        className={cn('size-10 rounded-sm', tone.tile)}
+        iconClassName={cn('size-5', tone.icon)}
       />
       <View className='flex-1'>
         <Text className='leading-5'>
