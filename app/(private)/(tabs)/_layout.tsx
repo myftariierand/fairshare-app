@@ -1,13 +1,14 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Text } from '@/components/ui/text'
+import { Icon } from '@/components/ui/icon'
+import { InitialsAvatar } from '@/components/ui/initials-avatar'
 import '@/global.css'
 import { useAuthUser } from '@/lib/auth-context'
 
-import { Tabs } from 'expo-router'
+import { Tabs, router } from 'expo-router'
+import { Pressable, View } from 'react-native'
 import { useCSSVariable, useUniwind } from 'uniwind'
 import { BRAND_THEME } from '@/lib/theme'
 
-import { ActivityIcon, ContactIcon, UserGroupIcon, UserIcon } from 'lucide-react-native'
+import { ActivityIcon, ContactIcon, PlusIcon, UserGroupIcon } from 'lucide-react-native'
 
 export default function RootLayout() {
   const user = useAuthUser()
@@ -42,6 +43,29 @@ export default function RootLayout() {
         }}
       />
       <Tabs.Screen
+        name='add'
+        options={{
+          title: 'Add expense',
+          tabBarLabel: () => null,
+          tabBarButton: ({ style }) => (
+            <View style={style} className='items-center justify-center'>
+              <Pressable
+                accessibilityRole='button'
+                accessibilityLabel='Add expense'
+                onPress={() => router.push('/new-expense')}
+                className='bg-primary h-12 w-14 items-center justify-center rounded-2xl active:opacity-80'
+              >
+                <Icon as={PlusIcon} className='text-primary-foreground size-6' />
+              </Pressable>
+            </View>
+          ),
+        }}
+        listeners={{
+          // never switch to the placeholder tab
+          tabPress: e => e.preventDefault(),
+        }}
+      />
+      <Tabs.Screen
         name='activity'
         options={{
           title: 'Activity',
@@ -53,11 +77,7 @@ export default function RootLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: () => (
-            <Avatar alt={user.name} className='size-7'>
-              <AvatarFallback className='border-border size border'>
-                <Text className='text-xs'>{user.name.slice(0, 2)}</Text>
-              </AvatarFallback>
-            </Avatar>
+            <InitialsAvatar name={user.name} className='size-7' textClassName='text-[10px]' />
           ),
         }}
       />
