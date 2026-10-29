@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import { useAuth } from '@/lib/auth-context'
 import { useGetProfileQuery } from '@/services/profile'
 
-import { BugIcon, LogOutIcon, UserIcon } from 'lucide-react-native'
+import { BugIcon, HandHeartIcon, LogOutIcon, UserIcon } from 'lucide-react-native'
 
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
@@ -91,6 +91,15 @@ export default function ProfileScreen() {
             showChevron
           />
         </Link>
+        <Separator />
+        {/* Placeholder: no donation flow yet */}
+        <ListRow
+          title='Donate'
+          subtitle="Support FairShare's development"
+          leading={<Icon as={HandHeartIcon} className='text-muted-foreground size-5' />}
+          showChevron
+          onPress={() => {}}
+        />
       </Card>
 
       <Button variant='destructive' className='mt-2 w-full' onPress={signOut}>
