@@ -33,18 +33,19 @@ export default function GroupSummary({
     computeGroupMemberBalances(members, transactions).find(m => m.id === user.id)?.balance ?? 0
 
   return (
+    // Total takes the spare width; the other two size to their content
     <Card className='flex-row gap-0 px-0 py-4'>
-      <View className='flex-1 gap-1 px-4'>
+      <View className='min-w-0 flex-1 gap-1 px-4'>
         <SectionLabel>Total</SectionLabel>
         <Amount value={total} currency={currency} className='font-semibold' numberOfLines={1} />
       </View>
       <View className='bg-border w-px' />
-      <View className='flex-1 gap-1 px-4'>
+      <View className='shrink-0 gap-1 px-4'>
         <SectionLabel>Your share</SectionLabel>
         <Amount value={userShare} currency={currency} className='font-semibold' numberOfLines={1} />
       </View>
       <View className='bg-border w-px' />
-      <View className='flex-1 items-start gap-1 px-4'>
+      <View className='shrink-0 items-start gap-1 px-4'>
         <SectionLabel>You</SectionLabel>
         <BalanceChip value={yourBalance} currency={currency} className='-ml-0.5' />
       </View>

@@ -11,7 +11,7 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
   return (
     <TabsPrimitive.List
       className={cn(
-        'bg-card border-border flex h-12 flex-row items-center justify-center rounded-xl border p-1',
+        'bg-card border-border flex h-12 flex-row items-center justify-center rounded-md border p-1',
         Platform.select({ web: 'inline-flex w-fit', native: 'mr-auto' }),
         className
       )}
@@ -36,7 +36,7 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
             web: 'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring web:h-[calc(100%-1px)] inline-flex cursor-default whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
           }),
           props.disabled && 'opacity-50',
-          props.value === value && 'bg-accent rounded-lg',
+          props.value === value && 'bg-accent rounded-[10px]',
           className
         )}
         {...props}
