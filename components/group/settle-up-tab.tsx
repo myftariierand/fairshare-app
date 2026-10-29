@@ -1,17 +1,22 @@
 import { View } from 'react-native'
+import { format } from 'date-fns'
 
 import { useAuthUser } from '@/lib/auth-context'
 import { useSettleUp } from '@/services/group'
 
 import { formatAmount, getErrorMessage } from '@/lib/utils'
 
-import type { Debt } from '@/types/group'
+import { TransactionType } from '@/types/group'
+import type { Debt, Member, Transaction } from '@/types/group'
 
-import { HandCoinsIcon, MoveRightIcon } from 'lucide-react-native'
+import { ArrowRightIcon, CheckIcon } from 'lucide-react-native'
 import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
+import { Amount } from '@/components/ui/amount'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
+import { InitialsAvatar } from '@/components/ui/initials-avatar'
+import { SectionLabel } from '@/components/ui/section-label'
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -25,19 +30,29 @@ import {
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner-native'
 import { Spinner } from '@/components/spinner'
-import { Empty } from '@/components/ui/empty'
 
 export default function SettleUpTab({
   debts,
+  transactions,
+  members,
   currency,
   groupId,
 }: {
   debts: Debt[]
+  transactions: Transaction[]
+  members: Member[]
   currency: string
   groupId: string
 }) {
   const user = useAuthUser()
   const settleUp = useSettleUp()
+
+  const firstName = (person: { id: string; name: string }) =>
+    person.id === user.id ? 'You' : person.name.split(' ')[0]
+
+  const payments = transactions
+    .filter(t => t.type === TransactionType.settlement)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   const handleSettleUp = async (debt: Debt) => {
     try {
@@ -52,66 +67,118 @@ export default function SettleUpTab({
     }
   }
 
-  if (!debts.length) {
-    return (
-      <Empty
-        title='Nothing To Settle'
-        icon={HandCoinsIcon}
-        description='There are no debts to settle at the moment.'
-      />
-    )
-  }
-
   return (
-    <View className='gap-2'>
-      {debts.map(debt => (
-        <Card key={debt.from.id + debt.to.id} className='p-0'>
-          <CardContent className='flex-row items-center justify-between p-2 pl-4'>
-            <View>
-              <View className='flex-row gap-3'>
-                <Text className='text-sm'>{debt.from.name.split(' ')[0]}</Text>
-                <Icon as={MoveRightIcon} />
-                <Text className='text-sm'>{debt.to.name.split(' ')[0]}</Text>
+    <View className='gap-5 pb-6'>
+      {!debts.length ? (
+        <Card className='items-center gap-2 px-6 py-7'>
+          <View className='flex-row'>
+            {members.slice(0, 5).map((member, i) => (
+              <InitialsAvatar
+                key={member.id}
+                name={member.name}
+                className={
+                  i > 0 ? 'border-card -ml-2 size-9 border-2' : 'border-card size-9 border-2'
+                }
+                textClassName='text-xs'
+              />
+            ))}
+          </View>
+          <Text className='mt-2 text-lg font-bold'>Everyone's square</Text>
+          <Text className='text-muted-foreground text-center'>
+            No debts left in this group. New expenses will show suggested payments here.
+          </Text>
+        </Card>
+      ) : (
+        <View className='gap-2'>
+          <SectionLabel>Suggested payments</SectionLabel>
+          {debts.map(debt => {
+            const youReceive = user.id === debt.to.id
+            const youPay = user.id === debt.from.id
+            return (
+              <Card key={debt.from.id + debt.to.id} className='gap-3 p-4'>
+                <View className='flex-row items-center gap-2'>
+                  <InitialsAvatar
+                    name={debt.from.name}
+                    className='size-9'
+                    textClassName='text-xs'
+                  />
+                  <Icon as={ArrowRightIcon} className='text-muted-foreground size-4' />
+                  <InitialsAvatar name={debt.to.name} className='size-9' textClassName='text-xs' />
+                  <View className='ml-1 flex-1'>
+                    <Text className='font-semibold' numberOfLines={1}>
+                      {firstName(debt.from)} {youPay ? 'pay' : 'pays'} {firstName(debt.to)}
+                    </Text>
+                  </View>
+                  <Amount
+                    value={youPay ? -debt.amount : debt.amount}
+                    currency={currency}
+                    tone={youPay || youReceive ? 'balance' : 'plain'}
+                    className='font-semibold'
+                  />
+                </View>
+                {youReceive ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant='outline' size='sm'>
+                        <Icon as={CheckIcon} className='size-4' />
+                        <Text>Mark as paid</Text>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Did {debt.from.name.split(' ')[0]} pay you?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This records a payment of {formatAmount(debt.amount, currency)} from{' '}
+                          {debt.from.name} to you and settles the debt.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>
+                          <Text>Cancel</Text>
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          disabled={settleUp.isPending}
+                          onPress={() => handleSettleUp(debt)}
+                        >
+                          {settleUp.isPending ? <Spinner /> : <Text>Mark as paid</Text>}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : youPay ? (
+                  <Text className='text-muted-foreground text-sm'>
+                    Once you've paid, {debt.to.name.split(' ')[0]} marks it as paid.
+                  </Text>
+                ) : null}
+              </Card>
+            )
+          })}
+        </View>
+      )}
+
+      {payments.length > 0 && (
+        <View className='gap-1'>
+          <SectionLabel>Payment history</SectionLabel>
+          {payments.map(payment => (
+            <View key={payment.id} className='flex-row items-center gap-3 py-2'>
+              <View className='bg-owed/10 size-8 items-center justify-center rounded-md'>
+                <Icon as={CheckIcon} className='text-owed size-4' />
               </View>
-              <View className='flex-row gap-1'>
-                <Text className='text-xs'>{debt.from.name.split(' ')[0]}</Text>
-                <Text className='text-muted-foreground text-xs'>owes</Text>
-                <Text className='text-xs'>{formatAmount(debt.amount, currency)}</Text>
-                <Text className='text-muted-foreground text-xs'>to</Text>
-                <Text className='text-xs'>{debt.to.name.split(' ')[0]}</Text>
+              <Text className='flex-1' numberOfLines={2}>
+                {payment.description}
+              </Text>
+              <View className='items-end'>
+                <Amount value={payment.amount} currency={currency} className='text-sm' />
+                <Text className='text-muted-foreground text-xs'>
+                  {format(payment.createdAt, 'd MMM')}
+                </Text>
               </View>
             </View>
-            {user.id === debt.to.id && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button size={'icon'} variant={'secondary'} className='size-12'>
-                    <Icon as={HandCoinsIcon} />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will settle the debt between you and {debt.from.name}.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>
-                      <Text>Cancel</Text>
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      disabled={settleUp.isPending}
-                      onPress={() => handleSettleUp(debt)}
-                    >
-                      {settleUp.isPending ? <Spinner /> : <Text>Settle Up</Text>}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </CardContent>
-        </Card>
-      ))}
+          ))}
+        </View>
+      )}
     </View>
   )
 }

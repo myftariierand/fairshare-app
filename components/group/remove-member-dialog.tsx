@@ -46,16 +46,20 @@ export function RemoveMemberDialog(props: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button size={'icon'} variant={'outline'} disabled={removeMember.isPending}>
-          <Icon as={UserMinusIcon} />
+        <Button
+          size='icon'
+          variant='ghost'
+          disabled={removeMember.isPending}
+          accessibilityLabel={`Remove ${props.member.name} from the group`}
+        >
+          <Icon as={UserMinusIcon} className='text-muted-foreground' />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Remove member?</AlertDialogTitle>
+          <AlertDialogTitle>Remove {props.member.name.split(' ')[0]}?</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to remove {props.member.name} from the group? This action cannot
-            be undone.
+            {props.member.name} will lose access to this group. You can invite them again later.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -63,7 +67,9 @@ export function RemoveMemberDialog(props: Props) {
             <Text>Cancel</Text>
           </AlertDialogCancel>
           <AlertDialogAction asChild disabled={removeMember.isPending} onPress={handleRemoveMember}>
-            <Button variant={'destructive'}>{false ? <Spinner /> : <Text>Remove</Text>}</Button>
+            <Button variant={'destructive'}>
+              {removeMember.isPending ? <Spinner /> : <Text>Remove</Text>}
+            </Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import { Stack } from 'expo-router'
+import { Link, Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 
@@ -8,11 +8,13 @@ import { useGroupIdParam } from '@/hooks/use-group-id-param'
 import { useAuthUser } from '@/lib/auth-context'
 
 import { Text } from '@/components/ui/text'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { InitialsAvatar } from '@/components/ui/initials-avatar'
+import { SectionLabel } from '@/components/ui/section-label'
+import { Separator } from '@/components/ui/separator'
 import { RemoveMemberDialog } from '@/components/group/remove-member-dialog'
 import { EditGroupForm } from '@/components/group/edit-group-form'
-import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 import DeleteGroup from '@/components/group/delete-group'
 
 const SettingsScreen = () => {
@@ -22,52 +24,62 @@ const SettingsScreen = () => {
 
   if (!data) return null
 
+  const isAdmin = data.createdById === user.id
+
   return (
     <>
       <Stack.Screen
         options={{
-          title: 'Settings',
+          title: 'Group settings',
         }}
       />
-      <SafeAreaView edges={['bottom']}>
+      <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
         <KeyboardAwareScrollView>
-          <View className='p-4 pt-0'>
-            <Text className='mb-4' variant={'large'}>
-              Members
-            </Text>
-            <View className='gap-4'>
-              {data?.members.map(member => (
-                <View key={member.id} className='flex-row items-center gap-2'>
-                  <Avatar alt={member.name}>
-                    <AvatarFallback className='border-border border'>
-                      <Text variant={'muted'} className='text-xs'>
-                        {member.name.slice(0, 2)}
-                      </Text>
-                    </AvatarFallback>
-                  </Avatar>
-                  <View className='flex-1'>
-                    <View className='flex-row items-center gap-1'>
-                      <Text>{member.name}</Text>
-                      {data.createdById === member.id && (
-                        <Badge variant={'secondary'}>
-                          <Text>Admin</Text>
-                        </Badge>
+          <View className='gap-8 p-4'>
+            <View className='gap-3'>
+              <SectionLabel>Details</SectionLabel>
+              <EditGroupForm data={data} />
+            </View>
+
+            <View className='gap-3'>
+              <View className='flex-row items-center justify-between'>
+                <SectionLabel>Members · {data.members.length}</SectionLabel>
+                <Link asChild href={`/groups/${groupId}/invite-member`}>
+                  <Button variant='ghost' size='sm'>
+                    <Text className='text-primary'>Invite</Text>
+                  </Button>
+                </Link>
+              </View>
+              <Card className='gap-0 px-4 py-0'>
+                {data.members.map((member, index) => (
+                  <View key={member.id}>
+                    {index > 0 && <Separator />}
+                    <View className='min-h-16 flex-row items-center gap-3 py-2'>
+                      <InitialsAvatar name={member.name} className='size-10' />
+                      <View className='flex-1'>
+                        <View className='flex-row items-center gap-2'>
+                          <Text className='shrink font-semibold' numberOfLines={1}>
+                            {member.id === user.id ? `${member.name} (you)` : member.name}
+                          </Text>
+                          {data.createdById === member.id && (
+                            <View className='bg-secondary rounded-full px-2 py-0.5'>
+                              <Text className='text-xs font-semibold'>Admin</Text>
+                            </View>
+                          )}
+                        </View>
+                        <Text className='text-muted-foreground text-sm' numberOfLines={1}>
+                          {member.email}
+                        </Text>
+                      </View>
+                      {isAdmin && data.createdById !== member.id && (
+                        <RemoveMemberDialog member={member} />
                       )}
                     </View>
-                    <Text variant={'muted'}>{member.email}</Text>
                   </View>
-                  {data.createdById !== member.id && data.createdById === user.id && (
-                    <RemoveMemberDialog member={member} />
-                  )}
-                </View>
-              ))}
+                ))}
+              </Card>
             </View>
-            <Separator className='my-4' />
-            <Text className='mb-4' variant={'large'}>
-              Edit
-            </Text>
-            <EditGroupForm data={data} />
-            <Separator className='my-4' />
+
             <DeleteGroup />
           </View>
         </KeyboardAwareScrollView>

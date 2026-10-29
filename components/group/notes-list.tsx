@@ -21,13 +21,15 @@ import { cn } from '@/lib/utils'
 import type { Task } from '@/services/tasks'
 
 import {
+  CheckIcon,
   GripVerticalIcon,
   NotebookIcon,
-  SquareCheckIcon,
-  SquareIcon,
-  TrashIcon,
+  PlusIcon,
+  Trash2Icon,
 } from 'lucide-react-native'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { SectionLabel } from '@/components/ui/section-label'
 import { Text } from '@/components/ui/text'
 import { Icon } from '@/components/ui/icon'
 import { Empty } from '@/components/ui/empty'
@@ -41,38 +43,51 @@ const TaskRow = ({ item, groupId, userId }: { item: Task; groupId: string; userI
   const isTemp = isTempId(item.id)
 
   return (
-    <View className='flex-row items-center gap-3 rounded-md px-3 py-2'>
+    <View className='border-border bg-background min-h-14 flex-row items-center gap-3 border-b py-2'>
       <Pressable
         onPress={() => updateTask.mutate({ groupId, taskId: item.id, done: !item.done })}
         disabled={isTemp}
-        hitSlop={8}
+        hitSlop={10}
         accessibilityRole='checkbox'
+        accessibilityLabel={item.text}
         accessibilityState={{ checked: item.done, disabled: isTemp }}
+        className={cn(
+          'size-6 items-center justify-center rounded-md border-2',
+          item.done ? 'bg-muted border-muted' : 'border-muted-foreground/60'
+        )}
       >
-        {item.done ? <Icon as={SquareCheckIcon} /> : <Icon as={SquareIcon} />}
+        {item.done && <Icon as={CheckIcon} className='text-muted-foreground size-4' />}
       </Pressable>
 
       <View className='flex-1'>
         <Text className={cn(item.done && 'text-muted-foreground line-through')}>{item.text}</Text>
-        <Text variant={'muted'}>{userId === item.createdBy.id ? 'You' : item.createdBy.name}</Text>
+        <Text className='text-muted-foreground text-xs'>
+          {userId === item.createdBy.id ? 'Added by you' : item.createdBy.name}
+        </Text>
       </View>
 
       <Pressable
         onPress={() => deleteTask.mutate({ taskId: item.id, groupId })}
         disabled={isTemp}
         hitSlop={8}
+        accessibilityRole='button'
+        accessibilityLabel={`Delete ${item.text}`}
+        className='size-9 items-center justify-center rounded-md active:opacity-60'
       >
-        <Icon as={TrashIcon} size={16} />
+        <Icon as={Trash2Icon} className='text-muted-foreground size-4' />
       </Pressable>
 
-      <Pressable
-        onPressIn={drag}
-        disabled={item.done || isTemp}
-        hitSlop={8}
-        className={cn((item.done || isTemp) && 'opacity-30')}
-      >
-        <Icon as={GripVerticalIcon} />
-      </Pressable>
+      {!item.done && (
+        <Pressable
+          onPressIn={drag}
+          disabled={isTemp}
+          hitSlop={8}
+          accessibilityLabel={`Reorder ${item.text}`}
+          className={cn('h-9 w-6 items-center justify-center', isTemp && 'opacity-30')}
+        >
+          <Icon as={GripVerticalIcon} className='text-muted-foreground size-5' />
+        </Pressable>
+      )}
     </View>
   )
 }
@@ -87,6 +102,7 @@ export default function NotesList() {
 
   const { data: items = [] } = useGetTasks(groupId)
   const addTask = useAddTaskMutation()
+  const deleteTask = useDeleteTaskMutation()
   const { mutate: reorderTasks } = useReorderTasksMutation()
 
   const sortedItems = useMemo(
@@ -133,6 +149,13 @@ export default function NotesList() {
     inputRef.current?.focus()
   }
 
+  const doneItems = items.filter(task => task.done && !isTempId(task.id))
+  const openCount = items.length - items.filter(task => task.done).length
+
+  const clearDone = () => {
+    for (const task of doneItems) deleteTask.mutate({ taskId: task.id, groupId })
+  }
+
   const renderItem = useCallback(
     ({ item }: { item: Task }) => <TaskRow item={item} groupId={groupId} userId={user.id} />,
     [groupId, user.id]
@@ -147,21 +170,48 @@ export default function NotesList() {
       keyboardShouldPersistTaps='handled'
       style={{ marginBottom: insets.bottom + 8 }}
       ListHeaderComponent={
-        <Input
-          ref={inputRef}
-          placeholder='Add a task, press enter'
-          value={inputValue}
-          onChangeText={setInputValue}
-          onSubmitEditing={handleAdd}
-          returnKeyType='done'
-          submitBehavior='submit'
-        />
+        <View className='gap-4 pb-1'>
+          <View className='flex-row gap-2'>
+            <Input
+              ref={inputRef}
+              placeholder='Add an item…'
+              accessibilityLabel='New shopping or to-do item'
+              value={inputValue}
+              onChangeText={setInputValue}
+              onSubmitEditing={handleAdd}
+              returnKeyType='done'
+              submitBehavior='submit'
+              className='flex-1'
+            />
+            <Button
+              size='icon'
+              className='h-control w-control'
+              accessibilityLabel='Add item'
+              disabled={!inputValue.trim()}
+              onPress={handleAdd}
+            >
+              <Icon as={PlusIcon} />
+            </Button>
+          </View>
+          {items.length > 0 && (
+            <View className='flex-row items-center justify-between'>
+              <SectionLabel>
+                {openCount} to do · {items.length - openCount} done
+              </SectionLabel>
+              {doneItems.length > 0 && (
+                <Button variant='ghost' size='sm' onPress={clearDone}>
+                  <Text className='text-muted-foreground'>Clear done</Text>
+                </Button>
+              )}
+            </View>
+          )}
+        </View>
       }
       ListEmptyComponent={
         <Empty
-          title='No Notes'
+          title='No notes yet'
           icon={NotebookIcon}
-          description='Add a note by typing in the field above and pressing Enter.'
+          description='Keep a shared shopping or to-do list for the group here.'
         />
       }
     />
