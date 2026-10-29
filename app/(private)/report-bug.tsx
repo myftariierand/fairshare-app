@@ -11,6 +11,7 @@ import { useAppForm } from '@/lib/form'
 import { useAuthUser } from '@/lib/auth-context'
 import { getDeviceSummary } from '@/lib/device-info'
 import { getErrorMessage } from '@/lib/utils'
+import { useFullSheetTopInset } from '@/hooks/use-full-sheet-top-inset'
 import { BUG_SEVERITIES, useReportBugMutation, type BugSeverity } from '@/services/bug-report'
 
 import { XIcon } from 'lucide-react-native'
@@ -36,6 +37,7 @@ const SEVERITY: Record<BugSeverity, { label: string; hint: string }> = {
 export default function ReportBugScreen() {
   const user = useAuthUser()
   const card = useCSSVariable('--color-card') as string
+  const topInset = useFullSheetTopInset()
   const reportBug = useReportBugMutation()
   const device = useMemo(getDeviceSummary, [])
 
@@ -89,7 +91,12 @@ export default function ReportBugScreen() {
         keyboardShouldPersistTaps='handled'
         bottomOffset={24}
         style={{ backgroundColor: card }}
-        contentContainerStyle={{ padding: 20, paddingTop: 24, paddingBottom: 40, gap: 20 }}
+        contentContainerStyle={{
+          padding: 20,
+          paddingTop: topInset + 24,
+          paddingBottom: 40,
+          gap: 20,
+        }}
       >
         <View className='flex-row items-start gap-3'>
           <View className='flex-1'>

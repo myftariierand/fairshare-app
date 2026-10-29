@@ -9,6 +9,7 @@ import { useSearchUserQuery, type SearchResult } from '@/services/users'
 import { useGetGroupById, useInviteToGroupMutation } from '@/services/group'
 import { useGroupIdParam } from '@/hooks/use-group-id-param'
 import { getErrorMessage } from '@/lib/utils'
+import { useFullSheetTopInset } from '@/hooks/use-full-sheet-top-inset'
 
 import { SearchIcon, SendIcon, UserPlusIcon, UsersIcon, XIcon } from 'lucide-react-native'
 
@@ -36,6 +37,7 @@ export default function InviteMemberScreen() {
   const { groupId } = useGroupIdParam()
   const { data: group } = useGetGroupById(groupId)
   const card = useCSSVariable('--color-card') as string
+  const topInset = useFullSheetTopInset()
   const [input, setInput] = useState('')
   const [query] = useDebounceValue(input.trim(), 400)
 
@@ -59,7 +61,8 @@ export default function InviteMemberScreen() {
         keyExtractor={u => u.id}
         keyboardShouldPersistTaps='handled'
         keyboardDismissMode='on-drag'
-        contentContainerClassName='grow px-5 pt-6 pb-10'
+        contentContainerClassName='grow px-5 pb-10'
+        contentContainerStyle={{ paddingTop: topInset + 24 }}
         ItemSeparatorComponent={() => <View className='bg-border h-px' />}
         ListHeaderComponent={
           <View className='gap-5 pb-2'>

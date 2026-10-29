@@ -8,6 +8,7 @@ import { toast } from 'sonner-native'
 import { useSearchUserQuery, type SearchResult } from '@/services/users'
 import { useSendFriendRequestMutation } from '@/services/friends'
 import { getErrorMessage } from '@/lib/utils'
+import { useFullSheetTopInset } from '@/hooks/use-full-sheet-top-inset'
 
 import { SearchIcon, UserPlusIcon, UsersIcon, XIcon } from 'lucide-react-native'
 
@@ -36,6 +37,7 @@ function requestLabel(status: unknown) {
 
 export default function AddFriendScreen() {
   const card = useCSSVariable('--color-card') as string
+  const topInset = useFullSheetTopInset()
   const [input, setInput] = useState('')
   const [query] = useDebounceValue(input.trim(), 400)
 
@@ -61,7 +63,8 @@ export default function AddFriendScreen() {
         keyExtractor={u => u.id}
         keyboardShouldPersistTaps='handled'
         keyboardDismissMode='on-drag'
-        contentContainerClassName='grow px-5 pt-6 pb-10'
+        contentContainerClassName='grow px-5 pb-10'
+        contentContainerStyle={{ paddingTop: topInset + 24 }}
         ItemSeparatorComponent={() => <View className='bg-border h-px' />}
         ListHeaderComponent={
           <View className='gap-5 pb-2'>
