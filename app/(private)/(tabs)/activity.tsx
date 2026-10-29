@@ -28,12 +28,6 @@ import { Icon } from '@/components/ui/icon'
 
 import type { AcitivityLog } from '@/services/activity'
 
-const COLORS = {
-  background: '#ffffff',
-  foreground: '#0a0a0a',
-  muted: '#737373',
-}
-
 type Part = { text: string; muted?: boolean }
 type LogConfig = { icon: LucideIcon; parts: Part[] }
 

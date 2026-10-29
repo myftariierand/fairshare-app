@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { AuthProvider, useAuth } from '@/lib/auth-context'
-import { NAV_THEME } from '@/lib/theme'
+import { useNavTheme } from '@/lib/theme'
 import { ThemeProvider } from 'expo-router/react-navigation'
 import { PortalHost } from '@rn-primitives/portal'
 import { StatusBar } from 'expo-status-bar'
@@ -70,12 +70,13 @@ function RootNavigator() {
 
 export default function RootLayout() {
   const { theme } = useUniwind()
+  const navTheme = useNavTheme()
 
   return (
     <KeyboardProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <ThemeProvider value={NAV_THEME[theme ?? 'light']}>
+          <ThemeProvider value={navTheme}>
             <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
             <RootNavigator />
             <PortalHost />

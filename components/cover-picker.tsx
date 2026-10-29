@@ -36,7 +36,7 @@ export const CoverPicker = ({ value, onChange }: Props) => {
               hitSlop={8}
               className='border-background bg-destructive absolute -bottom-4 left-1/2 h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border-2'
             >
-              <Icon as={Trash} size={14} color={'white'} />
+              <Icon as={Trash} size={14} className='text-white' />
             </Pressable>
           </View>
         ) : (

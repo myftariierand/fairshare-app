@@ -103,10 +103,10 @@ export default function TransactionList({
                     className={cn(
                       'text-sm font-semibold',
                       transaction.balance < 0
-                        ? 'text-destructive'
+                        ? 'text-owe'
                         : transaction.balance === 0
                           ? ''
-                          : 'text-success'
+                          : 'text-owed'
                     )}
                   >
                     {formatAmount(Math.abs(transaction.balance), currency)}
