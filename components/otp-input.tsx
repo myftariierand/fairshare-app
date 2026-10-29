@@ -68,7 +68,7 @@ export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(
             return (
               <View
                 key={i}
-                className='bg-background dark:bg-input/30 text-foreground border-input size-10 items-center justify-center rounded-md border'
+                className='bg-card text-foreground border-input size-12 items-center justify-center rounded-md border'
                 style={[
                   // styles.cell,
                   isActive && { borderColor: activeColor, borderWidth: 2 },

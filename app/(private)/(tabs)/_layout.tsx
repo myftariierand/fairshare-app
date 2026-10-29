@@ -5,17 +5,15 @@ import { useAuthUser } from '@/lib/auth-context'
 
 import { Tabs, router } from 'expo-router'
 import { Pressable, View } from 'react-native'
-import { useCSSVariable, useUniwind } from 'uniwind'
-import { BRAND_THEME } from '@/lib/theme'
+import { useCSSVariable } from 'uniwind'
 
 import { ActivityIcon, ContactIcon, PlusIcon, UserGroupIcon } from 'lucide-react-native'
 
 export default function RootLayout() {
   const user = useAuthUser()
   const mutedForeground = useCSSVariable('--color-muted-foreground') as string
-  const { theme } = useUniwind()
-  // Bundled in app.json; only the redesign theme uses it
-  const fontFamily = theme === BRAND_THEME ? 'Geist' : undefined
+  // Navigation text isn't styled by Uniwind, so set the bundled font directly
+  const fontFamily = 'Geist'
 
   return (
     <Tabs

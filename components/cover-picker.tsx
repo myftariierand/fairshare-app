@@ -40,7 +40,7 @@ export const CoverPicker = ({ value, onChange }: Props) => {
             </Pressable>
           </View>
         ) : (
-          <View className='border-input dark:bg-input/30 bg-background h-28 items-center justify-center gap-1 rounded-2xl border border-dashed'>
+          <View className='border-input bg-card h-28 items-center justify-center gap-1 rounded-2xl border border-dashed'>
             <Icon as={ImagePlus} className='text-muted-foreground' />
             <Text variant={'muted'} className='text-xs'>
               Add a cover image

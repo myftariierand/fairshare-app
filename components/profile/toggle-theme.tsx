@@ -1,4 +1,4 @@
-import { ChevronRightIcon, MoonIcon, SparklesIcon, SunIcon } from 'lucide-react-native'
+import { ChevronRightIcon, MoonIcon, SunIcon } from 'lucide-react-native'
 import { Pressable, View } from 'react-native'
 import { Uniwind, useUniwind } from 'uniwind'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -12,23 +12,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BRAND_THEME } from '@/lib/theme'
 import { cn } from '@/lib/utils'
 
 export const THEME_STORAGE_KEY = 'theme'
 
-export type ThemePreference = 'light' | 'dark' | 'system' | typeof BRAND_THEME
+export type ThemePreference = 'light' | 'dark' | 'system'
 
 const OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: 'light', label: 'Light' },
   { value: 'dark', label: 'Dark' },
   { value: 'system', label: 'System' },
-  { value: BRAND_THEME, label: 'New design (beta)' },
 ]
 
 // Settings row that opens the theme menu
 const ToggleTheme = ({ className }: { className?: string }) => {
-  // `theme` is the resolved theme ('light' | 'dark' | 'fairshare'), even when following the system
+  // `theme` is the resolved theme ('light' | 'dark'), even when following the system
   const { theme, hasAdaptiveThemes } = useUniwind()
   const current = (hasAdaptiveThemes ? 'system' : theme) as ThemePreference
   const currentLabel = OPTIONS.find(o => o.value === current)?.label
@@ -55,7 +53,7 @@ const ToggleTheme = ({ className }: { className?: string }) => {
           className={cn('min-h-14 flex-row items-center gap-3 active:opacity-70', className)}
         >
           <Icon
-            as={theme === BRAND_THEME ? SparklesIcon : theme === 'dark' ? MoonIcon : SunIcon}
+            as={theme === 'dark' ? MoonIcon : SunIcon}
             className='text-muted-foreground size-5'
           />
           <Text className='flex-1 font-semibold'>Appearance</Text>

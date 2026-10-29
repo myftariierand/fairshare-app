@@ -298,7 +298,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
             <View className='items-center pt-4'>
               <SectionLabel>Amount</SectionLabel>
               <View className='mt-1 flex-row items-baseline justify-center gap-2'>
-                <Text className='text-muted-foreground fairshare:font-geist-mono font-mono text-xl font-medium'>
+                <Text className='text-muted-foreground font-mono text-xl font-medium'>
                   {currency}
                 </Text>
                 <TextInput
@@ -308,7 +308,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
                   value={field.state.value}
                   onChangeText={handleAmountChange}
                   autoFocus={!data}
-                  className='text-foreground fairshare:font-geist-mono min-w-24 font-mono text-5xl font-semibold tracking-tight'
+                  className='text-foreground min-w-24 font-mono text-5xl font-semibold tracking-tight'
                   placeholderTextColorClassName='accent-muted-foreground'
                 />
               </View>
@@ -421,7 +421,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
             <SectionLabel>Split</SectionLabel>
             <Text
               className={cn(
-                'fairshare:font-geist-mono font-mono text-sm',
+                'font-mono text-sm',
                 amountsOff ? 'text-destructive' : 'text-muted-foreground'
               )}
             >
@@ -459,7 +459,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
 
                     {mode === 'equally' && (
                       <>
-                        <Text className='text-muted-foreground fairshare:font-geist-mono font-mono text-sm'>
+                        <Text className='text-muted-foreground font-mono text-sm'>
                           {included && total > 0 ? amountFor(member.id) : '–'}
                         </Text>
                         <Pressable
@@ -482,7 +482,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
 
                     {mode === 'shares' && (
                       <>
-                        <Text className='text-muted-foreground fairshare:font-geist-mono font-mono text-sm'>
+                        <Text className='text-muted-foreground font-mono text-sm'>
                           {included && total > 0 ? amountFor(member.id) : '–'}
                         </Text>
                         <View className='flex-row items-center gap-1'>
@@ -497,7 +497,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
                             <Icon as={MinusIcon} className='size-4' />
                           </Button>
                           <Text
-                            className='fairshare:font-geist-mono w-6 text-center font-mono font-semibold'
+                            className='w-6 text-center font-mono font-semibold'
                             accessibilityLabel={`${weightOf(member.id)} shares`}
                           >
                             {weightOf(member.id)}
@@ -522,7 +522,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
                             accessibilityLabel={`Amount for ${name}`}
                             inputMode='decimal'
                             placeholder='0.00'
-                            className='fairshare:font-geist-mono h-10 w-28 text-right font-mono'
+                            className='h-10 w-28 text-right font-mono'
                             value={field.state.value}
                             onChangeText={v => field.handleChange(sanitizeNumberInput(v))}
                           />

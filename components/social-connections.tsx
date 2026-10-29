@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Image, Platform, View } from 'react-native'
 import { useUniwind } from 'uniwind'
-import { isDarkTheme } from '@/lib/theme'
 import { toast } from 'sonner-native'
 
 import { useAuth } from '@/lib/auth-context'
@@ -66,7 +65,7 @@ export function SocialConnections({ label = 'Continue with Google' }: { label?: 
             <Image
               className={cn('size-5', strategy.useTint && Platform.select({ web: 'dark:invert' }))}
               tintColor={Platform.select({
-                native: strategy.useTint ? (isDarkTheme(theme) ? 'white' : 'black') : undefined,
+                native: strategy.useTint ? (theme === 'dark' ? 'white' : 'black') : undefined,
               })}
               source={strategy.source}
               accessibilityIgnoresInvertColors
