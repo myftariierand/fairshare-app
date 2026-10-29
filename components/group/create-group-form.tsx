@@ -1,8 +1,8 @@
-import { Pressable, View } from 'react-native'
+import { ActivityIndicator, Pressable, View } from 'react-native'
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
 import { toast } from 'sonner-native'
-import { router } from 'expo-router'
+import { Link, router } from 'expo-router'
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -15,7 +15,7 @@ import { inviteToGroup, useCreateGroup } from '@/services/group'
 import { useGetFriendsQuery } from '@/services/friends'
 import { cn, getErrorMessage } from '@/lib/utils'
 
-import { Check, CheckIcon } from 'lucide-react-native'
+import { Check, CheckIcon, UserPlusIcon } from 'lucide-react-native'
 
 import { Text } from '@/components/ui/text'
 import { Input } from '@/components/ui/input'
@@ -69,7 +69,12 @@ type CoverSchemaType = z.infer<typeof coverSchema>
 const CreateGroupForm = () => {
   const insets = useSafeAreaInsets()
   const createGroup = useCreateGroup()
-  const { data: friends = [] } = useGetFriendsQuery()
+  const {
+    data: friends = [],
+    isPending: friendsLoading,
+    isError: friendsFailed,
+    refetch: refetchFriends,
+  } = useGetFriendsQuery()
 
   const form = useAppForm({
     defaultValues: {
@@ -197,64 +202,85 @@ const CreateGroupForm = () => {
           }}
         />
 
-        {friends.length > 0 && (
-          <form.Field name='invite'>
-            {field => {
-              const invited = field.state.value
-              const toggle = (id: string) =>
-                field.handleChange(
-                  invited.includes(id) ? invited.filter(i => i !== id) : [...invited, id]
-                )
-
-              return (
-                <View className='gap-2'>
-                  <SectionLabel>
-                    Invite friends{invited.length ? ` · ${invited.length} selected` : ''}
-                  </SectionLabel>
-                  <Card className='gap-0 px-4 py-0'>
-                    {friends.map((friend, index) => {
-                      const on = invited.includes(friend.id)
-                      return (
-                        <View key={friend.id}>
-                          {index > 0 && <Separator />}
-                          <Pressable
-                            role='checkbox'
-                            aria-checked={on}
-                            accessibilityLabel={`Invite ${friend.name}`}
-                            onPress={() => toggle(friend.id)}
-                            className='min-h-14 flex-row items-center gap-3 py-2 active:opacity-70'
-                          >
-                            <InitialsAvatar
-                              name={friend.name}
-                              className='size-9'
-                              textClassName='text-xs'
-                            />
-                            <Text className='flex-1 font-medium' numberOfLines={1}>
-                              {friend.name}
-                            </Text>
-                            <View
-                              className={cn(
-                                'size-6 items-center justify-center rounded-md border-2',
-                                on ? 'bg-primary border-primary' : 'border-muted-foreground/60'
-                              )}
-                            >
-                              {on && (
-                                <Icon as={CheckIcon} className='text-primary-foreground size-4' />
-                              )}
-                            </View>
-                          </Pressable>
-                        </View>
-                      )
-                    })}
-                  </Card>
-                  <Text className='text-muted-foreground text-sm'>
-                    They'll get an invite to join. You can also share a link or QR code later.
-                  </Text>
-                </View>
+        <form.Field name='invite'>
+          {field => {
+            const invited = field.state.value
+            const toggle = (id: string) =>
+              field.handleChange(
+                invited.includes(id) ? invited.filter(i => i !== id) : [...invited, id]
               )
-            }}
-          </form.Field>
-        )}
+
+            return (
+              <View className='gap-2'>
+                <SectionLabel>
+                  Invite friends{invited.length ? ` · ${invited.length} selected` : ''}
+                </SectionLabel>
+                <Card className='gap-0 px-4 py-0'>
+                  {friendsLoading ? (
+                    <View className='min-h-14 flex-row items-center gap-3 py-2'>
+                      <ActivityIndicator />
+                      <Text className='text-muted-foreground'>Loading friends…</Text>
+                    </View>
+                  ) : friendsFailed ? (
+                    <View className='min-h-14 flex-row items-center gap-3 py-2'>
+                      <Text className='text-muted-foreground flex-1'>Couldn't load friends</Text>
+                      <Button variant='ghost' size='sm' onPress={() => refetchFriends()}>
+                        <Text className='text-primary'>Retry</Text>
+                      </Button>
+                    </View>
+                  ) : friends.length === 0 ? (
+                    <View className='min-h-14 flex-row items-center gap-3 py-2'>
+                      <Text className='text-muted-foreground flex-1'>No friends yet</Text>
+                      <Link asChild href='/friends/add'>
+                        <Button variant='ghost' size='sm'>
+                          <Icon as={UserPlusIcon} className='text-primary size-4' />
+                          <Text className='text-primary'>Add a friend</Text>
+                        </Button>
+                      </Link>
+                    </View>
+                  ) : null}
+                  {friends.map((friend, index) => {
+                    const on = invited.includes(friend.id)
+                    return (
+                      <View key={friend.id}>
+                        {index > 0 && <Separator />}
+                        <Pressable
+                          role='checkbox'
+                          aria-checked={on}
+                          accessibilityLabel={`Invite ${friend.name}`}
+                          onPress={() => toggle(friend.id)}
+                          className='min-h-14 flex-row items-center gap-3 py-2 active:opacity-70'
+                        >
+                          <InitialsAvatar
+                            name={friend.name}
+                            className='size-9'
+                            textClassName='text-xs'
+                          />
+                          <Text className='flex-1 font-medium' numberOfLines={1}>
+                            {friend.name}
+                          </Text>
+                          <View
+                            className={cn(
+                              'size-6 items-center justify-center rounded-md border-2',
+                              on ? 'bg-primary border-primary' : 'border-muted-foreground/60'
+                            )}
+                          >
+                            {on && (
+                              <Icon as={CheckIcon} className='text-primary-foreground size-4' />
+                            )}
+                          </View>
+                        </Pressable>
+                      </View>
+                    )
+                  })}
+                </Card>
+                <Text className='text-muted-foreground text-sm'>
+                  They'll get an invite to join. You can also share a link or QR code later.
+                </Text>
+              </View>
+            )
+          }}
+        </form.Field>
       </KeyboardAwareScrollView>
 
       <KeyboardStickyView className='bg-background' offset={{ closed: 0, opened: 0 }}>
