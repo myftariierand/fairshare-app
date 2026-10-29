@@ -1,5 +1,7 @@
 import { View } from 'react-native'
-import { Link, Stack } from 'expo-router'
+import { Link, Stack, router } from 'expo-router'
+import { ArrowLeftIcon } from 'lucide-react-native'
+import { useCSSVariable } from 'uniwind'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 
@@ -16,11 +18,13 @@ import { Separator } from '@/components/ui/separator'
 import { RemoveMemberDialog } from '@/components/group/remove-member-dialog'
 import { EditGroupForm } from '@/components/group/edit-group-form'
 import DeleteGroup from '@/components/group/delete-group'
+import { HeaderButton, headerLeftOptions } from '@/components/header-button'
 
 const SettingsScreen = () => {
   const { groupId } = useGroupIdParam()
   const { data } = useGetGroupById(groupId)
   const user = useAuthUser()
+  const background = useCSSVariable('--color-background') as string
 
   if (!data) return null
 
@@ -31,15 +35,19 @@ const SettingsScreen = () => {
       <Stack.Screen
         options={{
           title: 'Group settings',
+          headerTitleAlign: 'center',
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: background },
+          headerTitleStyle: { fontFamily: 'Geist', fontWeight: '600' },
+          ...headerLeftOptions(
+            <HeaderButton icon={ArrowLeftIcon} label='Back' onPress={() => router.back()} />
+          ),
         }}
       />
       <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
-        <KeyboardAwareScrollView>
-          <View className='gap-8 p-4'>
-            <View className='gap-3'>
-              <SectionLabel>Details</SectionLabel>
-              <EditGroupForm data={data} />
-            </View>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps='handled' bottomOffset={24}>
+          <View className='gap-8 p-5'>
+            <EditGroupForm data={data} />
 
             <View className='gap-3'>
               <View className='flex-row items-center justify-between'>
