@@ -11,6 +11,8 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   --spacing-hairline: hairlineWidth();
+  /* Height of buttons and inputs; set per theme below */
+  --spacing-control: 40px;
 
   /* Bundled via the expo-font config plugin in app.json */
   --font-geist: Geist;
@@ -55,6 +57,17 @@
       --color-sidebar-border: oklch(0.922 0 0);
       --color-sidebar-ring: oklch(0.708 0 0);
       --radius: 10px;
+      --spacing-control: 40px;
+      --color-tint-1: oklch(0.97 0 0);
+      --color-tint-1-foreground: oklch(0.205 0 0);
+      --color-tint-2: oklch(0.97 0 0);
+      --color-tint-2-foreground: oklch(0.205 0 0);
+      --color-tint-3: oklch(0.97 0 0);
+      --color-tint-3-foreground: oklch(0.205 0 0);
+      --color-tint-4: oklch(0.97 0 0);
+      --color-tint-4-foreground: oklch(0.205 0 0);
+      --color-tint-5: oklch(0.97 0 0);
+      --color-tint-5-foreground: oklch(0.205 0 0);
     }
 
     @variant dark {
@@ -93,6 +106,17 @@
       --color-sidebar-border: oklch(1 0 0 / 10%);
       --color-sidebar-ring: oklch(0.556 0 0);
       --radius: 10px;
+      --spacing-control: 40px;
+      --color-tint-1: oklch(0.269 0 0);
+      --color-tint-1-foreground: oklch(0.985 0 0);
+      --color-tint-2: oklch(0.269 0 0);
+      --color-tint-2-foreground: oklch(0.985 0 0);
+      --color-tint-3: oklch(0.269 0 0);
+      --color-tint-3-foreground: oklch(0.985 0 0);
+      --color-tint-4: oklch(0.269 0 0);
+      --color-tint-4-foreground: oklch(0.985 0 0);
+      --color-tint-5: oklch(0.269 0 0);
+      --color-tint-5-foreground: oklch(0.985 0 0);
     }
 
     /* Redesign (beta): opt-in from Profile until it replaces dark */
@@ -131,7 +155,20 @@
       --color-sidebar-accent-foreground: #f3f4f1;
       --color-sidebar-border: #2a2d32;
       --color-sidebar-ring: #c8f169;
-      --radius: 14px;
+      /* md = 14px for controls, xl = 20px for cards */
+      --radius: 16px;
+      --spacing-control: 52px;
+      /* Avatar and group tiles: lime, sky, peach, lilac, mint */
+      --color-tint-1: #2b3a1e;
+      --color-tint-1-foreground: #c8f169;
+      --color-tint-2: #1e3340;
+      --color-tint-2-foreground: #8fd3ff;
+      --color-tint-3: #3a2a1e;
+      --color-tint-3-foreground: #ffc08a;
+      --color-tint-4: #33213a;
+      --color-tint-4-foreground: #e2a8ff;
+      --color-tint-5: #1e3a33;
+      --color-tint-5-foreground: #6ee7b7;
     }
   }
 }

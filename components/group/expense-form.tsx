@@ -40,7 +40,8 @@ import { Switch } from '@/components/ui/switch'
 import { Card } from '@/components/ui/card'
 import { ExpenseSplits } from '@/components/group/expense-splits'
 import { Spinner } from '@/components/spinner'
-import { SingleTransaction } from '@/types/group'
+import { SingleTransaction, type TransactionCategory } from '@/types/group'
+import { CategoryGlyph } from '@/components/category-icon'
 
 export const expenseFormOpts = formOptions({
   defaultValues: {
@@ -213,7 +214,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
               <View className='flex-row flex-wrap justify-start gap-1'>
                 {Object.entries(transactionCategories)
                   .slice(0, 10)
-                  .map(([value, { emoji, label }]) => (
+                  .map(([value, { label }]) => (
                     <ToggleGroupItem
                       key={label}
                       value={value}
@@ -221,9 +222,11 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
                       size={'sm'}
                       variant={'outline'}
                     >
-                      <Text>
-                        {emoji} {label}
-                      </Text>
+                      <CategoryGlyph
+                        category={value as TransactionCategory}
+                        iconClassName='size-4'
+                      />
+                      <Text>{label}</Text>
                     </ToggleGroupItem>
                   ))}
               </View>
@@ -231,7 +234,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
                 <CollapsibleContent className='flex-row flex-wrap gap-1'>
                   {Object.entries(transactionCategories)
                     .slice(10)
-                    .map(([value, { emoji, label }]) => (
+                    .map(([value, { label }]) => (
                       <ToggleGroupItem
                         key={label}
                         value={value}
@@ -239,9 +242,11 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
                         size={'sm'}
                         variant={'outline'}
                       >
-                        <Text>
-                          {emoji} {label}
-                        </Text>
+                        <CategoryGlyph
+                          category={value as TransactionCategory}
+                          iconClassName='size-4'
+                        />
+                        <Text>{label}</Text>
                       </ToggleGroupItem>
                     ))}
                 </CollapsibleContent>
