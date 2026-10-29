@@ -1,9 +1,10 @@
 import '@/global.css'
 import { useMemo } from 'react'
 import { Platform, View } from 'react-native'
-import { useSegments } from 'expo-router'
+import { VectorIcon, useSegments } from 'expo-router'
 import { NativeTabs } from 'expo-router/native-tabs'
 import { useCSSVariable } from 'uniwind'
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 
 import { useAuthUser } from '@/lib/auth-context'
 import { useGetFriendRequestsQuery } from '@/services/friends'
@@ -14,6 +15,15 @@ import { FloatingAddButton } from '@/components/floating-add-button'
 // Badges are rendered only when there's something to count: with any text, including
 // "0", the native badge shows and its `hidden` prop is ignored
 const badge = (count: number) => (count > 9 ? '9+' : String(count))
+
+type MdiName = React.ComponentProps<typeof MaterialCommunityIcons>['name']
+
+// Android icons with an outlined and a filled glyph. The Material Symbols font behind
+// the `md` prop has only outlined glyphs, so selected and unselected tabs looked the same.
+const mdi = (outline: MdiName, filled: MdiName) => ({
+  default: <VectorIcon family={MaterialCommunityIcons} name={outline} />,
+  selected: <VectorIcon family={MaterialCommunityIcons} name={filled} />,
+})
 
 // #rrggbb plus an alpha byte; other formats come back unchanged
 const withAlpha = (hex: string, alpha: number) =>
@@ -65,7 +75,10 @@ export default function TabsLayout() {
         labelVisibilityMode='labeled'
       >
         <NativeTabs.Trigger name='(home)'>
-          <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md='home' />
+          <NativeTabs.Trigger.Icon
+            sf={{ default: 'house', selected: 'house.fill' }}
+            src={mdi('home-outline', 'home')}
+          />
           <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
           {pendingInvites > 0 && (
             <NativeTabs.Trigger.Badge>{badge(pendingInvites)}</NativeTabs.Trigger.Badge>
@@ -75,7 +88,7 @@ export default function TabsLayout() {
         <NativeTabs.Trigger name='(groups)'>
           <NativeTabs.Trigger.Icon
             sf={{ default: 'person.3', selected: 'person.3.fill' }}
-            md='groups'
+            src={mdi('account-group-outline', 'account-group')}
           />
           <NativeTabs.Trigger.Label>Groups</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
@@ -83,7 +96,7 @@ export default function TabsLayout() {
         <NativeTabs.Trigger name='(friends)'>
           <NativeTabs.Trigger.Icon
             sf={{ default: 'person.2', selected: 'person.2.fill' }}
-            md='group'
+            src={mdi('account-multiple-outline', 'account-multiple')}
           />
           <NativeTabs.Trigger.Label>Friends</NativeTabs.Trigger.Label>
           {incomingRequests > 0 && (
@@ -92,14 +105,17 @@ export default function TabsLayout() {
         </NativeTabs.Trigger>
 
         <NativeTabs.Trigger name='(activity)'>
-          <NativeTabs.Trigger.Icon sf='clock.arrow.circlepath' md='history' />
+          <NativeTabs.Trigger.Icon
+            sf={{ default: 'clock', selected: 'clock.fill' }}
+            src={mdi('clock-outline', 'clock')}
+          />
           <NativeTabs.Trigger.Label>Activity</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
 
         <NativeTabs.Trigger name='(profile)'>
           <NativeTabs.Trigger.Icon
             sf={{ default: 'person.crop.circle', selected: 'person.crop.circle.fill' }}
-            md='account_circle'
+            src={mdi('account-circle-outline', 'account-circle')}
           />
           <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
