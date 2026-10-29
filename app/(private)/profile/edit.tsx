@@ -7,7 +7,6 @@ import { Text } from '@/components/ui/text'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import UpdateProfileForm from '@/components/profile/update-profile-form'
 import ChangePasswordForm from '@/components/profile/change-password-form'
-import ToggleTheme from '@/components/profile/toggle-theme'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function EditProfileScreen() {
@@ -41,17 +40,6 @@ export default function EditProfileScreen() {
                 </CardContent>
               </Card>
             )}
-            <Card>
-              <CardHeader>
-                <CardTitle>Appearance</CardTitle>
-                <CardDescription>
-                  Change your theme, color scheme and other things here.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ToggleTheme />
-              </CardContent>
-            </Card>
           </View>
         </ScrollView>
       </SafeAreaView>

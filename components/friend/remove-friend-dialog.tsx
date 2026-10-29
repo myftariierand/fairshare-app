@@ -6,9 +6,6 @@ import { getErrorMessage } from '@/lib/utils'
 
 import type { Friend } from '@/services/friends'
 
-import { UserMinusIcon } from 'lucide-react-native'
-
-import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,14 +15,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
 import { Spinner } from '@/components/spinner'
 
+// Controlled: opened from the friend row's menu
 type Props = {
   friend: Friend
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
 const RemoveFriendDialog = (props: Props) => {
@@ -34,23 +32,20 @@ const RemoveFriendDialog = (props: Props) => {
   const handleDelete = async () => {
     try {
       await removeFriend.mutateAsync(props.friend.requestId)
+      props.onOpenChange(false)
     } catch (error) {
       toast.error(getErrorMessage(error))
     }
   }
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button size={'sm'} variant={'outline'} className='ml-auto'>
-          <Icon as={UserMinusIcon} />
-          <Text>Remove</Text>
-        </Button>
-      </AlertDialogTrigger>
+    <AlertDialog open={props.open} onOpenChange={props.onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Remove {props.friend.name}?</AlertDialogTitle>
-          <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+          <AlertDialogDescription>
+            You'll need to send a new request to be friends again.
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>

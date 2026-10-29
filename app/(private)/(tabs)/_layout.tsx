@@ -4,18 +4,27 @@ import '@/global.css'
 import { useAuthUser } from '@/lib/auth-context'
 
 import { Tabs } from 'expo-router'
-import { useCSSVariable } from 'uniwind'
+import { useCSSVariable, useUniwind } from 'uniwind'
+import { BRAND_THEME } from '@/lib/theme'
 
 import { ActivityIcon, ContactIcon, UserGroupIcon, UserIcon } from 'lucide-react-native'
 
 export default function RootLayout() {
   const user = useAuthUser()
   const mutedForeground = useCSSVariable('--color-muted-foreground') as string
+  const { theme } = useUniwind()
+  // Bundled in app.json; only the redesign theme uses it
+  const fontFamily = theme === BRAND_THEME ? 'Geist' : undefined
 
   return (
     <Tabs
       screenOptions={{
         tabBarInactiveTintColor: mutedForeground,
+        headerTitleAlign: 'left',
+        headerShadowVisible: false,
+        headerTitleStyle: { fontSize: 28, fontWeight: '700', fontFamily },
+        headerLeftContainerStyle: { paddingLeft: 4 },
+        tabBarLabelStyle: { fontFamily, fontWeight: '500' },
       }}
     >
       <Tabs.Screen

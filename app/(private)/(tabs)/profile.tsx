@@ -1,22 +1,23 @@
 import { ScrollView, View } from 'react-native'
-import { Link, Tabs as RouterTabs } from 'expo-router'
+import { Link } from 'expo-router'
+import { format } from 'date-fns'
 
-import { useAuth, useAuthUser } from '@/lib/auth-context'
+import { useAuth } from '@/lib/auth-context'
+import { useGetProfileQuery } from '@/services/profile'
 
-import { CreditCardIcon, PencilIcon, UserCheckIcon, UsersIcon } from 'lucide-react-native'
+import { LogOutIcon, PencilIcon, UserIcon } from 'lucide-react-native'
 
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { Icon } from '@/components/ui/icon'
-import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs'
+import { InitialsAvatar } from '@/components/ui/initials-avatar'
+import { ListRow } from '@/components/ui/list-row'
+import { SectionLabel } from '@/components/ui/section-label'
+import { Separator } from '@/components/ui/separator'
 
-import ProfileHeader from '@/components/profile/header'
-import BalanceTicket from '@/components/profile/balance-ticket'
-import StatCard from '@/components/profile/stat-card'
-import { useState } from 'react'
-import { GroupsTab } from '@/components/profile/groups-tab'
-import FriendsTab from '@/components/profile/friends-tabs'
-import { useGetProfileQuery } from '@/services/profile'
+import { BalanceSummary } from '@/components/balance-summary'
+import ToggleTheme from '@/components/profile/toggle-theme'
 
 export default function ProfileScreen() {
   const { signOut } = useAuth()
@@ -27,59 +28,66 @@ export default function ProfileScreen() {
   }
 
   const transactions = user.groups.flatMap(group => group.transactions)
-  const involvedTransactions = transactions.filter(transactions =>
-    transactions.splits.some(split => split.userId === user.id)
+  const involvedTransactions = transactions.filter(transaction =>
+    transaction.splits.some(split => split.userId === user.id)
   ).length
 
-  const [value, setValue] = useState('groups')
-
   return (
-    <>
-      <RouterTabs.Screen
-        options={{
-          headerRight: () => (
-            <Link asChild href={'/profile/edit'}>
-              <Button size={'sm'} variant={'secondary'}>
-                <Icon as={PencilIcon} size={12} />
-                <Text>Edit Profile</Text>
-              </Button>
-            </Link>
-          ),
-          headerRightContainerStyle: { paddingRight: 16 },
-        }}
-      />
-      <ScrollView>
-        <View className='gap-2 p-4'>
-          <ProfileHeader user={user} />
-          <BalanceTicket currentUserId={user.id} transactions={transactions} />
-          <View className='flex-row gap-2'>
-            <StatCard icon={UsersIcon} value={user.groups.length} label='Groups' />
-            <StatCard icon={UserCheckIcon} value={user.friends.length} label='Friends' />
-            <StatCard icon={CreditCardIcon} value={involvedTransactions} label='Transactions' />
-          </View>
-          <Tabs value={value} onValueChange={setValue}>
-            <TabsList>
-              {[
-                ['groups', 'Groups'],
-                ['friends', 'Friends'],
-              ].map(([val, label]) => (
-                <TabsTrigger key={val} value={val}>
-                  <Text>{label}</Text>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            <TabsContent value='groups'>
-              <GroupsTab groups={user.groups} />
-            </TabsContent>
-            <TabsContent value='friends'>
-              <FriendsTab friends={user.friends} />
-            </TabsContent>
-          </Tabs>
-          <Button onPress={signOut}>
-            <Text>Sign Out</Text>
-          </Button>
+    <ScrollView contentContainerClassName='gap-4 p-4 pb-10'>
+      <View className='flex-row items-center gap-4'>
+        <InitialsAvatar name={user.name} className='size-16' textClassName='text-xl' />
+        <View className='flex-1'>
+          <Text className='text-2xl font-bold tracking-tight' numberOfLines={1}>
+            {user.name}
+          </Text>
+          <Text className='text-muted-foreground mt-0.5' numberOfLines={1}>
+            {user.email}
+          </Text>
+          <Text className='text-muted-foreground text-sm'>
+            Member since {format(user.createdAt, 'MMMM yyyy')}
+          </Text>
         </View>
-      </ScrollView>
-    </>
+        <Link asChild href={'/profile/edit'}>
+          <Button size='icon' variant='outline' accessibilityLabel='Edit profile'>
+            <Icon as={PencilIcon} className='size-4' />
+          </Button>
+        </Link>
+      </View>
+
+      <BalanceSummary userId={user.id} transactions={transactions} />
+
+      <View className='flex-row gap-3'>
+        <Stat value={user.groups.length} label='Groups' />
+        <Stat value={user.friends.length} label='Friends' />
+        <Stat value={involvedTransactions} label='Transactions' />
+      </View>
+
+      <SectionLabel className='mt-2'>Settings</SectionLabel>
+      <Card className='gap-0 px-4 py-0'>
+        <Link asChild href={'/profile/edit'}>
+          <ListRow
+            title={user.provider === 'local' ? 'Account & password' : 'Account'}
+            leading={<Icon as={UserIcon} className='text-muted-foreground size-5' />}
+            showChevron
+          />
+        </Link>
+        <Separator />
+        <ToggleTheme />
+      </Card>
+
+      <Button variant='destructive' className='mt-2 w-full' onPress={signOut}>
+        <Icon as={LogOutIcon} className='size-4' />
+        <Text>Sign out</Text>
+      </Button>
+    </ScrollView>
+  )
+}
+
+function Stat({ value, label }: { value: number; label: string }) {
+  return (
+    <Card className='flex-1 gap-0.5 p-4'>
+      <Text className='fairshare:font-geist-mono font-mono text-xl font-semibold'>{value}</Text>
+      <Text className='text-muted-foreground text-sm'>{label}</Text>
+    </Card>
   )
 }

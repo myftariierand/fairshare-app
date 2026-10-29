@@ -1,81 +1,173 @@
+import { useMemo, useState } from 'react'
 import { View, FlatList, RefreshControl } from 'react-native'
-
-import { useGetFriendRequestsQuery, useGetFriendsQuery } from '@/services/friends'
-
-import { ContactIcon, InboxIcon, UserPlusIcon } from 'lucide-react-native'
-import { Text } from '@/components/ui/text'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Link, Tabs } from 'expo-router'
+
+import { useAuthUser } from '@/lib/auth-context'
+import { useGetFriendRequestsQuery, useGetFriendsQuery, type Friend } from '@/services/friends'
+
+import {
+  ChevronRightIcon,
+  ContactIcon,
+  EllipsisIcon,
+  InboxIcon,
+  SearchIcon,
+  UserMinusIcon,
+  UserPlusIcon,
+} from 'lucide-react-native'
+
+import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
-import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { Empty } from '@/components/ui/empty'
+import { InitialsAvatar } from '@/components/ui/initials-avatar'
+import { ListRow } from '@/components/ui/list-row'
+import { SectionLabel } from '@/components/ui/section-label'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
+import { HeaderIconButton } from '@/components/header-icon-button'
 import RemoveFriendDialog from '@/components/friend/remove-friend-dialog'
 
 export default function FriendsScreen() {
+  const user = useAuthUser()
   const { data, isRefetching, refetch } = useGetFriendsQuery()
   const { data: requests } = useGetFriendRequestsQuery()
+  const [query, setQuery] = useState('')
+  const [removing, setRemoving] = useState<Friend | null>(null)
+
+  const incomingCount = requests?.filter(r => r.receiverId === user.id).length ?? 0
+
+  const friends = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return data ?? []
+    return (data ?? []).filter(
+      f => f.name.toLowerCase().includes(q) || f.email.toLowerCase().includes(q)
+    )
+  }, [data, query])
 
   return (
     <>
       <Tabs.Screen
         options={{
-          headerRight: () => {
-            return (
-              <>
-                <Link asChild href={'/friends/add'}>
-                  <Button size={'sm'} variant={'secondary'} className='mr-2'>
-                    <Icon as={UserPlusIcon} />
-                    <Text>Add Friend</Text>
-                  </Button>
-                </Link>
-                <Link asChild href={'/friends/requests'}>
-                  <Button size={'icon'} variant={'secondary'} className='size-8'>
-                    <Icon as={InboxIcon} />
-                    {!!requests?.length && (
-                      <Badge
-                        className='absolute -top-2 -right-2 h-4 w-4 p-0'
-                        variant={'destructive'}
-                      >
-                        <Text className='text-xs'>1</Text>
-                      </Badge>
-                    )}
-                  </Button>
-                </Link>
-              </>
-            )
-          },
+          headerRight: () => (
+            <View className='flex-row gap-2'>
+              <HeaderIconButton
+                href='/friends/requests'
+                icon={InboxIcon}
+                label='Friend requests'
+                count={incomingCount}
+              />
+              <HeaderIconButton href='/friends/add' icon={UserPlusIcon} label='Add friend' />
+            </View>
+          ),
           headerRightContainerStyle: { paddingRight: 16 },
         }}
       />
       <FlatList
         className='flex-1'
-        data={data}
-        keyExtractor={g => g.id}
-        contentContainerClassName='gap-3 p-4'
+        data={friends}
+        keyExtractor={f => f.id}
+        contentContainerClassName='px-4 pb-8'
+        keyboardShouldPersistTaps='handled'
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+        ListHeaderComponent={
+          <View className='gap-4 pt-2 pb-2'>
+            {!!data?.length && (
+              <View className='justify-center'>
+                <Icon
+                  as={SearchIcon}
+                  className='text-muted-foreground absolute left-3.5 z-10 size-5'
+                />
+                <Input
+                  value={query}
+                  onChangeText={setQuery}
+                  placeholder='Search by name or email'
+                  accessibilityLabel='Search friends'
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  clearButtonMode='while-editing'
+                  className='pl-11'
+                />
+              </View>
+            )}
+            {incomingCount > 0 && (
+              <Link asChild href='/friends/requests'>
+                <ListRow
+                  className='bg-primary/10 border-primary/30 rounded-xl border px-4'
+                  title={`${incomingCount} friend request${incomingCount > 1 ? 's' : ''}`}
+                  subtitle='Review who wants to connect'
+                  leading={
+                    <View className='bg-primary size-9 items-center justify-center rounded-lg'>
+                      <Icon as={UserPlusIcon} className='text-primary-foreground size-5' />
+                    </View>
+                  }
+                  trailing={<Icon as={ChevronRightIcon} className='text-muted-foreground size-5' />}
+                />
+              </Link>
+            )}
+            {!!data?.length && (
+              <SectionLabel>
+                {query ? `${friends.length} of ${data.length}` : `${data.length}`} friend
+                {data.length === 1 ? '' : 's'}
+              </SectionLabel>
+            )}
+          </View>
+        }
         ListEmptyComponent={
-          <Empty
-            title='No Friends'
-            icon={ContactIcon}
-            description='Add friends by tapping in Add Friend button, searching and sending requests.'
-          />
+          query ? (
+            <Text className='text-muted-foreground py-8 text-center'>
+              No friends match “{query}”
+            </Text>
+          ) : (
+            <Empty
+              title='No friends yet'
+              icon={ContactIcon}
+              description='Find people by name or email and send them a request.'
+            />
+          )
         }
         renderItem={({ item }) => (
-          <View className='flex-row items-center'>
-            <Avatar alt={item.name}>
-              <AvatarFallback className='border-border border'>
-                <Text>{item.name.slice(0, 2)}</Text>
-              </AvatarFallback>
-            </Avatar>
-            <View className='ml-3 flex-1'>
-              <Text className='flex items-center gap-1 font-semibold'>{item.name}</Text>
-              <Text className='text-muted-foreground text-xs'>{item.email}</Text>
-            </View>
-            <RemoveFriendDialog friend={item} />
-          </View>
+          <ListRow
+            title={item.name}
+            subtitle={item.email}
+            leading={<InitialsAvatar name={item.name} className='size-11' />}
+            trailing={
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    size='icon'
+                    variant='ghost'
+                    accessibilityLabel={`More options for ${item.name}`}
+                  >
+                    <Icon as={EllipsisIcon} className='text-muted-foreground' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end'>
+                  <DropdownMenuItem variant='destructive' onPress={() => setRemoving(item)}>
+                    <Icon as={UserMinusIcon} className='text-destructive size-4' />
+                    <Text>Remove friend</Text>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            }
+          />
         )}
+        ItemSeparatorComponent={() => <View className='bg-border h-px' />}
       />
+      {removing && (
+        <RemoveFriendDialog
+          friend={removing}
+          open
+          onOpenChange={open => {
+            if (!open) setRemoving(null)
+          }}
+        />
+      )}
     </>
   )
 }
