@@ -59,17 +59,21 @@ function RootNavigator() {
   if (isLoading) return null
 
   const isAuthed = isLoggedIn && !!user
+  // Where each signed-in state belongs. Every guard below redirects here when it fails:
+  // without an explicit target, SDK 58 falls back to the first allowed group, and the
+  // (public) group has no index route, so "/" ended up on Unmatched Route.
+  const home = !isAuthed ? '/login' : user.emailVerified ? '/' : '/verify-email'
 
   return (
     <GestureHandlerRootView>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Protected guard={isAuthed && user.emailVerified}>
+        <Stack.Protected guard={isAuthed && user.emailVerified} redirectTo={home}>
           <Stack.Screen name='(private)' />
         </Stack.Protected>
-        <Stack.Protected guard={!isAuthed}>
+        <Stack.Protected guard={!isAuthed} redirectTo={home}>
           <Stack.Screen name='(public)' />
         </Stack.Protected>
-        <Stack.Protected guard={isAuthed && !user.emailVerified}>
+        <Stack.Protected guard={isAuthed && !user.emailVerified} redirectTo={home}>
           <Stack.Screen name='verify-email' />
         </Stack.Protected>
       </Stack>
