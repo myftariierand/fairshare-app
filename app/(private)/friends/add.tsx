@@ -118,7 +118,7 @@ export default function AddFriendScreen() {
         }
         renderItem={({ item }) => <PersonRow person={item} />}
         ListEmptyComponent={
-          searching ? null : query ? (
+          searching ? undefined : query ? (
             <Empty
               icon={UsersIcon}
               title='No one found'

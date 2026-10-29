@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { type TextInput, View } from 'react-native'
+import { type TextInputInstance, View } from 'react-native'
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
 import { toast } from 'sonner-native'
@@ -49,9 +49,9 @@ function getPasswordStrength(password: string) {
 }
 
 export function SignUpForm() {
-  const emailInputRef = useRef<TextInput>(null)
-  const passwordInputRef = useRef<TextInput>(null)
-  const confirmInputRef = useRef<TextInput>(null)
+  const emailInputRef = useRef<TextInputInstance>(null)
+  const passwordInputRef = useRef<TextInputInstance>(null)
+  const confirmInputRef = useRef<TextInputInstance>(null)
 
   const { setTokens, setUser } = useAuth()
   const refetchProfile = useRefetchProfile()

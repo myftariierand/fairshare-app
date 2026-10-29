@@ -353,7 +353,7 @@ export default function ActivityScreen() {
           }
         />
       }
-      ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className='py-4' /> : null}
+      ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className='py-4' /> : undefined}
       renderSectionHeader={({ section }) => (
         <SectionLabel className='bg-background pt-5 pb-2'>{section.title}</SectionLabel>
       )}

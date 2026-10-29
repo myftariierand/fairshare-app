@@ -116,7 +116,7 @@ export default function InviteMemberScreen() {
         }
         renderItem={({ item }) => <PersonRow person={item} groupId={groupId} />}
         ListEmptyComponent={
-          searching ? null : query ? (
+          searching ? undefined : query ? (
             <Empty
               icon={UsersIcon}
               title='No one found'

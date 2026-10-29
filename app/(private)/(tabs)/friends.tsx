@@ -65,7 +65,9 @@ export default function FriendsScreen() {
         keyExtractor={f => f.id}
         contentContainerClassName='px-4 pb-8'
         keyboardShouldPersistTaps='handled'
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={() => void refetch()} />
+        }
         ListHeaderComponent={
           <View className='gap-4 pt-2 pb-2'>
             <View>

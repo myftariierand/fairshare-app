@@ -67,7 +67,7 @@ export default function GroupInvitesScreen() {
           </View>
         }
         renderItem={({ item }) => <InviteCard invite={item} />}
-        ListFooterComponent={isPending ? null : <AllCaughtUp hasInvites={data.length > 0} />}
+        ListFooterComponent={isPending ? undefined : <AllCaughtUp hasInvites={data.length > 0} />}
         ListFooterComponentClassName='grow'
       />
     </>

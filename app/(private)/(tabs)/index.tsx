@@ -82,7 +82,9 @@ export default function GroupsScreen() {
         data={activeGroups}
         keyExtractor={g => g.id}
         contentContainerClassName='gap-2 px-4 pb-8'
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={() => void refetch()} />
+        }
         ListHeaderComponent={
           <View className='gap-6 pt-2 pb-2'>
             {profile && (
@@ -101,7 +103,7 @@ export default function GroupsScreen() {
               icon={UserGroupIcon}
               description='Create a group for a trip, a flat or a night out, then add friends to it.'
             />
-          ) : null
+          ) : undefined
         }
         renderItem={({ item }) => <ActiveGroupRow group={item} />}
         ListFooterComponent={
@@ -132,7 +134,7 @@ export default function GroupsScreen() {
                   </Link>
                 ))}
             </View>
-          ) : null
+          ) : undefined
         }
       />
     </>

@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { ActivityIndicator, type TextInput, View } from 'react-native'
+import { ActivityIndicator, type TextInputInstance, View } from 'react-native'
 import { createFormHook, createFormHookContexts } from '@tanstack/react-form'
 import { z } from 'zod'
 import { toast } from 'sonner-native'
@@ -52,8 +52,8 @@ const { useAppForm } = createFormHook({
 })
 
 export function ChangePasswordForm() {
-  const newPasswordRef = useRef<TextInput>(null)
-  const confirmPasswordRef = useRef<TextInput>(null)
+  const newPasswordRef = useRef<TextInputInstance>(null)
+  const confirmPasswordRef = useRef<TextInputInstance>(null)
 
   const changePassword = useChangePasswordMutation()
 
