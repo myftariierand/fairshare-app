@@ -1,6 +1,7 @@
 import { View, FlatList } from 'react-native'
 import { Stack } from 'expo-router'
 import { useDebounceValue } from 'usehooks-ts'
+import { useCSSVariable } from 'uniwind'
 
 import { useSearchUserQuery } from '@/services/users'
 import { useSendFriendRequestMutation } from '@/services/friends'
@@ -14,6 +15,7 @@ import { Icon } from '@/components/ui/icon'
 import { SendHorizonalIcon } from 'lucide-react-native'
 
 export default function AddFriendScreen() {
+  const card = useCSSVariable('--color-card') as string
   const [debouncedValue, setValue] = useDebounceValue('', 500)
 
   const { data } = useSearchUserQuery(debouncedValue)
@@ -26,9 +28,11 @@ export default function AddFriendScreen() {
           presentation: 'formSheet',
           sheetGrabberVisible: true,
           sheetAllowedDetents: [0.9],
+          // Same card-colored sheet as group invites
+          contentStyle: { backgroundColor: card },
         }}
       />
-      <View className='p-4'>
+      <View className='bg-card flex-1 p-4'>
         <Text variant={'large'}>ADD A NEW FRIEND</Text>
         <Text variant={'muted'} className='mb-4'>
           You can search by name or email.
