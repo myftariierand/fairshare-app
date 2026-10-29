@@ -1,16 +1,17 @@
-import { router } from 'expo-router'
-import { ArrowLeftIcon, HandshakeIcon, type LucideIcon } from 'lucide-react-native'
+import { Stack } from 'expo-router'
+import { HandshakeIcon, type LucideIcon } from 'lucide-react-native'
 import { View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useCSSVariable } from 'uniwind'
 
-import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 
-// Shared frame for the signed-out screens: optional back button, a mark,
-// title + subtitle, the form, and a footer pinned to the bottom.
+// Shared frame for the signed-out screens: a mark, title + subtitle, the form,
+// and a footer pinned to the bottom. With showBack, the native stack header
+// shows a back button, so it stays put while the content scrolls with the keyboard.
 export function AuthLayout({
   title,
   subtitle,
@@ -31,9 +32,25 @@ export function AuthLayout({
   children: React.ReactNode
 }) {
   const insets = useSafeAreaInsets()
+  const [background, foreground] = useCSSVariable([
+    '--color-background',
+    '--color-foreground',
+  ]) as string[]
 
   return (
     <View className='bg-background flex-1'>
+      {showBack && (
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: '',
+            headerShadowVisible: false,
+            headerStyle: { backgroundColor: background },
+            headerTintColor: foreground,
+            headerBackButtonDisplayMode: 'minimal',
+          }}
+        />
+      )}
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps='handled'
         keyboardDismissMode='interactive'
@@ -41,28 +58,17 @@ export function AuthLayout({
         // Plain styles: the scroll content must fill the screen so the footer sits at the bottom
         contentContainerStyle={{
           flexGrow: 1,
-          paddingTop: insets.top + 12,
+          // The header already sits below the status bar when it's shown
+          paddingTop: showBack ? 0 : insets.top + 12,
           paddingBottom: insets.bottom + 16,
           paddingHorizontal: 24,
         }}
       >
         <View className='w-full max-w-sm self-center' style={{ flexGrow: 1 }}>
-          <View className='h-11 justify-center'>
-            {showBack && (
-              <Button
-                variant='outline'
-                size='icon'
-                accessibilityLabel='Back'
-                className='size-11 self-start'
-                onPress={() => (router.canGoBack() ? router.back() : router.replace('/login'))}
-              >
-                <Icon as={ArrowLeftIcon} />
-              </Button>
-            )}
-          </View>
+          {!showBack && <View className='h-11' />}
 
           <View
-            className={cn(centered ? 'items-center py-8' : 'pt-10')}
+            className={cn(centered ? 'items-center py-8' : showBack ? 'pt-4' : 'pt-10')}
             style={{ flexGrow: 1, justifyContent: centered ? 'center' : 'flex-start' }}
           >
             {icon ? (
