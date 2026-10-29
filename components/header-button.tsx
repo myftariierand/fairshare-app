@@ -1,4 +1,6 @@
-import type { LucideIcon } from 'lucide-react-native'
+import { router } from 'expo-router'
+import { ArrowLeftIcon, type LucideIcon } from 'lucide-react-native'
+import { useCSSVariable } from 'uniwind'
 
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
@@ -29,5 +31,21 @@ export function headerLeftOptions(element: React.ReactElement) {
     unstable_headerLeftItems: () => [
       { type: 'custom' as const, element, hidesSharedBackground: true },
     ],
+  }
+}
+
+// Header used across stack screens: centered title on the screen background,
+// no divider, and an outlined button on the left (back unless `left` is given)
+export function useCenteredHeader(title: string, left?: React.ReactElement) {
+  const background = useCSSVariable('--color-background') as string
+  return {
+    title,
+    headerTitleAlign: 'center' as const,
+    headerShadowVisible: false,
+    headerStyle: { backgroundColor: background },
+    headerTitleStyle: { fontFamily: 'Geist', fontWeight: '600' as const },
+    ...headerLeftOptions(
+      left ?? <HeaderButton icon={ArrowLeftIcon} label='Back' onPress={() => router.back()} />
+    ),
   }
 }
