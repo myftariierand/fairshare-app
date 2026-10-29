@@ -11,7 +11,10 @@ import { ActivityIcon, ContactIcon, PlusIcon, UserGroupIcon } from 'lucide-react
 
 export default function RootLayout() {
   const user = useAuthUser()
-  const mutedForeground = useCSSVariable('--color-muted-foreground') as string
+  const [mutedForeground, background] = useCSSVariable([
+    '--color-muted-foreground',
+    '--color-background',
+  ]) as string[]
   // Navigation text isn't styled by Uniwind, so set the bundled font directly
   const fontFamily = 'Geist'
 
@@ -21,6 +24,8 @@ export default function RootLayout() {
         tabBarInactiveTintColor: mutedForeground,
         headerTitleAlign: 'left',
         headerShadowVisible: false,
+        // Same ground as the screen, not the card color the navigation theme uses for headers
+        headerStyle: { backgroundColor: background },
         headerTitleStyle: { fontSize: 28, fontWeight: '700', fontFamily },
         headerLeftContainerStyle: { paddingLeft: 4 },
         tabBarLabelStyle: { fontFamily, fontWeight: '500' },
