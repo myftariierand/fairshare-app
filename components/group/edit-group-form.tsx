@@ -57,14 +57,13 @@ type CoverSchemaType = z.infer<typeof coverSchema>
 
 export const EditGroupForm = ({ data }: { data: SingleGroup }) => {
   const updateGroup = useUpdateGroup()
+  const savedCover = data.cover ? process.env.EXPO_PUBLIC_IMG_URL + '/' + data.cover : null
 
   const form = useAppForm({
     defaultValues: {
       name: data.name,
       currency: data.currency,
-      cover: data.cover
-        ? { uri: process.env.EXPO_PUBLIC_IMG_URL + '/' + data.cover }
-        : (null as CoverSchemaType | null),
+      cover: savedCover ? { uri: savedCover } : (null as CoverSchemaType | null),
     },
     validators: {
       onSubmit: z.object({
@@ -75,7 +74,14 @@ export const EditGroupForm = ({ data }: { data: SingleGroup }) => {
     },
     onSubmit: async ({ value, formApi }) => {
       try {
-        await updateGroup.mutateAsync({ id: data.id, ...value })
+        await updateGroup.mutateAsync({
+          id: data.id,
+          name: value.name,
+          currency: value.currency,
+          // Only a newly picked image is uploaded; the saved one is left alone
+          cover: value.cover?.uri === savedCover ? null : value.cover,
+          removeCover: Boolean(savedCover) && !value.cover,
+        })
         // Re-baseline so Save goes back to disabled
         formApi.reset(value)
         toast.success('Group updated')

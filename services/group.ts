@@ -71,10 +71,12 @@ export async function updateGroup({
   name,
   currency,
   cover,
-}: { id: string } & CreateGroupInput) {
+  removeCover,
+}: { id: string; removeCover: boolean } & CreateGroupInput) {
   const formData = new FormData()
   formData.append('name', name)
   formData.append('currency', currency)
+  if (removeCover) formData.append('removeCover', 'true')
 
   if (cover) {
     const ext = cover.uri.split('.').pop()?.toLowerCase() ?? 'jpg'
