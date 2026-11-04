@@ -52,7 +52,7 @@ const SseHandler = () => {
     let es: EventSource<'event'> | null = null
 
     const handle = (data: { type: SseEventType; message: string }) => {
-      queryClient.invalidateQueries({ queryKey: ['activity'] })
+      queryClient.invalidateQueries({ queryKey: ['activities'] })
 
       KEYS[data.type]?.forEach(queryKey => queryClient.invalidateQueries({ queryKey }))
 
