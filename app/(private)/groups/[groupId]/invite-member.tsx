@@ -48,10 +48,6 @@ export default function InviteMemberScreen() {
     <>
       <Stack.Screen
         options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          // Full height, like Add friend: iOS stretches a shorter custom detent when the keyboard opens
-          sheetAllowedDetents: [1],
           contentStyle: { backgroundColor: card },
         }}
       />

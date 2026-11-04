@@ -31,9 +31,6 @@ export default function GroupInvitesScreen() {
     <>
       <Stack.Screen
         options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.9],
           // The sheet uses the card color so it reads as a layer above the screen
           contentStyle: { backgroundColor: card },
         }}

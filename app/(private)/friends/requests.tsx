@@ -40,9 +40,6 @@ export default function FriendRequestsScreen() {
     <>
       <Stack.Screen
         options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.9],
           // Same card-colored sheet as group invites and add friend
           contentStyle: { backgroundColor: card },
         }}

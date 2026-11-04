@@ -48,11 +48,6 @@ export default function AddFriendScreen() {
     <>
       <Stack.Screen
         options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          // Full-height sheet: iOS stretches a shorter custom detent toward full screen when
-          // the keyboard opens, which made the sheet jump. At full height it stays put.
-          sheetAllowedDetents: [1],
           // Same card-colored sheet as group invites
           contentStyle: { backgroundColor: card },
         }}
