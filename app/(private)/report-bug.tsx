@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import { Stack, router } from 'expo-router'
 import { useStore } from '@tanstack/react-form'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { toast } from 'sonner-native'
 import { z } from 'zod'
 
@@ -31,6 +32,7 @@ const SEVERITY: Record<BugSeverity, { label: string; hint: string }> = {
 }
 
 export default function ReportBugScreen() {
+  const insets = useSafeAreaInsets()
   const user = useAuthUser()
   const headerOptions = useCenteredHeader('Report a bug')
   const reportBug = useReportBugMutation()
@@ -78,7 +80,8 @@ export default function ReportBugScreen() {
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps='handled'
         bottomOffset={24}
-        contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 20 }}
+        // Clears the navigation bar, whose height varies by phone and Android nav mode
+        contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 20, gap: 20 }}
       >
         <Text className='text-muted-foreground'>
           Tell us what went wrong and we'll look into it.
