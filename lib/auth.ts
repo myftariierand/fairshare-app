@@ -1,4 +1,8 @@
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
+import {
+  GoogleSignin,
+  isCancelledResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin'
 import axios from 'axios'
 
 import { api } from '@/lib/api'
@@ -34,7 +38,9 @@ export async function signInWithGoogle() {
     await GoogleSignin.hasPlayServices()
     await GoogleSignin.signOut()
     const res = await GoogleSignin.signIn()
-    const idToken = res.data?.idToken
+    // Dismissing the account picker resolves with this instead of throwing
+    if (isCancelledResponse(res)) return null
+    const idToken = res.data.idToken
     if (!idToken) throw new Error('No ID token')
 
     const { data } = await api.post<AuthResponse>(`/auth/google/mobile`, { idToken })
