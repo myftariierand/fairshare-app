@@ -16,7 +16,7 @@ export type BugReportInput = {
 }
 
 export async function reportBug(input: BugReportInput) {
-  const { data } = await api.post('/bug-report', input)
+  const { data } = await api.post('/bug-reports', input)
   return data
 }
 
