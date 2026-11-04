@@ -111,7 +111,7 @@ export const getLogConfig = (activity: AcitivityLog, currentUserId?: string): Lo
         icon: GitPullRequest,
         kind: 'group',
         tone: 'member',
-        parts: [b(activity.targetUser?.name), m(' accepted your friend request')],
+        parts: [b(activity.user?.name), m(' accepted your friend request')],
       }
     case ActivityAction.FRIENDSHIP_REMOVED:
       return {
