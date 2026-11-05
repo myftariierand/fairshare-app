@@ -5,7 +5,8 @@ import { useRouter, usePathname } from 'expo-router'
 import { toast } from 'sonner-native'
 
 import { SseEventType } from '@/types/common'
-import { useAuth, useAuthUser } from '@/lib/auth-context'
+import { api } from '@/lib/api'
+import { useAuthUser } from '@/lib/auth-context'
 
 type Key = readonly string[]
 
@@ -37,7 +38,6 @@ const SseHandler = () => {
   const queryClient = useQueryClient()
   const router = useRouter()
   const user = useAuthUser()
-  const token = useAuth()
 
   const pathname = usePathname()
   const pathnameRef = useRef(pathname)
@@ -50,6 +50,9 @@ const SseHandler = () => {
     if (!user) return
 
     let es: EventSource<'event'> | null = null
+    let retryTimer: ReturnType<typeof setTimeout> | undefined
+    let attempts = 0
+    let stopped = false
 
     const handle = (data: { type: SseEventType; message: string }) => {
       queryClient.invalidateQueries({ queryKey: ['activities'] })
@@ -79,28 +82,54 @@ const SseHandler = () => {
       if (!SILENT.includes(data.type)) toast.info(data.message)
     }
 
-    const connect = () => {
-      es?.close()
-      es = new EventSource<'event'>(`${process.env.EXPO_PUBLIC_API_URL}/sse/subscribe/${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      es.addEventListener('event', e => {
-        if (e.data) handle(JSON.parse(e.data))
-      })
-    }
-
     const disconnect = () => {
       es?.removeAllEventListeners()
       es?.close()
       es = null
     }
 
+    const retry = () => {
+      if (stopped) return
+
+      attempts++
+      retryTimer = setTimeout(connect, Math.min(1000 * 2 ** attempts, 30_000))
+    }
+
+    // A ticket works once, so every connection needs a new one. The library's own polling
+    // stays on: when a stream ends cleanly it fires no event, but reopening with the used
+    // ticket fails, and that error is what tells us to get a new one.
+    const connect = async () => {
+      try {
+        const { data } = await api.post<{ ticket: string }>('/sse/ticket')
+
+        if (stopped) return
+
+        es = new EventSource<'event'>(
+          `${process.env.EXPO_PUBLIC_API_URL}/sse/subscribe?ticket=${encodeURIComponent(data.ticket)}`
+        )
+        es.addEventListener('open', () => {
+          attempts = 0
+        })
+        es.addEventListener('event', e => {
+          if (e.data) handle(JSON.parse(e.data))
+        })
+        es.addEventListener('error', () => {
+          disconnect()
+          retry()
+        })
+      } catch {
+        retry()
+      }
+    }
+
     connect()
 
     return () => {
+      stopped = true
+      clearTimeout(retryTimer)
       disconnect()
     }
-  }, [user, token, queryClient, router])
+  }, [user, queryClient, router])
 
   return null
 }
