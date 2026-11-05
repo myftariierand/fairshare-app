@@ -4,7 +4,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
 import { useRefetchProfile } from '@/services/profile'
 
-import { setAuthFailureHandler } from './api'
+import { api, setAuthFailureHandler } from './api'
 import { tokenStorage } from './token-storage'
 
 import { Profile } from '@/types/common'
@@ -53,6 +53,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
+    // Ends the session on the server too. Not awaited, so signing out still works offline.
+    const refreshToken = await tokenStorage.getRefresh()
+    if (refreshToken) api.post('/auth/logout', { refreshToken }).catch(() => {})
+
     await GoogleSignin.signOut()
     await tokenStorage.clear()
     setAccessToken(null)

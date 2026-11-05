@@ -1,6 +1,7 @@
 import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { api } from '@/lib/api'
+import { tokenStorage } from '@/lib/token-storage'
 
 import type { Profile } from '@/types/common'
 
@@ -53,7 +54,9 @@ const updatePassword = async (input: {
   newPassword: string
   confirmPassword: string
 }) => {
-  const { data } = await api.post('/auth/change-password', input)
+  // Other sessions get logged out, so the server needs to know which one is this device
+  const refreshToken = await tokenStorage.getRefresh()
+  const { data } = await api.post('/auth/change-password', { ...input, refreshToken })
   return data
 }
 
