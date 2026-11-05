@@ -26,9 +26,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     ;(async () => {
-      const pending = await SecureStore.getItemAsync('pendingJoinGroupId')
+      const pending = await SecureStore.getItemAsync('pendingJoinToken')
       if (pending) {
-        await SecureStore.deleteItemAsync('pendingJoinGroupId')
+        await SecureStore.deleteItemAsync('pendingJoinToken')
         router.replace(`/join-group/${pending}`)
       }
     })()

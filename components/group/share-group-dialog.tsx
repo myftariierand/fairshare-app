@@ -1,7 +1,10 @@
-import { View, Share } from 'react-native'
+import { ActivityIndicator, View, Share } from 'react-native'
 import QRCode from 'react-native-qrcode-svg'
+import { toast } from 'sonner-native'
 
-import { useGetGroupById } from '@/services/group'
+import { useGetGroupById, useGetInviteLink, useResetInviteLink } from '@/services/group'
+
+import { getErrorMessage } from '@/lib/utils'
 
 import { Share2Icon } from 'lucide-react-native'
 
@@ -22,7 +25,9 @@ import { Text } from '@/components/ui/text'
 
 export default function ShareGroupDialog({ groupId }: { groupId: string }) {
   const { data } = useGetGroupById(groupId)
-  const joinUrl = `${process.env.EXPO_PUBLIC_WEB_URL}/join-group/${groupId}`
+  const { data: inviteLink } = useGetInviteLink(groupId)
+  const resetLink = useResetInviteLink()
+  const joinUrl = inviteLink && `${process.env.EXPO_PUBLIC_WEB_URL}/join-group/${inviteLink.token}`
 
   const groupName = data?.name
 
@@ -53,14 +58,33 @@ export default function ShareGroupDialog({ groupId }: { groupId: string }) {
           accessible
           accessibilityLabel='QR code for the group invite link'
         >
-          <QRCode value={joinUrl} size={200} color='#000' backgroundColor='#fff' />
+          {joinUrl ? (
+            <QRCode value={joinUrl} size={200} color='#000' backgroundColor='#fff' />
+          ) : (
+            <View className='size-[200px] items-center justify-center'>
+              <ActivityIndicator />
+            </View>
+          )}
         </View>
         <AlertDialogFooter className='flex-col'>
           <AlertDialogAction asChild>
-            <Button onPress={shareLink}>
+            <Button onPress={shareLink} disabled={!joinUrl}>
               <Text>Share invite link</Text>
             </Button>
           </AlertDialogAction>
+          {inviteLink?.canReset && (
+            <Button
+              variant='ghost'
+              disabled={resetLink.isPending}
+              onPress={() =>
+                resetLink.mutate(groupId, {
+                  onError: error => toast.error(getErrorMessage(error)),
+                })
+              }
+            >
+              <Text>Reset link (old links stop working)</Text>
+            </Button>
+          )}
           <AlertDialogCancel>
             <Text>Done</Text>
           </AlertDialogCancel>
