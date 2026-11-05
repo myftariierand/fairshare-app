@@ -17,7 +17,7 @@ import { PasswordInput } from '@/components/password-input'
 const PasswordChangeSchema = z
   .object({
     password: z.string().min(1, 'Current password is required.'),
-    newPassword: z.string().min(1, 'New password is required.'),
+    newPassword: z.string().min(8, 'Use at least 8 characters.'),
     confirmPassword: z.string().min(1, 'Password confirmation is required.'),
   })
   .superRefine((args, ctx) => {
