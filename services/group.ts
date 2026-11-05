@@ -23,6 +23,36 @@ export const useGetGroupById = (groupId: string) => {
   })
 }
 
+type InviteLink = { token: string; canReset: boolean }
+
+export async function getInviteLink(groupId: string) {
+  const { data } = await api.get<InviteLink>(`/groups/${groupId}/invite-link`)
+  return data
+}
+
+export const useGetInviteLink = (groupId: string) => {
+  return useQuery({
+    queryKey: ['groups', groupId, 'invite-link'],
+    queryFn: () => getInviteLink(groupId),
+  })
+}
+
+export async function resetInviteLink(groupId: string) {
+  const { data } = await api.post<InviteLink>(`/groups/${groupId}/invite-link/reset`)
+  return data
+}
+
+export const useResetInviteLink = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: resetInviteLink,
+    onSuccess: (_, groupId) => {
+      queryClient.invalidateQueries({ queryKey: ['groups', groupId, 'invite-link'] })
+    },
+  })
+}
+
 export type CreateGroupInput = {
   name: string
   currency: string

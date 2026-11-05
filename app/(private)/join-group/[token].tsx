@@ -7,37 +7,39 @@ import * as SecureStore from 'expo-secure-store'
 import { useAuth } from '@/lib/auth-context'
 import { api } from '@/lib/api'
 
+import type { Group } from '@/types/group'
+
 import { Text } from '@/components/ui/text'
 
 export default function JoinGroupScreen() {
-  const { groupId } = useLocalSearchParams<{ groupId: string }>()
+  const { token } = useLocalSearchParams<{ token: string }>()
   const { isLoggedIn: isAuthenticated, isLoading } = useAuth()
   const router = useRouter()
   const qc = useQueryClient()
   const attempted = useRef(false)
 
   const join = useMutation({
-    mutationFn: () => api.post(`/groups/${groupId}/join`),
-    onSuccess: () => {
+    mutationFn: () => api.post<Group>(`/groups/join/${token}`),
+    onSuccess: ({ data: group }) => {
       qc.invalidateQueries({ queryKey: ['groups'] })
-      router.replace(`/groups/${groupId}`)
+      router.replace(`/groups/${group.id}`)
     },
   })
 
   // Not logged in: remember the invite, then go to login
   useEffect(() => {
-    if (!isLoading && !isAuthenticated && groupId) {
-      SecureStore.setItemAsync('pendingJoinGroupId', groupId).then(() => router.replace('/login'))
+    if (!isLoading && !isAuthenticated && token) {
+      SecureStore.setItemAsync('pendingJoinToken', token).then(() => router.replace('/login'))
     }
-  }, [isLoading, isAuthenticated, groupId])
+  }, [isLoading, isAuthenticated, token])
 
   // Logged in: join once automatically
   useEffect(() => {
-    if (isAuthenticated && groupId && !attempted.current) {
+    if (isAuthenticated && token && !attempted.current) {
       attempted.current = true
       join.mutate()
     }
-  }, [isAuthenticated, groupId])
+  }, [isAuthenticated, token])
 
   if (join.isError) {
     return (
