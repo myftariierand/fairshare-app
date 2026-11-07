@@ -213,6 +213,7 @@ export const useGetExpenseById = (id: string) => {
 }
 
 type CreateExpenseInput = {
+  idempotencyKey?: string
   groupId: string
   amount: number
   description: string

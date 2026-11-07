@@ -27,6 +27,7 @@ import {
   sanitizeNumberInput,
   toMinorUnit,
   transactionCategories,
+  newIdempotencyKey,
 } from '@/lib/utils'
 
 import { CheckIcon, MinusIcon, PlusIcon } from 'lucide-react-native'
@@ -78,6 +79,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
   const { groupId } = useGroupIdParam()
   const { data: group } = useGetGroupById(groupId)
   const createExpense = useCreateExpense()
+  const [idempotencyKey] = useState(newIdempotencyKey)
   const updateExpense = useUpdateExpense()
   const currency = group?.currency ?? 'EUR'
 
@@ -150,7 +152,7 @@ export function ExpenseForm({ data }: { data?: SingleTransaction }) {
           toast.success('Expense updated')
           router.navigate(`/groups/${groupId}`)
         } else {
-          await createExpense.mutateAsync(transformedData)
+          await createExpense.mutateAsync({ ...transformedData, idempotencyKey })
           toast.success('Expense added')
           router.back()
         }

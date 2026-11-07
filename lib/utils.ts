@@ -217,3 +217,7 @@ export function fromMinorUnit(amount: number, currency: string): string {
   const decimals = currencyDecimals[currency] ?? 2
   return (amount / Math.pow(10, decimals)).toFixed(decimals)
 }
+
+// Identifies one expense being added, so sending it twice can't add it twice
+export const newIdempotencyKey = () =>
+  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
