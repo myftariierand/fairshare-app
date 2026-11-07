@@ -98,7 +98,7 @@ export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(
 OtpInput.displayName = 'OtpInput'
 
 /** Countdown for a "Resend code" button. */
-export function useResendTimer(seconds = 30) {
+export function useResendTimer(seconds = 60) {
   const [secondsLeft, setSecondsLeft] = useState(seconds)
 
   useEffect(() => {

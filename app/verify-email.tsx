@@ -28,7 +28,7 @@ export default function VerifyEmailScreen() {
       const profile = await refetchProfile()
 
       if (!profile.emailVerified) {
-        toast.error('Invalid or expired code. Please try again.')
+        toast.error('Invalid or expired code. Try again, or request a new one.')
         setCode('')
         return
       }
