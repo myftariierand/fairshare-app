@@ -60,6 +60,17 @@ const updatePassword = async (input: {
   return data
 }
 
+const deleteAccount = async (input: { password: string }) => {
+  const { data } = await api.post('/auth/delete-account', input)
+  return data
+}
+
+export const useDeleteAccountMutation = () => {
+  return useMutation({
+    mutationFn: deleteAccount,
+  })
+}
+
 export const useChangePasswordMutation = () => {
   return useMutation({
     mutationFn: updatePassword,

@@ -20,6 +20,7 @@ import { Separator } from '@/components/ui/separator'
 import { BalanceSummary } from '@/components/balance-summary'
 import ToggleTheme from '@/components/profile/toggle-theme'
 import AccentPicker from '@/components/profile/accent-picker'
+import DeleteAccount from '@/components/profile/delete-account'
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets()
@@ -106,6 +107,8 @@ export default function ProfileScreen() {
         <Icon as={LogOutIcon} className='size-4' />
         <Text>Sign out</Text>
       </Button>
+
+      <DeleteAccount needsPassword={user.provider === 'local'} />
     </ScrollView>
   )
 }
