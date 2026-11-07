@@ -19,6 +19,7 @@ import ExpenseList from '@/components/group/expense-list'
 import SettleUpTab from '@/components/group/settle-up-tab'
 import BalanceTab from '@/components/group/balance-tab'
 import NotesList from '@/components/group/notes-list'
+import { getErrorMessage } from '@/lib/utils'
 
 export default function GroupScreen() {
   // Home's Settle up opens the group on its debts tab
@@ -48,7 +49,7 @@ export default function GroupScreen() {
       <>
         <Stack.Screen options={{ headerShown: false }} />
         <View className='flex-1 items-center justify-center gap-4 p-6'>
-          <Text className='text-destructive'>{error.message}</Text>
+          <Text className='text-destructive'>{getErrorMessage(error)}</Text>
           <Button onPress={() => refetch()}>
             <Text>Try again</Text>
           </Button>
