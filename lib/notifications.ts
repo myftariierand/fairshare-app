@@ -4,6 +4,8 @@ import * as Device from 'expo-device'
 import Constants from 'expo-constants'
 import { Platform } from 'react-native'
 
+import { api } from '@/lib/api'
+
 // While the app is open, SSE already shows a toast, so don't show a system banner
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -13,6 +15,19 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 })
+
+let registeredToken: string | null = null
+
+// Sent when signing out, so this phone stops getting that person's notifications
+export const getRegisteredPushToken = () => registeredToken
+
+export async function registerPushToken() {
+  const token = await getPushToken()
+  if (!token) return
+
+  await api.post('/devices', { token, platform: Platform.OS })
+  registeredToken = token
+}
 
 export async function getPushToken(): Promise<string | null> {
   if (!Device.isDevice) return null

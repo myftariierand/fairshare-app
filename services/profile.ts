@@ -2,6 +2,7 @@ import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/r
 
 import { api } from '@/lib/api'
 import { tokenStorage } from '@/lib/token-storage'
+import { registerPushToken } from '@/lib/notifications'
 
 import type { Profile } from '@/types/common'
 
@@ -57,6 +58,8 @@ const updatePassword = async (input: {
   // Other sessions get logged out, so the server needs to know which one is this device
   const refreshToken = await tokenStorage.getRefresh()
   const { data } = await api.post('/auth/change-password', { ...input, refreshToken })
+  // The server removes every device when a password changes, this one included
+  registerPushToken().catch(() => {})
   return data
 }
 

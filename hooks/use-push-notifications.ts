@@ -1,10 +1,8 @@
 // hooks/usePushNotifications.ts
 import { useEffect } from 'react'
-import { Platform } from 'react-native'
 import * as Notifications from 'expo-notifications'
 import { useRouter } from 'expo-router'
-import { getPushToken } from '@/lib/notifications'
-import { api } from '@/lib/api' // your axios/fetch client
+import { registerPushToken } from '@/lib/notifications'
 import { SseEventType } from '@/types/common'
 
 export function usePushNotifications(userId?: string) {
@@ -14,9 +12,7 @@ export function usePushNotifications(userId?: string) {
   // Register the device token after login
   useEffect(() => {
     if (!userId) return
-    getPushToken().then(token => {
-      if (token) api.post('/devices', { token, platform: Platform.OS })
-    })
+    registerPushToken().catch(() => {})
   }, [userId])
 
   // Handle taps, including the one that cold-started the app
